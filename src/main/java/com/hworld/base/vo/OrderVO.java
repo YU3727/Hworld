@@ -43,7 +43,11 @@ public class OrderVO {
     private Integer memberNum;
     
     //최종 가격 
-    private int orderFinalPrice;
+    private Integer orderFinalPrice;
     
+    private List<MemberVO> memberVOs;
     
-}
+    private List<DirectVO> directVOs;
+    
+	}
+    

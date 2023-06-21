@@ -92,6 +92,11 @@
   color: #ffa202;
 }
 
+.btn-disabled {
+        pointer-events: none;
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
 
 
      .btn-solid-after {
@@ -115,6 +120,104 @@
         background-color: #e22454; 
         color: #fff; 
     }
+    
+.price-opt {
+	position: relative; 
+	padding-top: 28px; 
+	min-width: 113px; 
+	height: 38px; 
+	line-height: normal; 
+	display: inline-block; 
+	vertical-align: middle; 
+	margin: 0; 
+	padding: 0; 
+	margin-block-start: 1em; 
+	margin-block-end: 1em; 
+	margin-inline-start: 0px; 
+	margin-inline-end: 0px;
+}    
+ .price-opt .title{
+ 	position: absolute; 
+ 	bottom: 3px; 
+ 	left: 0; 
+ 	color: #cdcdcd; 
+ 	font-size: 14px; 
+ 	white-space: nowrap;
+ }
+   
+  .price-opt .num{
+  	font-family: TgothicBlack, Roboto, sans-serif; 
+  	letter-spacing: 0; 
+  	font-size: 26px; 
+  	letter-spacing: -1px; 
+  	color: #fff; 
+  	font-weight: 700;
+  
+  } 
+ .price-opt .unit{
+ 	color: #fff; 
+ 	font-size: 16px;
+ }	
+
+ .ico-plus{
+	 font-weight: bolder; 
+	 font-size: 20px; 
+	 color: white; 
+	 width: 20px; 
+	 height: 20px; 
+	 background-position: -446px -546px; 
+	 margin: -10px 28px 0 18px; 
+	 display: inline-block; 
+	 vertical-align: middle; 
+	 overflow: hidden; 
+	 display: inline-block; 
+	 background-image: url(../img/spr_img_v3.png); 
+	 background-repeat: no-repeat;
+ }
+                              
+.ico-equal{
+	font-weight: bolder; 
+	font-size: 20px; 
+	color: white; 
+	width: 20px; 
+	height: 20px; 
+	background-position: -470px -546px; 
+	margin: -10px 28px 0 18px; 
+	display: inline-block; 
+	vertical-align: middle; overflow: hidden;  background-image: url(../img/spr_img_v3.png); 
+	background-repeat: no-repeat;"
+}   
+
+.btn-text{
+	color: #3b98e6; 
+	cursor: pointer; 
+	-webkit-appearance: button; 
+	padding: 0; 
+	border: 0; 
+	background-color: transparent; 
+	text-transform: none; 
+	overflow: visible; 
+	font: inherit; 
+	margin: 0; 
+	writing-mode: horizontal-tb !important; 
+	letter-spacing: normal; 
+	word-spacing: normal; 
+	text-indent: 0px; 
+	text-shadow: none; 
+	display: inline-block; 
+	text-align: center; 
+	box-sizing: border-box;
+}
+
+#orderBtn{
+	width: 200px; 
+	height: 54px; 
+	font-size: 18px; 
+	display: inline-block; 
+	padding: 0 10px; 
+	text-align: center; 
+}
+   
     
  /* 요금제 변경 모달 버튼 */
  .quick-view-modal .product-right .size-detail {
@@ -169,35 +272,28 @@
                     <div class="details-items">
                         <div class="row g-4">
                         <!-- 상품 사진 이미지 div 태그 -->
-		                            <div class="col-md-6">
-		                                <div class="ratio_portrait">
-		                                    <div class="row g-sm-3 g-2">
-		                                        <div class="col-6">
-		                                            <div>
-		                                                <img src="/assets/images/fashion/galaxy21u1.png"
-		                                                    class="img-fluid bg-img blur-up lazyload" alt="">
-		                                            </div>
-		                                        </div>
-		                                    </div>
-		                                </div>
+		                            <div class="col-md-6" style="display:block;">
+		                            	<div class="ratio_landscape">
+		                                <img src="/assets/images/electronics/product/${param.slicedCode}.jpg">
+										</div>	  
 		                            </div>
                        <!-- 상품 사진 이미지 div 태그 end -->
                             <div class="col-md-6">
                                 <div class="cloth-details-size ">
+                                <c:if test="${memberVO.adminCheck == 0 }">
                                     <div class="admin-update-delete d-flex justify-content-end">
                                         <a href="./directUpdate?slicedCode=${param.slicedCode}" class="me-3">수정</a>
-                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#productdel">삭제</a>
+                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#productdel" id="productDelModal" >삭제</a>
                                     </div>    
+                                </c:if>
 								<div id="directList">
-									<div class="noStock" style="display:none;">
-										<h2 class="theme-color">선택하신 제품은 재고가 없습니다.</h2>
-									</div>
+									
 										<c:forEach items="${list}" var="direct" varStatus="status">
-											<div class="titlebox">
-												<div class="brand direct-item" style="font-size: 27px; color: gray;" id="productCode"
-												data-direct-code="${direct.directCode}" data-direct-price="${direct.directPrice}"
-												data-direct-stock="${direct.directStock}">
-													${direct.value} ${direct.slicedCode} ${direct.directCode}
+											<div class="titlebox" id="${direct.directCode}" data-selected="0">
+												<div class="brand" style="font-size: 27px; color: gray;" id="productCode"
+												data-direct-code="${direct.directCode}" data-direct-price="${direct.directPrice}" data-brand-code="${direct.brandCode}"
+												data-direct-stock="${direct.directStock}" data-sliced-code="${direct.slicedCode}" data-category-code="${direct.categoryCode}" data-brand-Code="${direct.brandCode}">
+													${direct.value}
 												</div>
 													<div class="details-image-concept mt-0" style="font-size: 35px;" id="directName">
 														<span class="directNameValue" data-direct-name="${direct.directName}">${direct.directName}</span>
@@ -206,16 +302,33 @@
 														<h3 class="mt-3 ">출고가</h3>
 													</div>
 														<p>
-														<span class="price-detail theme-color fw-bold" id="renewPrice" >${direct.directPrice}</span>
+														<span class="price-detail theme-color fw-bold data-comma" id="renewPrice" >${direct.directPrice}</span>
 														<span class="unit">원</span>
 														</p>
-													<input type="hidden" id="directCode" name="directCode" value="${direct.directCode}">
-													<input type="hidden" id="categoryCode" name="categoryCode" value="${direct.categoryCode}">
-													<input type="hidden" id="brandCode" name="brandCode" value="${direct.brandCode}">
-													<input type="hidden" id="slicedCode" name="slicedCode" value="${direct.slicedCode}">
-													<input type="text" id="directStock" name="directStock" value="${direct.directStock}" readonly>
+													<div class="direct-item" id="item_${direct.directCode}" data-direct-code="${direct.directCode}" data-category-code="${direct.categoryCode}" data-brand-code="${direct.brandCode}" data-sliced-code="${direct.slicedCode}" data-direct-stock="${direct.directStock}" data-direct-price="${direct.directPrice}" data-direct-name="${direct.directName}"></div>
 											</div>
 										</c:forEach>
+										<form action="./phoneOrder" method="get" id="buyForm">
+											<input type="hidden" id="colorCode" name="colorCode">
+											<input type="hidden" id="saveCapacity" name="saveCapacity">
+											<input type="hidden" id="directCode" name="directCode">
+											<input type="hidden" id="directStock" name="directStock" readonly>
+											<input type="hidden" id="selectedDirectName" name="directName">
+											<input type="hidden" id="planNum" name="planNum" value="">
+											<input type="hidden" id="planName2" name="planName" >
+											<input type="hidden" id="planPrice1" name="planPrice">
+											<input type="hidden" id="disKind" name="disKind">
+											<input type="hidden" id="joinType" name="joinType" >
+											<input type="hidden" id="totalPriceAll" name="totalPrice">
+											<input type="hidden" id="outPhonePrice" name="out_phonePayPrice">
+											<input type="hidden" id="outplanPrice" name="out_planPrice">
+											
+											<!-- <input type="text" id="" -->
+										
+											<!-- <input type="hidden" id="categoryCode" name="categoryCode" value="${direct.categoryCode}">
+											<input type="hidden" id="brandCode" name="brandCode" value="${direct.brandCode}">
+											<input type="hidden" id="slicedCode" name="slicedCode" value="${direct.slicedCode}"> -->
+										</form>
 										<div class="optionArea">
 											<div class="product-option-item color">
 										   		<div class="option-title-area">
@@ -223,7 +336,7 @@
 										        </div>
 												<div class="color-types">
 													<ul class="color-variant mb-0">
-														<li class="bg-white border boder-1 selected" value="W" name="colorCode"></li>
+														<li class="bg-white border border-1" value="W" name="colorCode"></li>
 														<li class="bg-gray1" value="G" name="colorCode"></li>
 														<li class="bg-black1" value="B" name="colorCode"></li>
 													</ul>
@@ -233,21 +346,21 @@
 												<div>
 													<h3 class="option-title mt-3 mb-2">용량</h3>
 												</div>
-											<div>
+											<div id="capacities">
 												<span>
-												  <input type="radio" hidden name="saveCapacity" value="128">
+												  <input type="radio" hidden name="saveCapacity" id="caOption1" value="128">
 												  <label for="saveCapacity" class="btn btn-outline-custom m-1 capacity">
 												    <span>128G</span>
 												  </label>
 												</span>
 												<span>
-												  <input type="radio" hidden name="saveCapacity" value="256">
+												  <input type="radio" hidden name="saveCapacity" id="caOption2" value="256">
 												  <label for="saveCapacity" class="btn m-1 btn-outline-custom capacity">
 												    <span>256G</span>
 												  </label>
 												</span>
 												<span>
-												  <input type="radio" hidden name="saveCapacity" value="512">
+												  <input type="radio" hidden name="saveCapacity" id="caOption3" value="512">
 												  <label for="saveCapacity" class="btn m-1 btn-outline-custom capacity">
 												    <span>512G</span>
 												  </label>
@@ -263,19 +376,19 @@
 											</div>
 											<div class="option-types" id="joinType">
 												<span class="c-ick-btn">
-													<input type="radio" hidden name="_joinType" id="joinType1">
+													<input type="radio" hidden name="joinType" id="joinType1" value="0">
 													<label for="joinType1" class="btn m-1 btn-outline-custom joinType">
 														<span class="labelin">기기변경</span>
 													</label>
 												</span>
 												<span class="c-ick-btn">
-													<input type="radio" hidden name="_joinType" id="joinType2">
+													<input type="radio" hidden name="joinType" id="joinType2" value="1">
 													<label for="joinType2" class="btn m-1 btn-outline-custom joinType">
 														<span class="labelin">번호이동</span>
 													</label>
 												</span>
 												<span class="c-ick-btn">
-													<input type="radio" hidden name="_joinType" id="joinType3">
+													<input type="radio" hidden name="joinType" id="joinType3" value="2">
 													<label for="joinType3" class="btn m-1 btn-outline-custom joinType">
 														<span class="labelin">신규가입</span>
 													</label>
@@ -289,19 +402,19 @@
 											</div>
 										<div class="option-types mb-3" id="payType">
 											<span class="c-ick-btn lg">
-												<input type="radio" hidden name="_payType" id="payType1">
+												<input type="radio" hidden name="disKind" id="payType1" value="1">
 												<label for="payType1" class="btn m-1 btn-outline-custom payType">
 													<span class="labelin">12개월<br>약정할인</span>
 												</label>
 											</span>
 											<span class="c-ick-btn lg checked">
-												<input type="radio" hidden name="_payType" id="payType2" >
+												<input type="radio" hidden name="disKind" id="payType2" value="2">
 												<label for="payType2" class="btn m-1 btn-outline-custom payType">
 													<span class="labelin">24개월<br>약정할인</span>
 												</label>
 											</span>
 											<span class="c-ick-btn lg">
-												<input type="radio" hidden name="_payType" id="payType3">
+												<input type="radio" hidden name="disKind" id="payType3" value="0">
 												<label for="payType3" class="btn btn-outline-custom m-1 payType">
 													<span class="labelin">24개월<br>공시지원금</span>
 												</label>
@@ -321,15 +434,18 @@
 									<div class="compare-title">
 										<div class="info">
 											<div class="tit">
+												<!-- 선택된 요금제 이름 span의 text에 삽입 -->
 												<span class="sub-tit" id="selectedPlanName" style="overflow: hidden; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; 
-												text-overflow: ellipsis;" data-plan-name="">선택된 요금제 이름</span>
+												text-overflow: ellipsis;" data-plan-name="" value=""></span>
+												<!-- 체크용 planNum -->
 												<br>
 												<h2 class="main-tit" id="dataDefaultQty" style="margin: 3px 0 3px; font-size: 16px; font-weight: 400; letter-spacing: -0.56px; 
 												padding-right: 100px;"> 데이터 <span id="dataGB"></span> </h2>                                                            
 											</div>
 											<div class="data" style="position: absolute; top: 35px; right: 0; text-align: right;">
+												<!-- 선택된 요금제 금액 h2의 text에 삽입 -->
 												<h2 class="price theme-color" id="planPrice" style="letter-spacing: -0.2px; display: block; margin-top: 4px; margin-right:50px; 
-												color: #000; font-weight: 700;" data-plan-price="" data-dp="">선택된 요금제 금액</h2> 
+												color: #000; font-weight: 700;" data-plan-price2="" data-dp=""></h2> 
 												<p style="color:black; font-size:15px; margin-top:-20px;" class="fw-bold">원/월</p>
 											</div> 
 											<div class="d-flex justify-content-end">
@@ -369,7 +485,9 @@
 	                        <div class="tab-content" id="nav-tabContent">
 	                            <div id="desc" class="tab-pane fade show active">
 	                                <div class="p_description">
-	                                    ${directVO.directContents}
+	                                <c:forEach items="${list }">
+	                                    ${list.get(0).directContents}
+	                                    </c:forEach>
 	                                </div>
 	                            </div>
 	                           
@@ -475,8 +593,10 @@
 					    									<c:set var="totalRating" value="${totalRating + review.rate}" /><p> 이거 뭐야  ${totalRating} </p>
 														</c:forEach>
 													</div>
-													<c:set var="averageRating" value="${totalRating / review.size()}" />
-													 <h2>평점 (<fmt:formatNumber value="${averageRating}" pattern="#.#" />)</h2>
+													<c:set var="averageRating" value="${empty review ? 0 : totalRating / review.size()}" />
+														<c:if test="${not empty averageRating && averageRating != null}">
+														    <h2>평점 (<fmt:formatNumber value="${averageRating}" pattern="#.#" />)</h2>
+														</c:if>
 
 				                                            <ul class="rating my-2 d-inline-block">
 																<li><i class="fas fa-star ${averageRating >= 0.5 ? 'theme-color' : ''}"></i></li>
@@ -586,19 +706,37 @@
 
 									<div class="customer-review-box col-md-9">
    										<div class="review-box d-flex justify-content-end">
+   										<%-- 오더 완성되면 사용할 예정<c:set var="hasPurchase" value="false" />
+
+										<c:forEach var="order" items="${orderList}">
+										    <c:if test="${order.directCode eq '해당 제품 코드' && not empty order.orderNum && order.memberNum eq '구매한 멤버 번호'}">
+										        <c:set var="hasPurchase" value="true" />
+										        <c:break />
+										    </c:if>
+										</c:forEach>
+										
+										<c:if test="${hasPurchase eq 'true'}">
+										    <button type="button" class="btn btn-primary">버튼</button>
+										</c:if> --%>
+										
 											<div class="box-head">
 											    <button class="btn btn-solid-default btn-sm fw-bold writeReview" data-bs-toggle="modal"
 											        data-bs-target="#addReview">후기 작성</button>
 											</div>
 										</div>
                                             <h2 class="col-md-7" style="margin-top:-50px;">구매 후기</h2>
+											<c:choose>
+											    <c:when test="${empty review}">
+											        <p>작성된 리뷰가 없습니다.</p>
+											    </c:when>
+											    <c:otherwise>
 											<c:forEach items="${review}" var="review">
 	                                             <div class="customer-section" data-review="${review.num}" data-rate="${review.rate}">
 	                                                <div class="customer-details">
 	                                                    <c:set var="username" value="${fn:substringBefore(review.email, '@')}" />
 															<h5>${username}</h5>
 															<c:if test="${memberVO.memberNum eq review.memberNum }">
-															<div class="update-delete d-flex justify-content-end">
+															<div class="admin-update-delete d-flex justify-content-end">
 						                                        <a href="javascript:void(0)" class="me-3 reviewUpdate" data-bs-toggle="modal"
 		                                                            data-bs-target="#updateReview" id="reviewUpdate${review.num}"
 		                                                            data-review-num="${review.num}">수정</a>
@@ -623,7 +761,8 @@
                                                 	</div>
                                                	</div>
 											</c:forEach>
-										
+											</c:otherwise>
+											</c:choose>
                           <!-- paging --> <nav class="page-section d-flex justify-content-end"
                                                 style="position: relative;">
                                                 <ul class="pagination mx-auto">
@@ -727,7 +866,7 @@
                                           	<c:forEach items="${gList}" var="i" varStatus="status">
                                           	<div class="mt-1" style="border-box:0px; box-shadow:1px 1px 2px 0px gray;  width:97%;">
                                            	<div class="form-check custome-radio-box mt-1">
-                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}"data-gb-value="${i.dataCapacity}"  data-plan-price="${i.planPrice}" data-dp="${i.disPercent}"/>
+                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}"data-gb-value="${i.dataCapacity}"  data-plan-price="${i.planPrice}" data-dp="${i.disCode}"/>
                                          				<label class="form-check-label fs-5" for="${i.planNum}">${i.planName}</label>
                                                   </div>
                                                   <div class="d-flex justify-content-between mb-1">
@@ -761,7 +900,7 @@
                                           	<c:forEach items="${sList}" var="i" varStatus="status">
                                           		<div class="mt-1" style="border-box:0px; box-shadow:1px 1px 2px 0px gray;  width:97%;">
                                            	<div class="form-check custome-radio-box mt-1">
-                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disPercent}"/>
+                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disCode}"/>
                                          				<label class="form-check-label fs-5" for="${i.planNum}">${i.planName}</label>
                                                   </div>
                                                   <div class="d-flex justify-content-between mb-1">
@@ -794,7 +933,7 @@
                                           	<c:forEach items="${tList}" var="i" varStatus="status">
                                            	<div class="mt-1" style="border-box:0px; box-shadow:1px 1px 2px 0px gray;  width:97%;">
                                            	<div class="form-check custome-radio-box mt-1">
-                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disPercent}"/>
+                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disCode}"/>
                                          				<label class="form-check-label fs-5" for="${i.planNum}">${i.planName}</label>
                                                   </div>
                                                   <div class="d-flex justify-content-between mb-1">
@@ -828,7 +967,7 @@
                                           	<c:forEach items="${zList}" var="i" varStatus="status">
                                            	<div class="mt-1" style="border-box:0px; box-shadow:1px 1px 2px 0px gray;  width:97%;">
                                            	<div class="form-check custome-radio-box mt-1">
-                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disPercent}"/>
+                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disCode}"/>
                                          				<label class="form-check-label fs-5" for="${i.planNum}">${i.planName}</label>
                                                   </div>
                                                   <div class="d-flex justify-content-between mb-1">
@@ -861,7 +1000,7 @@
                                           	<c:forEach items="${wList}" var="i" varStatus="status">
                                            	<div class="mt-1" style="border-box:0px; box-shadow:1px 1px 2px 0px gray;  width:97%;">
                                            	<div class="form-check custome-radio-box mt-1">
-                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disPercent}"/>
+                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disCode}"/>
                                          				<label class="form-check-label fs-5" for="${i.planNum}">${i.planName}</label>
                                                   </div>
                                                   <div class="d-flex justify-content-between mb-1">
@@ -894,7 +1033,7 @@
                                           	<c:forEach items="${hList}" var="i" varStatus="status">
                                            	<div class="mt-1" style="border-box:0px; box-shadow:1px 1px 2px 0px gray;  width:97%;">
                                            	<div class="form-check custome-radio-box mt-1">
-                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disPercent}"/>
+                                         				<input type="radio" name="planNum" class="form-check-input my-2" id="${i.planNum}" value="${i.planNum}" data-plan-price="${i.planPrice}" data-dp="${i.disCode}"/>
                                          				<label class="form-check-label fs-5" for="${i.planNum}">${i.planName}</label>
                                                   </div>
                                                   <div class="d-flex justify-content-between mb-1">
@@ -975,8 +1114,8 @@
                         </div>
                     </div>
                         
-                        <input type="hidden" id="orderNum" name="orderNum">
-                        <input type="hidden" id="memberNum" name="memberNum">
+                        <input type="text" id="orderNum" name="orderNum">
+                        <input type="text" id="memberNum" name="memberNum">
                         <input type="hidden" name="slicedCode" value="${param.slicedCode}">
                     <div class="modal-footer pt-0 text-end d-block">
                         <button type="button" class="btn btn-solid-default btn-sm" data-bs-dismiss="modal" onclick="form.submit()">작성</button>
@@ -1116,39 +1255,38 @@
             <div class="cart-content">
                 <div class="l-grid" style="margin-left: 102px; height: 90px; width: 1180px; margin: 0 auto;">            
                     <div id="paySummary" class="price-area" style="width: 680px; float: left; padding-top: 28px; line-height: normal;">
-                        
-                        <p class="price-opt" style="position: relative; padding-top: 28px; min-width: 113px; height: 38px; line-height: normal; display: inline-block; vertical-align: middle; margin: 0; padding: 0; margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px;">
-                            <span class="title" style="position: absolute; bottom: 3px; left: 0; color: #cdcdcd; font-size: 14px; white-space: nowrap; line-height: normal;">휴대폰 월 할부금</span>
+                        <p class="price-opt">
+                            <span class="title" style=" ">휴대폰 월 할부금</span>
                             <em class="price" style="font-style: normal;">		
-                                <span class="num" style="font-family: TgothicBlack, Roboto, sans-serif; letter-spacing: 0; font-size: 26px; letter-spacing: -1px; color: #fff; font-weight: 700;">70,814</span>		
-                                <span class="unit" style="color: #fff; font-size: 16px;">원</span>	
+                                <span class="num" id="out_phonePayPrice"></span>		
+                                <span class="unit">원</span>	
                             </em>
                         </p>
-                        <span class="ico-plus" style="font-weight: bolder; font-size: 20px; color: white; width: 20px; height: 20px; background-position: -446px -546px; margin: -10px 28px 0 18px; display: inline-block; vertical-align: middle; overflow: hidden; display: inline-block; background-image: url(../img/spr_img_v3.png); background-repeat: no-repeat;">+</span>
+                        <span class="ico-plus">+</span>
                         
-                        <p class="price-opt" style="position: relative; padding-top: 28px; min-width: 113px; height: 38px; line-height: normal; display: inline-block; vertical-align: middle; margin: 0; padding: 0; margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px;">	
-                            <span class="title" style="position: absolute; bottom: 3px; left: 0; color: #cdcdcd; font-size: 14px; white-space: nowrap;">월 통신요금</span>	
+                        <p class="price-opt">	
+                            <span class="title">월 통신요금</span>	
                             <em class="price" style="font-style: normal;">		
-                                <span class="num" style="font-family: TgothicBlack, Roboto, sans-serif; font-size: 26px; letter-spacing: -1px; color: #fff; font-weight: 700;">69,000</span>
-                                <span class="unit" style="color: #fff; font-size: 16px;">원</span>	
+                                <span class="num" id="out_planPrice"></span>
+                                <span class="unit">원</span>	
                             </em>
                         </p>
-                        <span class="ico-equal" style="font-weight: bolder; font-size: 20px; color: white; width: 20px; height: 20px; background-position: -470px -546px; margin: -10px 28px 0 18px; display: inline-block; vertical-align: middle; overflow: hidden;  background-image: url(../img/spr_img_v3.png); background-repeat: no-repeat;">=</span>
-                        <div class="price-sum" style="position: absolute; padding-top: 28px; min-width: 113px; height: 38px; line-height: normal; display: inline-block; vertical-align: middle; margin: 0; padding: 0; margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px;">	
-                            <span class="title" style="position: absolute; bottom: 3px; left: 0; color: #cdcdcd; font-size: 14px; white-space: nowrap;">예상 월 납부 금액</span>	
+                        <span class="ico-equal">=</span>
+                        <div class="price-opt">	
+                            <span class="title">예상 월 납부 금액</span>	
                             <strong class="price" style="display: inline-block; font-weight: bolder;">		
-                                <span class="num" style="font-family: TgothicBlack, Roboto, sans-serif; font-size: 26px; letter-spacing: -1px; color: #fff; font-weight: 700;">139,814</span>		
-                                <span class="unit" style="font-size: 22px; font-weight: 400; color: #fff;">원</span>	
+                                <span class="num" id="totalPrice"></span>		
+                                <span class="unit" >원</span>	
                             </strong>	
                             <span class="dsc" style="margin-left: 5px; color: #959595; font-size: 12px;">
-                                <button type="button" class="btn-text" id="feeDetail" style="color: #3b98e6; cursor: pointer; -webkit-appearance: button; padding: 0; border: 0; background-color: transparent; text-transform: none; overflow: visible; font: inherit; margin: 0; writing-mode: horizontal-tb !important; letter-spacing: normal; word-spacing: normal; text-indent: 0px; text-shadow: none; display: inline-block; text-align: center; box-sizing: border-box;">할부 수수료</button> 
+                                <button type="button" class="btn-text" id="feeDetail" style="">할부 수수료</button> 
                                 5.9%포함
                             </span>
                         </div>
                     </div>
                     <div class="btn-area" style="position: relative; padding-top:17px; float: right;"> 
                         <div class="product-buttons">                      
-                        <button type="button" class="btn btn-solid" id="orderBtn" style= "width: 200px; height: 54px; font-size: 18px; display: inline-block; padding: 0 10px; text-align: center; ">주문하기</button>
+                        <button type="button" class="btn btn-solid orderBtn" id="orderBtn">주문하기</button>
                     </div> 
                     </div>
                 </div>                    
@@ -1156,7 +1294,7 @@
         </div>
     </div>    
  <!-- sticky cart end -->
- <!-- 상품 삭제 모달창 start -->
+ <!-- 리뷰 삭제 모달창 start -->
  <div class="modal fade payment-modal" id="reviewdel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -1164,12 +1302,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form>
                     <div class="mb-4">
                      <h3>정말 삭제하시겠습니까? </h3> <h5>삭제 후에는 복구가 불가합니다.</h5>
                      <input type="hidden" id="modalDelNum" name="num" value="">
                     </div>
-                </form>
             </div>
             <div class="modal-footer pt-0 text-end d-block">
             	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -1178,78 +1314,38 @@
         </div>
     </div>
 </div>
+<!-- 리뷰 삭제 모달창 End -->
+
+<!-- 상품 삭제 모달창 start -->
+ <div class="modal fade payment-modal" id="productdel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+               
+                    <div class="mb-4">
+                     <h3>정말 삭제하시겠습니까? </h3> <h5>삭제 후에는 복구가 불가합니다.</h5>
+                     <input type="hidden" id="modalDelId" name="directCode" value="">
+                     <input type="hidden" id="modalDelSC" value="${param.slicedCode}">
+                    </div>
+            </div>
+            <div class="modal-footer pt-0 text-end d-block">
+            	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-solid-default rounded-1" id="productDelete">삭제</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- 상품 삭제 모달창 End -->
+
 <c:import url="../temp/footer.jsp"></c:import>
 
 <script src="/assets/js/newDirectCode.js"></script>
 <script src="/assets/js/updateReview.js"></script>
     <!-- 버튼 select js -->
-    <script>
-        const capacity = document.getElementsByClassName('capacity');
-        for(let capacity2 of capacity){
-            capacity2.addEventListener('click', function(){
-                if(capacity2.classList.contains('btn-outline-custom')){
-                    for(let capacity3 of capacity){
-                        if(capacity3.classList.contains('btn-solid-after')){
-                            capacity3.classList.remove('btn-solid-after');
-                            capacity3.classList.add('btn-outline-custom');
-                        }
-                    }
-                    capacity2.classList.remove('btn-outline-custom');
-                    capacity2.classList.add('btn-solid-after');
-                }
-                else{
-                    capacity2.classList.remove('btn-solid-after');
-                    capacity2.classList.add('btn-outline-custom');
-                }
-            })
-        }
-
-        const joinType = document.getElementsByClassName('joinType');
-        for(let joinType2 of joinType){
-            joinType2.addEventListener('click', function(){
-                if(joinType2.classList.contains('btn-outline-custom')){
-                    for(let joinType3 of joinType){
-                        if(joinType3.classList.contains('btn-solid-after')){
-                            joinType3.classList.remove('btn-solid-after');
-                            joinType3.classList.add('btn-outline-custom');
-                        }
-                    }
-
-                    joinType2.classList.remove('btn-outline-custom');
-                    joinType2.classList.add('btn-solid-after');
-                }
-                else{
-                    joinType2.classList.remove('btn-solid-after');
-                    joinType2.classList.add('btn-outline-custom');
-                }
-            })
-        }
-
-        const payType = document.getElementsByClassName('payType');
-        for(let payType2 of payType){
-            payType2.addEventListener('click', function(){
-                if(payType2.classList.contains('btn-outline-custom')){
-                    for(let payType3 of payType){
-                        if(payType3.classList.contains('btn-solid-after')){
-                            payType3.classList.remove('btn-solid-after');
-                            payType3.classList.add('btn-outline-custom');
-                        }
-                    }
-
-                    payType2.classList.remove('btn-outline-custom');
-                    payType2.classList.add('btn-solid-after');
-                }
-                else{
-                    payType2.classList.remove('btn-solid-after');
-                    payType2.classList.add('btn-outline-custom');
-                }
-            })
-        }
         
-</script>
-
-
 <!--  하단 금액 바 고정하는 JS -->
 <script>
    window.addEventListener('scroll', function() {
@@ -1263,7 +1359,7 @@
   }
 });
 </script>
- <script>
+<script>
   // 후기 작성 버튼 클릭 시 모달 창이 열릴 때 실행되는 함수
   $('#addReview').on('show.bs.modal', function (event) {
     const directName = $('.directNameValue').data('direct-name'); // 해당 후기 작성 버튼에 연결된 제품의 directName 값을 가져옴
@@ -1288,35 +1384,70 @@
 	});
 </script>
 
-<script type="text/javascript">
-  // 모달창에서 값을 선택하고 확인 버튼을 클릭했을 때 호출되는 함수
-  function onSelectConfirm() {
-    // 선택한 값을 가져오기
-    const selectedValue = document.querySelector('input[name="planNum"]:checked');
-    const planNameLabel = document.querySelector('label[for="' + selectedValue.id + '"]');
-    const planName = planNameLabel.innerText;
-    const planPrice = selectedValue.getAttribute('data-plan-price');
-    const dataGB = selectedValue.getAttribute('data-gb-value');
-    
-    // 가져온 값을 입력하기
-    setSelectedPlan(planName, planPrice, dataGB);
-  }
-  
-//모달창에서 선택한 값을 입력하는 함수
-  function setSelectedPlan(planName, planPrice, dataGB) {
-    // 선택한 요금제, 가격, 데이터 정보 가져오기
-    document.getElementById('selectedPlanName').textContent = planName;
-    document.getElementById('planPrice').textContent = planPrice;
-    
-    // 데이터 정보 처리
-    const dataGBElement = document.getElementById('dataGB');
-    if (dataGB === '무제한') {
-      dataGBElement.innerText = dataGB + '& 음성통화/문자 기본제공';
-    } else {
-      dataGBElement.innerText = dataGB + 'GB & 음성통화/문자 기본제공';
-    }
-  }
+<script>
+const capacity = document.getElementsByClassName('capacity');
+for(let capacity2 of capacity){
+    capacity2.addEventListener('click', function(){
+        if(capacity2.classList.contains('btn-outline-custom')){
+            for(let capacity3 of capacity){
+                if(capacity3.classList.contains('btn-solid-after')){
+                    capacity3.classList.remove('btn-solid-after');
+                    capacity3.classList.add('btn-outline-custom');
+                }
+            }
+            capacity2.classList.remove('btn-outline-custom');
+            capacity2.classList.add('btn-solid-after');
+        }
+        else{
+            capacity2.classList.remove('btn-solid-after');
+            capacity2.classList.add('btn-outline-custom');
+        }
+    })
+}
+
+const joinType = document.getElementsByClassName('joinType');
+for(let joinType2 of joinType){
+    joinType2.addEventListener('click', function(){
+        if(joinType2.classList.contains('btn-outline-custom')){
+            for(let joinType3 of joinType){
+                if(joinType3.classList.contains('btn-solid-after')){
+                    joinType3.classList.remove('btn-solid-after');
+                    joinType3.classList.add('btn-outline-custom');
+                }
+            }
+
+            joinType2.classList.remove('btn-outline-custom');
+            joinType2.classList.add('btn-solid-after');
+        }
+        else{
+            joinType2.classList.remove('btn-solid-after');
+            joinType2.classList.add('btn-outline-custom');
+        }
+    })
+}
+
+const payType = document.getElementsByClassName('payType');
+for(let payType2 of payType){
+    payType2.addEventListener('click', function(){
+        if(payType2.classList.contains('btn-outline-custom')){
+            for(let payType3 of payType){
+                if(payType3.classList.contains('btn-solid-after')){
+                    payType3.classList.remove('btn-solid-after');
+                    payType3.classList.add('btn-outline-custom');
+                }
+            }
+
+            payType2.classList.remove('btn-outline-custom');
+            payType2.classList.add('btn-solid-after');
+        }
+        else{
+            payType2.classList.remove('btn-solid-after');
+            payType2.classList.add('btn-outline-custom');
+        }
+    })
+}
 </script>
+
 
 
 <!--<script>
