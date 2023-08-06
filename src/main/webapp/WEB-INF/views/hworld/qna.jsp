@@ -94,7 +94,7 @@
                     <nav>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="index.html">
+                                <a href="/">
                                     <i class="fas fa-home"></i>
                                 </a>
                             </li>

@@ -126,47 +126,66 @@
 									<div class="table-responsive">
 										<table class="table">
 											<tbody>
+                                                <!-- 글 제목 -->
 												<tr>
-													<th scope="row" class="text-center align-middle h-100" >
-														<div class="d-flex">
-															<h6 class="mx-2 fw-bold">제목</h6>
-															<i class="fa fa-star" ></i>
-														</div>
-													</th>
-													<td colspan="5">
-														<div class="col-md-12">
-															<h6 class="mx-2 fw-bold">${vo.title}</h6>
-														</div>
-													</td>
+                                                    <div class="row">
+                                                        <td class="col-md-2 align-middle" >
+                                                            <div class="col-md-12">
+                                                                <h6 class="ms-1 fw-bold">제목</h6>
+                                                                <!-- <i class="fa fa-star" ></i> -->
+                                                            </div>
+                                                        </td>
+                                                        <td class="col-md-10 align-middle">
+                                                            <div class="col-md-12">
+                                                                <h6 >${vo.title}</h6>
+                                                            </div>
+                                                        </td>
+                                                    </div>
 												</tr>
-			
+                                                <!-- 첨부파일 -->
+                                                <c:if test="${not empty vo.filePath }">
+	                                                <tr>
+	                                                    <div class="row">
+	                                                        <td class="col-md-2">
+	                                                            <div class="col-md-12 mt-1 mb-4 align-middle">
+	                                                                <h6 class="ms-1 fw-bold">첨부 파일</h6>
+	                                                                <!-- <i class="fa fa-star" ></i> -->
+	                                                            </div>
+	                                                        </td>
+	                                                        <td class="col-md-10">
+	                                                            <div class="col-md-12 mt-1 mb-4 align-middle">
+	                                                                <a href="./fileDown?board=${board}&filePath=${vo.filePath}">다운받기</a>
+	                                                            </div>
+	                                                        </td>
+	                                                    </div>
+													</tr>
+												</c:if>
+                                                <!-- 글내용 -->
 												<tr>
-													<th scope="row" class="text-center align-middle h-100" >
-														<div class="d-flex">
-															<h6 class="mx-2 fw-bold">내용</h6>
-															<i class="fa fa-star" ></i>
-														</div>
-													</th>
-													<td colspan="5">
-														<div class="col-md-12">
-															<h6>${vo.contents}</h6>
-														</div>
-													</td>
+                                                    <div class="row">
+                                                        <td class="col-md-2 " >
+                                                            <div class="col-md-12 mt-1 mb-4 align-middle">
+                                                                <h6 class="ms-1 fw-bold">글 내용</h6>
+                                                                <!-- <i class="fa fa-star" ></i> -->
+                                                            </div>
+                                                        </td>
+                                                        <td class="col-md-10 ">
+                                                            <div class="col-md-12 mt-1 mb-4 align-middle">
+                                                                <h6>${vo.contents}</h6>
+                                                            </div>
+                                                        </td>
+                                                    </div>
 												</tr>
-			
-
-			
-												<tr>
-												</tr>
+	
 											</tbody>
 										</table>
 									</div>
 								</div>
 							</div>
-							<!-- <div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
-								<button class="btn btn-solid-default mx-2 " type="submit">작성 완료</button>
-								<button class="btn btn-solid-default " type="button">취소</button>
-							</div> -->
+							<div class="col-md-12 d-flex justify-content-end me-5 my-lg-5">
+								<a href="./noticeUpdate?num=${vo.num}" class="btn btn-solid-default mx-2 " type="submit">수정</a>
+								<button class="btn btn-solid-default " type="button">삭제</button>
+							</div>
 						</div>
 					</div>
 					
@@ -293,12 +312,7 @@
     </div>
     <!-- Quick view modal end -->
 <c:import url="../temp/footer.jsp"></c:import>
-<script type="text/javascript">
-	$('.tab-pane').click(function(){
-	    $('.tab-pane').removeClass('show active');
-	    $(this).addClass('show active');
-	})
-</script>
+
 </body>
 
 </html>

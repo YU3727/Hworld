@@ -8,7 +8,8 @@
 	<select id="paymentDetailUpdate" statementType="CALLABLE" parameterType="hashMap" resultType="hashMap">
 		{
 			CALL pmd_update_all (
-				#{result, mode=OUT, jdbcType=INTEGER, javaType=INTEGER}
+				#{result, mode=OUT, jdbcType=INTEGER, javaType=INTEGER},
+				#{msg, mode=OUT, jdbcType=VARCHAR, javaType=STRING}
 			)
 		}
 	</select>
@@ -16,9 +17,21 @@
 	<select id="billInsert" statementType="CALLABLE" parameterType="hashMap" resultType="hashMap">
 		{
 			CALL insert_bill_all (
-				#{result, mode=OUT, jdbcType=INTEGER, javaType=INTEGER}
+				#{result, mode=OUT, jdbcType=INTEGER, javaType=INTEGER},
+				#{msg, mode=OUT, jdbcType=VARCHAR, javaType=STRING}
 			)
 		}
 	</select>
+	
+	<select id="billCheckUpdate" statementType="CALLABLE" parameterType="hashMap" resultType="hashMap">
+		{
+			CALL pmd_billCheck_update_all (
+				#{result, mode=OUT, jdbcType=INTEGER, javaType=INTEGER},
+				#{msg, mode=OUT, jdbcType=VARCHAR, javaType=STRING}
+			)
+		}
+	</select>
+	
+	
 
 </mapper>
