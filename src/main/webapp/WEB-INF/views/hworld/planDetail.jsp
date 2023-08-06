@@ -226,7 +226,10 @@
     <!-- Shop Section start -->
     <section>
         <div class="container">
-        <input type="hidden" value="${param.planNum}" name="planNum">
+        <input type="hidden" value="${param.planNum}" id="planNum1" name="planNum">
+        <input type="hidden" value="${plan.planNum}" id="planNum2" name="planNum">
+        <input type="hidden" id="minAge">
+        <input type="hidden" id="maxAge">
             <div class="material-details">
                 <div class="title title1 title-effect title-left">
                     <h2>${planNote.note}</h2>
@@ -241,7 +244,7 @@
                                     <div class="justify-content-start" style="margin-top:-20px;">
                                         <a href="./planUpdate" class="me-3">수정</a>
                                         <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                        data-bs-target="#yogeumdel">비활성화</a>
+                                                        data-bs-target="#disabledBtn" id="xBtn">비활성화</a>
                                     </div>
                                 </c:if>    
                                     <div class="details-image-concept" >
@@ -289,6 +292,7 @@
 											                <span class="label-text">(부가세 포함)</span>
 											            </div>
 											            <div style="margin-top:5%;">
+											                    <div id="notiAge"></div>
 											                <div class="product-buttons justify-content-center">
 											                    <!-- 가입자 본인인증 모달 버튼 요금제변경 start -->
 											                    <c:choose>
@@ -363,7 +367,7 @@
                                     <div class="tab-pane fade show active" id="desc">
                                     <div class="shipping-chart">
                                     <div class="part">
-                                        <h4 class="inner-title mb-2">상세정보 쓰세요</h4>
+                                        
                                         <p class="font-light fs-6">${planVO.planExplain}</p>
                                 	</div>
                              		</div>
@@ -398,15 +402,12 @@
                                         <div class="row">
 										    <div class="col-md-6 d-flex">
 										        <div class="input col-md-3">
-										            <label class="fs-6"for="rrnf">주민등록번호 앞 6자리</label>
-										            <input type="text" name="rrnf" id="rrnf">
+										            <input style="font-size:15px;" type="text" name="rrnf" id="rrnf" placeholder= "주민등록번호 앞 6자리">
 										            <span class="spin"></span>
 										        </div>
 										        <p style="margin:40% 6% 0% 6%; ">-</p>
 										        <div class="input col-md-3">
-										            <label class="fs-6"for="rrnl">주민등록번호 뒤 7자리</label>
-										            <!-- 유효성 넣고 주민번호 뒤에자리 2******걸어줘야함 -->
-										            <input type="text" name="rrnl" id="rrnl">
+										            <input style="font-size:15px;" type="password" name="rrnl" id="rrnl" placeholder= "주민등록번호 뒤 7자리">
 										            <span class="spin"></span>
 										        </div>
 										    </div>
@@ -617,21 +618,23 @@
         </div>
 <!-- 번호이동 모달창 end -->
  <!-- 요금 삭제 모달창 start -->
- <div class="modal fade payment-modal" id="yogeumdel">
-    <div class="modal-dialog modal-dialog-centered">
+ <div class="modal fade payment-modal" id="disabledBtn">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form>
+                <form action = "./planDisabled" method="POST" id="disabledPlan">
                     <div class="mb-4">
-                     <h3>해당 요금제를 비활성화 하시겠습니까? </h3> <h5>비활성화 이후에는 활성화가 불가합니다.</h5>
+                     <h3 class="theme-color fw-bold">해당 요금제를 비활성화 하시겠습니까? </h3> <br> <h5>비활성화 이후에는 활성화가 불가합니다.</h5>
+                     <h5>해당요금제로는 더이상 신규가입이 불가하게 됩니다.</h5>
+                     <input type="text" name="planNum" id="modalPlanNum">
                     </div>
                 </form>
             </div>
             <div class="modal-footer pt-0 text-end d-block">
-                <a href="#" ><button class="btn btn-solid-default rounded-1">확인</button></a>
+                <button type="button" id="confirmDisabled" class="btn btn-solid-default rounded-1">확인</button></a>
             </div>
         </div>
     </div>
@@ -740,10 +743,75 @@
   changeTelecomModal.addEventListener('shown.bs.modal', handleModalShown);
 
   // changeTelecom 버튼에 이벤트 리스너 추가
-  const changeTelecomBtn = document.getElementById('changeTelecomBtn');
-  changeTelecomBtn.addEventListener('click', () => {
+  //const changeTelecomBtn = document.getElementById('changeTelecomBtn');
+  //changeTelecomBtn.addEventListener('click', () => {
     // 모달을 열기 전에 필요한 동작을 수행할 수 있습니다
-  });
+  //});
+  
+  const memberBirth = '${memberVO.rrnf}';
+  let age = calculateAge(memberBirth);
+  console.log(age);
+  
+//나이 계산 함수
+  function calculateAge(memberBirth) {
+      let birthYear = parseInt(memberBirth.substring(0, 2), 10);
+      let birthMonth = parseInt(memberBirth.substring(2, 4), 10);
+      let birthDay = parseInt(memberBirth.substring(4, 6), 10);
+
+      let currentDate = new Date();
+      let currentYear = currentDate.getFullYear();
+      let currentMonth = currentDate.getMonth() + 1;
+      let currentDay = currentDate.getDate();
+
+      let century = (birthYear >= 0 && birthYear <= 21) ? 2000 : 1900;
+      let age = currentYear - (century + birthYear);
+      
+      if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+          age--;
+      }
+
+      return age;
+  }
+  
+   const checkPlanNum = $('#planNum1').val();
+   let maxAge = '';
+   let minAge = '';
+   if(checkPlanNum.includes('Z')){
+	   maxAge = 12;
+	   $('#maxAge').val(maxAge);
+   }
+   
+   if(checkPlanNum.includes('T')){
+	   maxAge = 18;
+	   $('#maxAge').val(maxAge);
+   }
+   
+   if(checkPlanNum.includes('S01')){
+	   minAge = 65;
+	   $('#minAge').val(minAge);
+   } else if(checkPlanNum.includes('S02')){
+	   minAge = 70;
+	   $('#minAge').val(minAge);
+   } else if(checkPlanNum.includes('S03')){
+	   minAge = 80;
+	   $('#minAge').val(minAge);
+   }
+    
+    
+   if (age < minAge && minAge != 0) {
+       const ageLow = $('#minAge').val();
+       const ageButton1 = 
+       '<div class="btn btn-outline-danger rounded-3 theme-color btn-disabled" style="margin-left:-10%;"><span>'+ageLow+'세 이하는 해당 요금제를 사용할 수 없습니다.</span></div>';
+       $('#notiAge').html(ageButton1);
+       $('.product-buttons').hide();
+       }
+   if (age > maxAge && maxAge != 0) {
+	   const ageHigh = $('#maxAge').val();
+       const ageButton2 = 
+       '<div class="btn btn-outline-danger rounded-3 theme-color btn-disabled" style="margin-left:-10%;"><span>'+ageHigh+'세 이상은 해당 요금제를 사용할 수 없습니다.</span></div>';
+       $('#notiAge').html(ageButton2);
+       $('.product-buttons').hide();
+       }
 </script>
 
 <script>
@@ -828,6 +896,24 @@ $(document).ready(function() {
         console.log('24개월 할인 선택');
       }
     }
+    
+ // 비활성화 버튼 클릭 이벤트 처리
+    $('#xBtn').click(function() {
+    	console.log('eventOn');
+        const planNum = $('#planNum1').val();
+       console.log(planNum);
+        $('#modalPlanNum').val(planNum); 
+        
+    });
+
+    $('#confirmDisabled').click(function() {
+        let confirm = $('#modalPlanNum').val();
+      console.log(confirm);
+    	   $('#disabledPlan').submit();
+    	   console.log("확인")
+    });
+
+  
 });
 
 </script>

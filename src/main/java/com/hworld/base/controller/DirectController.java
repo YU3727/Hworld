@@ -1,6 +1,7 @@
 package com.hworld.base.controller;
 
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 import java.sql.Array;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,9 @@ import javax.websocket.server.PathParam;
 
 import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -75,17 +78,64 @@ public class DirectController {
 
 	        List<DirectVO> ar = directService.getList(pager); 
 	        log.error(ar.get(0).getDirectCode());
+	        List<PlanVO> existPlanList = directService.getExistPlanList();
+		    List<PlanVO> planList = directService.getPlanList();
+		    List<PlanVO> gList = new ArrayList<>();
+			List<PlanVO> sList = new ArrayList<>();
+			List<PlanVO> tList = new ArrayList<>();
+			List<PlanVO> zList = new ArrayList<>();
+			List<PlanVO> wList = new ArrayList<>();
+			List<PlanVO> hList = new ArrayList<>();
+
+		    for (PlanVO plan : planList) {
+			    String planNum = plan.getPlanNum();
+			    if (planNum.startsWith("G")) {
+			        gList.add(plan);
+			    } else if (planNum.startsWith("S")) {
+			        sList.add(plan);
+			    } else if (planNum.startsWith("T")) {
+			        tList.add(plan);
+			    } else if (planNum.startsWith("Z")) {
+			        zList.add(plan);
+			    } else if (planNum.startsWith("W")) {
+			        wList.add(plan);
+			    } else if (planNum.startsWith("H")) {
+			        hList.add(plan);
+			    }
+			}
+	        
+	        
+	        mv.addObject("existList", existPlanList);
+			mv.addObject("gList", gList);
+			mv.addObject("sList", sList);
+			mv.addObject("tList", tList);
+			mv.addObject("zList", zList);
+			mv.addObject("wList", wList);
+			mv.addObject("hList", hList);    
+	        
 	        
 		mv.addObject("list", ar);
-		mv.setViewName("hworld/phoneList");
+		mv.setViewName("hworld/phoneList2");
+		
 		return mv;
 	}
+	
 
 	// 휴대폰 상세 페이지
 	@GetMapping("phoneDetail")
-	public ModelAndView getDetail(String slicedCode, QnaVO qnaVO) throws Exception{
+	public ModelAndView getDetail(String slicedCode, QnaVO qnaVO, HttpSession session) throws Exception{
 		ModelAndView mv = new ModelAndView();
-
+		MemberVO memberVO = (MemberVO) session.getAttribute("memberVO");
+		if (memberVO == null || memberVO.getMemberNum() == null) {
+	       
+			String message="로그인이 필요합니다.";
+			
+			mv.addObject("url", "/member/login"); 
+		    mv.addObject("result", message);
+	        mv.setViewName("common/result");
+	        return mv;
+	    }
+		
 	    List<DirectVO> ar = directService.getDetail(slicedCode);
 	   
 	    List<PlanVO> existPlanList = directService.getExistPlanList();
@@ -123,13 +173,23 @@ public class DirectController {
 		}
 	    
 	    List<ReviewVO> reviews = directService.getReview(slicedCode);//slicedCode로 페이징된 리뷰 목록 조회
-	    List<ReviewVO> pReview = new ArrayList<>();
-	    for(ReviewVO review : reviews) {
-	    	String categoryCode = review.getCategoryCode();
-	    	if(categoryCode.equals("01")) {
-	    		pReview.add(review);
-	    	}
+//	    List<ReviewVO> pReview = new ArrayList<>();
+//	    for(ReviewVO review : reviews) {
+//	    	String categoryCode = review.getCategoryCode();
+//	    	if(categoryCode.equals("00")) {
+//	    		pReview.add(review);
+//	    	}
+//	    }
+	    
+	 // 세션에서 계산된 값(params)을 가져옴
+	    Map<String, Object> monthlyPay = (Map<String, Object>) session.getAttribute("monthlyPay");
+	 // monthlyPayParams 사용 예시
+	    if (monthlyPay != null) {
+	        log.info(" :::::::::::::::::::: {} ", monthlyPay.get("directCode"));
+	        log.info(" :::::::::::::::::::: {} ", monthlyPay.get("disKind"));
+	        log.info(" :::::::::::::::::::: {} ", monthlyPay.get("planNum"));
 	    }
+	    mv.addObject("monthlyPay", monthlyPay);
 	    
 		mv.addObject("existList", existPlanList);
 		mv.addObject("gList", gList);
@@ -142,32 +202,28 @@ public class DirectController {
 		mv.addObject("qnaList", pQna);
 		
 	    mv.addObject("list", ar);
-	    mv.addObject("review",pReview);
+	    mv.addObject("review",reviews);
 	    mv.setViewName("hworld/phoneDetail");
 
 		return mv;
 	}
 
+	//월요금 계산하는 프로시저 호출 컨트롤러
 	@ResponseBody
 	@GetMapping("calMonthlyPay")
-	public Map<String, Object> getMonthlyPay(@RequestParam Map<String, Object> params) throws Exception{
+	public Map<String, Object> getMonthlyPay(@RequestParam Map<String, Object> params, HttpSession session) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		
 		//String 타입의 disKind를 int로 바꿔줌
-		log.info(" :::::::::::::::::::: before: {} ",  params.get("disKind").getClass());
+		
 		params.put("disKind", Integer.parseInt((String)params.get("disKind")));
-		log.info(" :::::::::::::::::::: after: {} ",  params.get("disKind").getClass());
 		
 		//Map은 heap영역 주소값 복사가 안됨 그냥 메서드 호출하고 매개변수로 받은 기존객체에 데이터를 리턴하는식으로 써야할거같음
 		directService.getMonthlyPay(params);
 
-		log.info(" :::::::::::::::::::: {} ", params.get("directCode"));
-		log.info(" :::::::::::::::::::: {} ", params.get("disKind"));
-		log.info(" :::::::::::::::::::: {} ", params.get("planNum"));
-		log.info(" :::::::::::::::::::: {} ", params.get("out_phonePayPrice"));
-		log.info(" :::::::::::::::::::: {} ", params.get("out_planPrice"));
+		 // 계산된 값(params)을 세션에 저장
+	    session.setAttribute("monthlyPay", params);
 		
-		//mv.addObject("calResult", params);
 		
 		return params;
 	}
@@ -215,17 +271,17 @@ public class DirectController {
 		
 	    directService.setSeenList(request, response, slicedCode);
 	    List<ReviewVO> reviews = directService.getReview(slicedCode);//slicedCode로 페이징된 리뷰 목록 조회
-	    List<ReviewVO> accReview = new ArrayList<>();
-	    for(ReviewVO review : reviews) {
-	    	String categoryCode = review.getCategoryCode();
-	    	if(!categoryCode.equals("01")) {
-	    		accReview.add(review);
-	    	}
-	    }
+//	    List<ReviewVO> accReview = new ArrayList<>();
+//	    for(ReviewVO review : reviews) {
+//	    	String categoryCode = review.getCategoryCode();
+//	    	if(!categoryCode.equals("01")) {
+//	    		accReview.add(review);
+//	    	}
+//	    }
 	    
 		mv.addObject("list", ar);		
 		mv.addObject("qnaList", accQna);
-		mv.addObject("review",accReview);
+		mv.addObject("review",reviews);
 		mv.setViewName("hworld/accessoryDetail2");
 		return mv;
 	}
@@ -456,16 +512,37 @@ public class DirectController {
 	public ModelAndView phoneOrder(@RequestParam Map<String, Object> map, HttpSession session) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		MemberVO memberVO = (MemberVO) session.getAttribute("memberVO");
-		Integer memberNum = memberVO.getMemberNum();
+		
+		
+		if(memberVO == null) {
+			
+			mv.setViewName("hworld/login");
+			return mv;
+		}else {
+		
+			Integer memberNum = memberVO.getMemberNum();
+		
 		//회선이 없는 경우 null 뜨는거 방지해야해 진희야 까먹지마 
 		PlanVO phoneNum = directService.getKingPhoneNum(memberNum);
-		log.error(phoneNum.toString());
+		
+		if(phoneNum != null) {
+		
 		mv.addObject("phoneNum", phoneNum);
 		mv.addObject("map", map);
 		mv.setViewName("hworld/phoneOrder");
 		return mv;
+
+		
+		} else {
+
+			mv.addObject("map", map);
+			mv.setViewName("hworld/phoneOrder");
+			return mv;
+			
+		}
+		}
 	}
-	
+	@Transactional
 	@PostMapping("formAdd")
 	public ModelAndView setFormAdd(@Valid ApplicationVO applicationVO, BindingResult bindingResult, HttpSession session) throws Exception{
 		ModelAndView mv = new ModelAndView();
@@ -480,20 +557,39 @@ public class DirectController {
 		//에러가 없는경우 insert 작업
 		int result = directService.setFormAdd(applicationVO, session);
 		log.info("=============> result : {} ", result);
+		
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("memberVO");
+		Integer memberNum = memberVO.getMemberNum();
+		int ownResult = directService.setOwnCheck(memberNum);
+		
 		mv.setViewName("redirect:./phoneOrderResult");
 		//성공하면 결과에 따라 alert띄우기 해도 될듯. 나중에 index 등으로 바꾸기
 		return mv;
 	}
+	
+	@ResponseBody
+	@GetMapping("checkPhoneNum")
+	public Map<String, Object> checkPhoneNum(String phoneNum, String rrnf, String rrnl, String name) throws Exception {
+	    return directService.checkPhoneNum(phoneNum, rrnf, rrnl, name);
+	}
+	
+	
+	
 	//휴대폰 상품 구매 후 결과 페이지
 	@GetMapping("phoneOrderResult")
 	public ModelAndView phoneOrderResult(@RequestParam Map<String, Object> map, HttpSession session) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		MemberVO memberVO = (MemberVO) session.getAttribute("memberVO");
 		Integer memberNum = memberVO.getMemberNum();
-		//회선이 없는 경우 null 뜨는거 방지해야해 진희야 까먹지마 
+		
+		// 신규가입인 경우 만 해당 
 		PlanVO phoneNum = directService.getMemberPlan(memberNum);
 		
-		mv.addObject("phon", phoneNum);
+		String directName = directService.getDirectName(memberNum);
+		log.error(directName);
+		mv.addObject("phone", phoneNum);
+		mv.addObject("directName", directName);
 		mv.setViewName("hworld/phoneOrderResult");
 		return mv;
 	}

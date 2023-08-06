@@ -33,6 +33,15 @@ $('.optionArea').on('click', 'li[name="colorCode"], label.capacity', function() 
 
   //색상, 용량 옵션이 선택 됐는지 체크
   let selColor = $('#colorCode').val();
+  if(selColor=='W'){
+	  $('#colorName').text('화이트');
+  }else if(selColor == 'G'){
+	   $('#colorName').text('그레이');
+  }else if(selColor == 'B'){
+	   $('#colorName').text('블랙');
+	}else {
+		$('#colorName').text('');
+	}
   let selCapacity = $('#saveCapacity').val();
 
   chkColor = isEmpty(selColor);
@@ -174,7 +183,6 @@ $('#directCode, input[name="disKind"], input[name="planNum"]').on('change', func
   
   //영수증 가격 출력
   let directCode = $('#directCode').val(); // 기기코드
-  let saveCapacity = $('#saveCapacity').val();
   let planNum = $('input[name=planNum]:checked').val(); // 요금제번호
   let disKind = $('input[name=disKind]:checked').val(); // 할인유형
 
@@ -246,42 +254,6 @@ function isEmpty(value){
       return false;
   else
       return true;
-}
-
-
-// 모달창에서 값을 선택하고 확인 버튼을 클릭했을 때 호출되는 함수
-function onSelectConfirm() {
-  // 선택한 값을 가져오기
-  const selectedValue = document.querySelector('input[name="planNum"]:checked');
-  const planNameLabel = document.querySelector('label[for="' + selectedValue.id + '"]');
-  const planName = planNameLabel.innerText;
-  const planPrice = selectedValue.getAttribute('data-plan-price');
-  const dataGB = selectedValue.getAttribute('data-gb-value');
-  const planNum = selectedValue.getAttribute('value');
-  
-  // 가져온 값을 입력하기
-  setSelectedPlan(planName, planPrice, dataGB, planNum);
-}
-
-
-//모달창에서 선택한 값을 입력하는 함수
-function setSelectedPlan(planName, planPrice, dataGB, planNum) {
-  // 선택한 요금제, 가격, 데이터 정보 가져오기
-  document.getElementById('selectedPlanName').textContent = planName;
-  document.getElementById('planPrice').setAttribute('data-plan-price2', planPrice);
-  document.getElementById('planPrice').textContent=planPrice;
-  document.getElementById('planNum').value = planNum;
-  var planPrice2 = $('#planPrice').attr('data-plan-price2');
-	$('#planPrice1').val(planPrice2);
-	$('#planName2').val(planName);
-          
-  // 데이터 정보 처리
-  const dataGBElement = document.getElementById('dataGB');
-  if (dataGB === '무제한') {
-    dataGBElement.innerText = dataGB + '& 음성통화/문자 기본제공';
-  } else {
-    dataGBElement.innerText = dataGB + 'GB & 음성통화/문자 기본제공';
-  }
 }
 
 

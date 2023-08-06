@@ -30,6 +30,7 @@ import com.hworld.base.util.SHA256Util;
 import com.hworld.base.vo.ApplicationVO;
 import com.hworld.base.vo.DirectVO;
 import com.hworld.base.vo.MemberVO;
+import com.hworld.base.vo.OtherTelecomVO;
 import com.hworld.base.vo.PlanVO;
 import com.hworld.base.vo.QnaVO;
 import com.hworld.base.vo.ReviewVO;
@@ -87,7 +88,6 @@ public class DirectService {
 	
 	// 상품 리뷰 작성 
 	public int setReviewAdd(ReviewVO reviewVO) throws Exception {
-		
 		return directDAO.setReviewAdd(reviewVO);
 	}
 	
@@ -95,34 +95,23 @@ public class DirectService {
 		
 	//상품 등록 
 	public int setInsert(DirectVO directVO, MultipartFile[] multipartFiles)throws Exception{
-		
 		String fileName = fileManager.deleteFile(multipartFiles, directVO);
 		fileName = fileManager.saveFile(multipartFiles, directVO);
-				
-		
 		int result = directDAO.setInsert(directVO);
-		
 		return result;
 	}
 
-
 	//상품 수정 
 	public int setUpdate(DirectVO directVO, MultipartFile[] multipartFiles) throws Exception{
-		
 		String fileName = fileManager.deleteFile(multipartFiles, directVO);
 		fileName = fileManager.saveFile(multipartFiles, directVO);	
-
 		return directDAO.setUpdate(directVO);
 	}
 
-	
 	//상품 삭제 
 	public int setDelete(String slicedCode) throws Exception{
-		
-		
 		return directDAO.setDelete(slicedCode);
 	}
-	
 	
 	public void setSeenList(HttpServletRequest request, HttpServletResponse response, String slicedCode) {
 	    Cookie[] cookies = request.getCookies();
@@ -172,8 +161,6 @@ public class DirectService {
 	    }
 	}
 
-
-    
 	public List<DirectVO> getSeenList(HttpServletRequest request) throws Exception {
 	    Cookie[] cookies = request.getCookies();
 	    List<DirectVO> recentlyViewedProducts = new ArrayList<>();
@@ -220,13 +207,9 @@ public class DirectService {
 	}
 
 
-
-
-
 	//리뷰삭제
 	public int setReviewDelete(ReviewVO reviewVO) throws Exception{
-		return directDAO.setReviewDelete(reviewVO);
-		
+		return directDAO.setReviewDelete(reviewVO);	
 	}
 	
 	//리뷰수정
@@ -246,8 +229,7 @@ public class DirectService {
 	public int setReplyAdd(QnaVO qnaVO) throws Exception{
 		return directDAO.setReplyAdd(qnaVO);
 	}
-	
-	
+
 	//getExistPlanList
 	public List<PlanVO> getExistPlanList() throws Exception{
 		return directDAO.getExistPlanList();
@@ -270,20 +252,22 @@ public class DirectService {
 		//-> 1.2 번호이동 : 타통신사 DB에는 있고, 우리 DB에 없는 번호로 가입가능 
 		//세션에서 정보 받아오기때문에 주민등록번호 뒷자리로만 본인정보 조회 
 		
-				//평문 주민뒷자리를 rrnlOrigin에 저장 -> 나중에 실제로 사용할땐 지우면 됨 -----> 진희 코멘트 : 일단 ㄱㄱ하나요? 
+				//평문 주민뒷자리를 rrnlOrigin에 저장 -> 나중에 실제로 사용할땐 지우면 됨 
 				applicationVO.setRrnlOrigin(applicationVO.getRrnl());
 				
 				//SHA256Util을 이용해서 RRNL 암호화(RRN 값 기반)
 				String RRN = applicationVO.getRrnf()+"-"+applicationVO.getRrnl();
 				applicationVO.setRrnl(SHA256Util.encryptMD5(RRN));
 				
-				//신청서 db에 insert ->  진희 코멘트 : appNum 생성되는것 같군요 
+				//신청서 db에 insert  appNum 생성
 				int result = directDAO.setFormAdd(applicationVO);
 				log.error(">>>>>>>>>>>>>>>>>>>>>>>>>> appNum: {} ", applicationVO.getAppNum());
 
 				
-				//회원번호 조회하기 ( 주민번호 뒷자리 입력하면 그 값으로 )
+				//회원번호 조회하기 ( 주민번호 뒷자리 입력하면 그 값으로 ) 
 				MemberVO memberVO = directDAO.getMemberSearch(applicationVO);
+				
+				
 				
 				//세션에서 정보 가져오기 (회원번호)
 				
@@ -311,9 +295,32 @@ public class DirectService {
 				return result;
 	}
 
-		//구매완료(가입완료 후 결과안내 창)
+	//구매완료(가입완료 후 결과안내 창)
 	public PlanVO getMemberPlan(Integer memberNum) throws Exception{
 			return directDAO.getMemberPlan(memberNum);
-	}	
+	}
 	
+	public String getDirectName(Integer memberNum) throws Exception{
+		return directDAO.getDirectName(memberNum);
+	}
+	
+	//ownCheck 1로 변경 
+	public int setOwnCheck(Integer memberNum) throws Exception{
+		return directDAO.setOwnCheck(memberNum);
+	}
+
+	
+	// 휴대폰 번호 사용가능 여부 조회 
+	public Map<String, Object> checkPhoneNum(String phoneNum, String rrnf, String rrnl, String name) throws Exception {
+		// 휴대폰 번호 사용가능 여부 조회
+	
+		String encryptedRrnl = SHA256Util.encryptMD5(rrnf + "-" + rrnl); // 주민등록번호 뒷자리 암호화
+		  
+	    String result = directDAO.checkPhoneNum(phoneNum, rrnf, encryptedRrnl, name);
+	    
+	    Map<String, Object> resultMap = new HashMap<>();
+	    resultMap.put("result", result);
+	    
+	    return resultMap;
+	}
 }

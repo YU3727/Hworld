@@ -93,24 +93,128 @@ $('#tel').on("blur", function() {
 });
 
 
-//유효성 검사
-//rrnl 7자리, 숫자만 입력
-$('#rrnl').on("blur", function() {
-    //숫자만 입력되게 하는 정규식
-    let checkValue = $(this).val().replace(/[^\d]/g, "");
-    $(this).val(checkValue);
-    
-    let length = checkValue.length;
 
-    if(length != 7) {
-        $('#rrnl').val("");
-        $('#rrnlResult').empty();
-        $('#rrnlResult').append('<p class="theme-color">주민번호 뒷자리는 7자리여야 합니다.</p>');
-        //유효성검사용 체크값 false로 입력
+//번호변경 모달창 검사
+//유효성 검사
+//전화번호 11자리, 숫자만 입력 + 중복검사까지 ajax로 실행
+$('#numChangeValue').on("blur", function() {
+    //숫자만 입력되게 하는 정규식
+    let inputValue = $(this).val().replace(/[^\d]/g, "");
+    $(this).val(inputValue);
+    
+    let length = inputValue.length;
+
+    if(length !== 11) {
+        //this.setCustomValidity("전화번호는 11자리여야 합니다.");
+        //alert("전화번호는 11자리여야 합니다.");
+        $('#numChangeValue').val('');
+        $('#searchResult').empty();
+        $('#searchResult').append('<p class="theme-color">전화번호는 11자리여야 합니다.</p>');
     }else{
-        $('#rrnlResult').empty();
+        //11자리인 경우 번호 중복체크
+        //responseBody에 담겨져 응답 돌아옴
+        $.ajax({
+            type: 'GET',
+            url: './isChangeableNum',
+            dataType: 'JSON',
+            data: {
+                phoneNum: inputValue
+            },
+            success: function(response) {
+                //console.log('요청 성공');
+                //console.log(response);
+                if(response == true){
+                    $('#searchResult').empty().append('<p class="theme-color">사용 불가능한 번호입니다</p>');
+                    $('#checkAllowed').val('false');
+                }else if(response == false){
+                    $('#searchResult').empty().append('<p>사용 가능한 번호입니다</p>');
+                    $('#checkAllowed').val('true'); //이 값이 true일 때 변경창 작동하게끔 만들기
+                }else{
+                    $('#searchResult').empty();
+                    $('#checkAllowed').val('false');
+                }
+            },
+            error: function(error) {
+                console.log('요청 실패');
+            }
+        });
+    }
+
+});
+
+
+//번호 변경할 때 번호 변경 입력창 비우기
+$('.numChange').click(function(){
+    //새로 버튼을 누를 때 마다 값을 비워주기
+    $('#numChangeValue').val('');
+    $('#searchResult').empty();
+    $('#checkAllowed').val('');
+})
+
+
+//번호 변경하기
+$('#executiveChangeNumber').click(function() {
+    $('#numChangeValue').blur();
+    let checkAllowed = $('#checkAllowed').val();
+    let inputValue = $('#numChangeValue').val();
+    console.log("값 성공?", checkAllowed);
+
+    //번호 중복 없이 변경 가능한 경우
+    if(checkAllowed=='true'){
+        console.log('중복없음');
+        console.log(inputValue);
+
+        //번호 변경하는 ajax
+        // $.ajax({
+        //     type: 'POST',
+        //     url: './changeNum',
+        //     dataType: 'JSON',
+        //     data: {
+        //         phoneNum: inputValue
+        //     },
+        //     success: function(response) {
+        //         //console.log('요청 성공');
+        //         //console.log(response);
+        //         if(response == true){
+        //             $('#searchResult').empty().append('<p class="theme-color">사용 불가능한 번호입니다</p>');
+        //             $('#checkAllowed').val('false');
+        //         }else if(response == false){
+        //             $('#searchResult').empty().append('<p>사용 가능한 번호입니다</p>');
+        //             $('#checkAllowed').val('true'); //이 값이 true일 때 변경창 작동하게끔 만들기
+        //         }else{
+        //             $('#searchResult').empty();
+        //             $('#checkAllowed').val('false');
+        //         }
+        //     },
+        //     error: function(error) {
+        //         console.log('요청 실패');
+        //     }
+        // });
+
+    }else{
+        console.log('이게 보이면 안됨');
     }
 });
+
+
+//유효성 검사
+//rrnl 7자리, 숫자만 입력
+// $('#rrnl').on("blur", function() {
+//     //숫자만 입력되게 하는 정규식
+//     let checkValue = $(this).val().replace(/[^\d]/g, "");
+//     $(this).val(checkValue);
+    
+//     let length = checkValue.length;
+
+//     if(length != 7) {
+//         $('#rrnl').val("");
+//         $('#rrnlResult').empty();
+//         $('#rrnlResult').append('<p class="theme-color">주민번호 뒷자리는 7자리여야 합니다.</p>');
+//         //유효성검사용 체크값 false로 입력
+//     }else{
+//         $('#rrnlResult').empty();
+//     }
+// });
 
 
 

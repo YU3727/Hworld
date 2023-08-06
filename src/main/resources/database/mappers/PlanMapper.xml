@@ -72,17 +72,32 @@
 		{
 			CALL check_changePlan (
 			#{serialNum, mode=IN, jdbcType=INTEGER, javaType=INTEGER},
+			#{planNum, mode=IN, jdbcType=VARCHAR, javaType=STRING},
+			#{cancelPrice,mode=OUT, jdbcType=INTEGER, javaType=INTEGER},
 			#{result,mode=OUT, jdbcType=INTEGER, javaType=INTEGER}
 			 )
 		}
 </select>
 
-<!-- 기존 사용중인 요금제 정보 회선번호까지 불러오기 -->
+<!-- 원구매가 공시지원금이었을 경우, 요금제 하향 조정시 발생하는 위약금 안내 프로시저  -->
+<select id="getCheckCancelFee" statementType="CALLABLE" parameterType="hashMap" resultType="hashMap">
+		{
+			CALL calc_cancelPrice (
+			#{serialNum, mode=IN, jdbcType=INTEGER, javaType=INTEGER},
+			#{nowDate, mode=IN, jdbcType=DATE, javaType=DATE},
+			#{requestCode, mode=IN, jdbcType=INTEGER, javaType=INTEGER},
+			#{planNum, mode=IN, jdbcType=VARCHAR, javaType=STRING},
+			#{cancelPrice,mode=OUT, jdbcType=INTEGER, javaType=INTEGER}
+			 )
+		}
+</select>
+
+<!-- 대표회선 기존 사용중인 요금제 정보 회선번호까지 불러오기 -->
 <select id="getBeforePlan" resultType="PlanVO" parameterType="Integer">
-	SELECT P.PLANNUM, P.PLANNAME, P.PLANPRICE, P.DATACAPACITY, M.MEMBERNUM, T.SERIALNUM , T.PHONENUM, T.KINGCHECK FROM PLAN P
+	SELECT P.PLANNUM, P.PLANNAME, P.PLANPRICE, P.DATACAPACITY, M.MEMBERNUM, T.SERIALNUM , T.PHONENUM, T.KINGCHECK, T.CONTRACTDATE, T.EXPIREDATE FROM PLAN P
 	JOIN TELEPHONE T ON T.PLANNUM = P.PLANNUM 
 	JOIN MEMBER M ON T.MEMBERNUM = M.MEMBERNUM
-	WHERE M.MEMBERNUM = #{memberNum}
+	WHERE M.MEMBERNUM = #{memberNum} AND T.KINGCHECK =1
 </select>
 
 <!-- 번호이동 타통신사 조회 -->
@@ -111,9 +126,11 @@ WHERE TAPHONENUM = #{taPhoneNum} AND TELECOMNAME = #{telecomName}
  	SET DISCODE=#{disCode}, PLANNAME=#{planName}, PLANPRICE=#{planPrice}, DATACAPACITY=#{dataCapacity},CATEGORYCODE=#{categoryCode}, PLANEXPLAIN=#{planExplain}, PLANEXPLAINS=#{planExplainS}
  </update>
  
- <delete id="setPlanDelete" parameterType="PlanVO">
- 	DELETE FROM PLAN WHERE PLANNUM=#{planNum}
- </delete>
+ <update id="setPlanDisabled" parameterType="PlanVO">
+ 	UPDATE PLAN 
+ 	SET DISABLED = 0 WHERE PLANNUM=#{planNum}
+ 	
+ </update>
  
  <!-- 부가서비스 -->
  
@@ -128,11 +145,20 @@ WHERE TAPHONENUM = #{taPhoneNum} AND TELECOMNAME = #{telecomName}
     WHERE EXTRAPLANNUM=#{extraPlanNum}
 </select>
 
-<select id="getNoteNameExtraPlan" resultType="ExtraPlanVO">
-    SELECT DISTINCT CC.NOTE AS note
-    FROM EPLAN EP
-    LEFT JOIN COMMONCODE CC ON (EP.CATEGORYCODE = CC.CODE) AND (CC.TYPE = SUBSTRING(#{extraPlanNum},1,1))
-    WHERE EP.EPLANNUM = #{extraPlanNum}
+<insert id="setAddServ" statementType="CALLABLE" parameterType="hashMap" >
+		{
+			CALL insert_addServ (
+				#{serialNum, mode=IN, jdbcType=INTEGER, javaType=INTEGER},
+				#{extraPlanNum, mode=IN, jdbcType=VARCHAR, javaType=STRING}
+			)
+		}
+</insert>
+
+<select id="searchExtraPlan" resultType="hashMap" parameterType="hashMap">
+	SELECT * FROM TELEPHONE_EPLAN TE
+	INNER JOIN TELEPHONE T ON T.SERIALNUM = TE.SERIALNUM 
+	WHERE T.SERIALNUM = #{serialNum} AND TE.EXTRAPLANNUM = #{extraPlanNum} 
+	AND T.MEMBERNUM = #{memberNum} AND T.KINGCHECK = 1
 </select>
 
 <insert id="setExtraPlanInsert" parameterType="ExtraPlanVO">

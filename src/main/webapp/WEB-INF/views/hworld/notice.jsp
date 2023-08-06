@@ -11,16 +11,33 @@
     <style>
         .search-section .search-bar .input-group {
            margin : 0 0;
+           width: 100%;
         }
 
         .tracker-table {
             padding-top: 0;
         }
+
+        .tracker-table .table .important_box .important_text {
+            color: var(--theme-color);
+        }
     </style>
+
 </head>
 
 <body class="theme-color2 light ltr">
 <c:import url="../temp/header.jsp"></c:import>
+<script type="text/javascript">
+    window.onpageshow = (event) => {
+        if(event.persisted || (window.performance && window.performance.navigation.type == 2)) {
+            console.log('뒤로가기 이벤트 감지');
+            location.reload();
+        }
+        else {
+            console.log('새로열린 페이지');
+        }
+    }
+</script>
     <!-- mobile fix menu start -->
     <div class="mobile-menu d-sm-none">
         <ul>
@@ -79,7 +96,7 @@
                     <nav>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="index.html">
+                                <a href="/">
                                     <i class="fas fa-home"></i>
                                 </a>
                             </li>
@@ -142,8 +159,8 @@
                                 	<c:forEach items="${list}" var="boardVO">
 	                                    <tr>
 	                                    	<c:if test="${boardVO.noticeCheck eq 1}">
-		                   	                    <td>
-		                                            <p>${boardVO.noticeCheck}</p>
+		                   	                    <td class="important_box">
+		                                            <p class="important_text">[중요]</p>
 		                                        </td>
 	                                    	</c:if>
 	                                    	<c:if test="${boardVO.noticeCheck eq 0}">
@@ -192,12 +209,13 @@
                         </a>
                     </li>
                 </ul>
-                <button class="btn btn-solid-default m-1" style="position: absolute">글쓰기</button>
+                <a href="./noticeAdd" class="btn btn-solid-default m-1" style="position: absolute">글쓰기</a>
             </nav>
         </div>
     </section>
     <!-- Notice Section End -->  
 <c:import url="../temp/footer.jsp"></c:import>
+
 </body>
 
 </html>
