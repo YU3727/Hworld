@@ -28,14 +28,29 @@
 	</select>
 	
 	<insert id="setAdd" parameterType="BoardVO">
-		INSERT INTO NOTICE (MEMBERNUM, NOTICECHECK, TITLE, CONTENTS, REGDATE, FILEPATH, HIT)
-		VALUES (#{memberNum}, #{noticeCheck}, #{title}, #{contents}, NOW(), #{filePath}, 0)
+		INSERT INTO NOTICE (MEMBERNUM, NOTICECHECK, TITLE, CONTENTS, REGDATE, FILENAME, ORINAME, HIT)
+		VALUES (#{memberNum}, #{noticeCheck}, #{title}, #{contents}, NOW(), #{fileName}, #{oriName}, 0)
 	</insert>
 	
-	<update id="setBoardHitUpdate" parameterType="NoticeVO">
+	<update id="setUpdate" parameterType="BoardVO">
+		UPDATE NOTICE SET TITLE = #{title}, CONTENTS = #{contents}, FILENAME = #{fileName}, ORINAME = #{oriName}
+		WHERE NUM = #{num}
+	</update>
+	
+	<update id="setBoardHitUpdate" parameterType="BoardVO">
 		UPDATE NOTICE SET HIT = HIT + 1 
 		WHERE NUM = #{num}
 	</update>
+	
+	<update id="setFileDelete" parameterType="BoardVO">
+		UPDATE NOTICE SET FILENAME = NULL, ORINAME = NULL
+		WHERE NUM = #{num}
+	</update>
+	
+	<delete id="setDelete" parameterType="BoardVO">
+		DELETE FROM NOTICE 
+		WHERE NUM = #{num}
+	</delete>
 	
 	
 

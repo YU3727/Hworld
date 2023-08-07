@@ -34,10 +34,10 @@ public class BoardFileManager extends AbstractView {
 				HttpServletResponse response) throws Exception {
 			// controller에서 빠져나갈때 같은 이름을 찾는다 
 			
-			String filePath = (String) model.get("filePath");
+			String fileName = (String) model.get("fileName");
 			String board = (String) model.get("board");
 			
-			 File file = new File(path+board, filePath);
+			 File file = new File(path+board, fileName);
 			 
 			 //한글 처리
 			 response.setCharacterEncoding("UTF-8");
@@ -46,7 +46,7 @@ public class BoardFileManager extends AbstractView {
 			 response.setContentLengthLong(file.length());
 			 
 			 //다운로드시 파일의 이름을 인코딩
-			 String oriName = URLEncoder.encode(filePath, "UTF-8");
+			 String oriName = URLEncoder.encode(fileName, "UTF-8");
 			 
 			 //header 설정
 			 response.setHeader("Content-Disposition", "attachment;filename=\""+oriName+"\"");
@@ -71,7 +71,7 @@ public class BoardFileManager extends AbstractView {
 	
 	
 		//1. HDD에 파일을 저장하고 저장된 파일명을 리턴
-		public String saveFile(MultipartFile multipartFile, String path) throws Exception {
+		public String saveFile(String path, MultipartFile multipartFile)  throws Exception {
 			
 				if(multipartFile == null || multipartFile.isEmpty()) {
 					return null;
@@ -105,22 +105,14 @@ public class BoardFileManager extends AbstractView {
 		}
 		    
 		
-//		public String deleteFile(MultipartFile[] multipartFiles, DirectVO directVO) throws Exception{
-//		
-//		    File folder = new File(path);
-//		    String fileName = directVO.getDirectCode().substring(directVO.getDirectCode().length() - 5);
-//		    File isEmptyFile = new File(folder, fileName);
-//		    File isEmptyThumbFile = new File(folder, fileName+"Thumb");
-//
-//
-//		    if (isEmptyFile.exists()) {
-//		    	isEmptyFile.delete();
-//		    	isEmptyThumbFile.delete();
-//		    }
-//
-//		    return fileName;
-//			
-//		}
+		public boolean deleteFile(String path, String fileName) throws Exception{
+		
+		    File file = new File(path, fileName);
+		    
+
+		    return file.delete();
+			
+		}
 		
 		private String getFileName(String oriName) {
 			String uuid = UUID.randomUUID().toString();

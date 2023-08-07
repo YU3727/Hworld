@@ -176,7 +176,7 @@
 	                                                                                </th>
 	                                                                                <td colspan="5">
 	                                                                                    <div class="col-md-12">
-	                                                                                        <input type="text" class="form-control" id="fname" name="title">
+	                                                                                        <input type="text" class="form-control" id="fname" name="title" value="${vo.title}">
 	                                                                                    </div>
 	                                                                                </td>
 	                                                                            </tr>
@@ -190,7 +190,7 @@
 	                                                                                </th>
 	                                                                                <td colspan="5">
 	                                                                                    <div class="col-md-12">
-	                                                                                        <textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
+	                                                                                        <textarea class="form-control" name="contents" id="contents" cols="100" rows="10"></textarea>
 	                                                                                    </div>
 	                                                                                </td>
 	                                                                            </tr>
@@ -203,7 +203,7 @@
 	                                                                                </th>
 	                                                                                <td colspan="5" class="align-middle">
 	                                                                                    <div class="">
-	                                                                                        <input class="form-control" type="file" id="formFile" name="file">
+	                                                                                        <input class="form-control" type="file" id="formFile" name="file" value="">
 	                                                                                    </div>
 	                                                                                </td>
 	                                                                            </tr>   
@@ -347,10 +347,19 @@
     <!-- Quick view modal end -->
 <c:import url="../temp/footer.jsp"></c:import>
 <script type="text/javascript">
-	$('.tab-pane').click(function(){
-	    $('.tab-pane').removeClass('show active');
-	    $(this).addClass('show active');
-	})
+	$('#contents').summernote({
+        placeholder: '상세 내용을 입력해주세요.',
+        tabsize: 2,
+        height: 300,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+        ]
+      });
 </script>
 </body>
 

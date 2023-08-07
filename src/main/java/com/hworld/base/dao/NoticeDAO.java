@@ -13,4 +13,6 @@ import com.hworld.base.vo.QnaVO;
 public interface NoticeDAO extends BoardDAO{
 	
 	public int setBoardHitUpdate(NoticeVO noticeVO) throws Exception;
+	
+	public int setFileDelete(NoticeVO noticeVO) throws Exception;
 }

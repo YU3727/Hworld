@@ -10,7 +10,7 @@ import com.hworld.base.vo.QnaVO;
 import com.hworld.base.vo.TelephoneVO;
 
 @Mapper
-public interface QnaDAO extends BoardDAO{
+public interface QnaDAO extends BbsDAO{
 	
 //    // Q&A 갯수
 //    public Long getTotalCount(Pager pager) throws Exception;

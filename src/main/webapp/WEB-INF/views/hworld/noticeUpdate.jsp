@@ -134,8 +134,9 @@
                                             <!-- 문의 작성 테이블 Section Start -->
                                             <div class="tab-content" id="nav-tabContent">
 	                                                <div class="tab-pane fade show active" id="account">
-													<form action="./noticeAdd" method="post" enctype="multipart/form-data">
-                                                        <input type="hidden" name="board" value="${board}">
+													<form action="./noticeUpdate" method="post" enctype="multipart/form-data">
+                                                        <input type="hidden" name="board" id="board" value="${board}">
+                                                        <input type="hidden" name="num" id="num" value="${vo.num}">
 	                                                    <div class="row g-4">
 	                                                        <div class="col-12 overflow-visible">
 	                                                            <div class="tracker-table pt-0" >  
@@ -176,7 +177,7 @@
 	                                                                                </th>
 	                                                                                <td colspan="5">
 	                                                                                    <div class="col-md-12">
-	                                                                                        <input type="text" class="form-control" id="fname" name="title">
+	                                                                                        <input type="text" class="form-control" id="fname" name="title" value="${vo.title}">
 	                                                                                    </div>
 	                                                                                </td>
 	                                                                            </tr>
@@ -190,7 +191,7 @@
 	                                                                                </th>
 	                                                                                <td colspan="5">
 	                                                                                    <div class="col-md-12">
-	                                                                                        <textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
+	                                                                                        <textarea class="form-control" name="contents" id="contents" cols="100" rows="10">${vo.contents}</textarea>
 	                                                                                    </div>
 	                                                                                </td>
 	                                                                            </tr>
@@ -202,9 +203,19 @@
 	                                                                                    </div>
 	                                                                                </th>
 	                                                                                <td colspan="5" class="align-middle">
-	                                                                                    <div class="">
-	                                                                                        <input class="form-control" type="file" id="formFile" name="file">
-	                                                                                    </div>
+                                                                                        <div class="my-5">
+                                                                                            <c:if test="${!empty vo.fileName}">
+                                                                                                <div class="input-group">
+                                                                                                    <input type="text" disabled class="form-control oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
+                                                                                                    <button class="dels btn btn-outline-danger" type="button" data-delete-id="${vo.num}">X</button>
+                                                                                                </div>
+                                                                                            </c:if>     
+ 
+                                                                                        </div> 
+                                                                                        <div class="my-3">
+                                                                                            <input class="form-control newFile" type="file" id="formFile" name="file">
+                                                                                        </div>    
+
 	                                                                                </td>
 	                                                                            </tr>   
 	                                        
@@ -215,8 +226,8 @@
 	                                                            </div>
 	                                                        </div>
 	                                                        <div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
-	                                                            <button class="btn btn-solid-default mx-2 " type="submit">글 등록</button>
-	                                                            <a href="./notice" class="btn btn-solid-default" >취소</a>
+	                                                            <button class="btn btn-solid-default mx-2 " type="submit">글 수정</button>
+	                                                            <a href="./noticeDetail?num=${vo.num}" class="btn btn-solid-default" >취소</a>
 	                                                        </div>
 	                                                    </div>
 	
@@ -346,11 +357,23 @@
     </div>
     <!-- Quick view modal end -->
 <c:import url="../temp/footer.jsp"></c:import>
+<script src="/assets/js/boardFileManager.js"></script> 
 <script type="text/javascript">
-	$('.tab-pane').click(function(){
-	    $('.tab-pane').removeClass('show active');
-	    $(this).addClass('show active');
-	})
+	$('#contents').summernote({
+        placeholder: '상세 내용을 입력해주세요.',
+        tabsize: 2,
+        height: 300,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+        ]
+      });
+
+     
 
 </script>
 </body>

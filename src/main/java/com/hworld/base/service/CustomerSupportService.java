@@ -48,7 +48,7 @@ public class CustomerSupportService {
 	private String path;
 
 	
-	
+	//공지사항
 	public List<BoardVO> getNoticeList(Pager pager) throws Exception {
 		Long totalCount = noticeDAO.getTotalCount(pager);
 		pager.makeNum(totalCount);
@@ -57,20 +57,82 @@ public class CustomerSupportService {
 		
 	}
 	
-	public BoardVO getNoticeDetail(BoardVO boardVO) throws Exception {
-		return noticeDAO.getDetail(boardVO);
+	public BoardVO getDetail(NoticeVO noticeVO) throws Exception {
+		return noticeDAO.getDetail(noticeVO);
 	}
 	
 	public int setBoardHitUpdate(NoticeVO noticeVO) throws Exception {
 		return noticeDAO.setBoardHitUpdate(noticeVO);
 	}
 	
+	public int setAdd(NoticeVO noticeVO, String board, HttpSession session, MultipartFile file) throws Exception {
+		noticeVO.setMemberNum(((MemberVO)(session.getAttribute("memberVO"))).getMemberNum());
+		noticeVO.setFileName(boardFileManager.saveFile(path + board + "/", file));
+		noticeVO.setOriName(file.getOriginalFilename());
+		return noticeDAO.setAdd(noticeVO);
+	}
 	
-	public List<TelephoneVO> setAdd(HttpSession session) throws Exception {
+	public int setFileDelete(NoticeVO noticeVO, String board) throws Exception {
+		noticeVO = (NoticeVO) noticeDAO.getDetail(noticeVO);
+		int result = noticeDAO.setFileDelete(noticeVO);
+
+		if(result < 0) {
+			return result;
+		}
+
+		boolean fileResult = boardFileManager.deleteFile(path + board + "/", noticeVO.getFileName());
+		
+		if(!fileResult) {
+			throw new Exception();
+		}
+		
+
+		
+		return result;
+			
+	}
+	
+	public int setUpdate(NoticeVO noticeVO, String board, MultipartFile file) throws Exception {
+		
+		if(file.isEmpty()) {
+			NoticeVO noticeFile= (NoticeVO) noticeDAO.getDetail(noticeVO);
+			noticeVO.setFileName(noticeFile.getFileName());
+			noticeVO.setOriName(noticeFile.getOriName());
+		}
+		else {
+			noticeVO.setFileName(boardFileManager.saveFile(path + board + "/", file));
+			noticeVO.setOriName(file.getOriginalFilename());
+		}
+		
+		return noticeDAO.setUpdate(noticeVO);
+	}
+	
+	public int setDelete(NoticeVO noticeVO, String board) throws Exception {
+		noticeVO = (NoticeVO) noticeDAO.getDetail(noticeVO);
+		int result = noticeDAO.setDelete(noticeVO);
+
+		if(result < 0) {
+			return result;
+		}
+
+		if(noticeVO.getFileName() != null) {
+			boolean fileResult = boardFileManager.deleteFile(path + board + "/", noticeVO.getFileName());
+			
+			if(!fileResult) {
+				throw new Exception();
+			}
+		}
+		
+		return result;
+	}
+	
+	//---------------------------------------------------------------------------------
+	//Qna
+	public List<TelephoneVO> getTelephoneList(HttpSession session) throws Exception {
 		TelephoneVO telephoneVO = new TelephoneVO();
-		//
-		MemberVO memberVO = (MemberVO)session.getAttribute("memberVO");
-		telephoneVO.setMemberNum(memberVO.getMemberNum());
+		
+		// 회원번호를 세션에서 가져와 회선VO에 대입
+		telephoneVO.setMemberNum(((MemberVO)session.getAttribute("memberVO")).getMemberNum());
 
 		return qnaDAO.getTelephoneList(telephoneVO); 
 	}
@@ -80,12 +142,7 @@ public class CustomerSupportService {
 		return qnaDAO.setAdd(qnaVO);
 	}
 	
-	public int setAdd(NoticeVO noticeVO, String board, HttpSession session, MultipartFile multipartFile) throws Exception {
-		noticeVO.setMemberNum(((MemberVO)(session.getAttribute("memberVO"))).getMemberNum());
-		path = path + board + "/";
-		noticeVO.setFilePath(boardFileManager.saveFile(multipartFile, path));
-		return noticeDAO.setAdd(noticeVO);
-	}
+
 	
 
 }

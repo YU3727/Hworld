@@ -43,6 +43,7 @@ public class CustomerSupportController {
 	
 	// ----------------------------------------------------------------------------------------------------
 	// 공지사항
+	// 리스트
 	@GetMapping("notice")
 	public ModelAndView getNoticeList(Pager pager) throws Exception{
 		ModelAndView modelAndView = new ModelAndView();
@@ -54,6 +55,8 @@ public class CustomerSupportController {
 		return modelAndView;
 	}
 	
+	
+	//글 상세
 	@GetMapping("noticeDetail")
 	public ModelAndView getNoticeDetail(NoticeVO noticeVO, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView mv = new ModelAndView();
@@ -79,12 +82,13 @@ public class CustomerSupportController {
 			response.addCookie(newCookie);
 		}
 
-		mv.addObject("vo", csService.getNoticeDetail(noticeVO));
+		mv.addObject("vo", csService.getDetail(noticeVO));
 		mv.addObject("board", "notice");
 		mv.setViewName("hworld/noticeDetail");
 		return mv;
 	}
 	
+	// 글 작성
 	@GetMapping("noticeAdd")
 	public ModelAndView setNoticeAdd() throws Exception {
 		ModelAndView mv = new ModelAndView();
@@ -94,8 +98,9 @@ public class CustomerSupportController {
 		return mv;
 	}
 	
+	// 글 작성
 	@PostMapping("noticeAdd")
-	public ModelAndView setNoticeAdd(NoticeVO noticeVO, String board, HttpSession session, MultipartFile file) throws Exception {
+	public ModelAndView setAdd(NoticeVO noticeVO, String board, HttpSession session, MultipartFile file) throws Exception {
 		ModelAndView mv = new ModelAndView();
 		
 		String msg = "공지사항 등록 실패";
@@ -113,16 +118,56 @@ public class CustomerSupportController {
 		return mv;
 	}
 	
+	// 글 수정
 	@GetMapping("noticeUpdate")
-	public ModelAndView setNoticeUpdate(NoticeVO noticeVO) throws Exception {
+	public ModelAndView setBoardUpdate(NoticeVO noticeVO) throws Exception {
 		ModelAndView mv = new ModelAndView();
 		
-		noticeVO = (NoticeVO)csService.getNoticeDetail(noticeVO);
-		log.error("NOTICE CHECK : ------------------> {}", noticeVO.getNoticeCheck());
-		
-		mv.addObject("vo", csService.getNoticeDetail(noticeVO));
+		mv.addObject("vo", csService.getDetail(noticeVO));
 		mv.addObject("board", "notice");
 		mv.setViewName("hworld/noticeUpdate");
+		return mv;
+	}
+	
+	//글 수정
+	@PostMapping("noticeUpdate")
+	public ModelAndView setBoardUpdate(NoticeVO noticeVO, String board, MultipartFile file) throws Exception {
+		ModelAndView mv = new ModelAndView();
+		
+		String msg = "수정 실패";
+		
+		int result = csService.setUpdate(noticeVO, board, file);
+		
+		if(result > 0) {
+			msg = "수정 성공";
+		}
+		
+		mv.addObject("result", msg);
+		mv.addObject("url", "./noticeDetail?num="+noticeVO.getNum());
+		mv.setViewName("common/result");
+		
+		
+		return mv;
+	}
+	
+	@PostMapping("noticeDelete")
+	public ModelAndView setBoardDelete(NoticeVO noticeVO, String board) throws Exception {
+		ModelAndView mv = new ModelAndView();
+		
+		mv.addObject("result", csService.setDelete(noticeVO, board));
+		mv.setViewName("common/ajaxResult");
+		
+		return mv;
+	}
+	
+	//첨부파일 삭제
+	@PostMapping("noticeFileDelete")
+	public ModelAndView setBoardFileDelete(NoticeVO noticeVO, String board) throws Exception {
+		ModelAndView mv = new ModelAndView();
+		
+		mv.addObject("result", csService.setFileDelete(noticeVO, board));
+		mv.setViewName("common/ajaxResult");
+		
 		return mv;
 	}
 	
@@ -132,7 +177,7 @@ public class CustomerSupportController {
 	public ModelAndView setQnaAdd(HttpSession session) throws Exception{
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("hworld/qna");
-		modelAndView.addObject("list", csService.setAdd(session));
+		modelAndView.addObject("list", csService.getTelephoneList(session));
 		return modelAndView;
 	}
 	
@@ -173,16 +218,20 @@ public class CustomerSupportController {
 	// ----------------------------------------------------------------------------------------------------
 	// 파일다운
 	@GetMapping("fileDown")
-	public ModelAndView getFileDown(String filePath, String board) throws Exception {
+	public ModelAndView getFileDown(String fileName, String board) throws Exception {
 		ModelAndView mv = new ModelAndView();
 		
-		mv.addObject("filePath", filePath);
+		mv.addObject("fileName", fileName);
 		mv.addObject("board", board);
 		mv.setViewName("boardFileManager");
 		
 		return mv;
 	
 	}
+	
+
+	
+
 	
 
 }

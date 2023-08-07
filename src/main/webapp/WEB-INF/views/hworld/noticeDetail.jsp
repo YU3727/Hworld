@@ -117,6 +117,12 @@
                     </div>
                 </div>
 
+                <div class="d-flex justify-content-end detail-menu">
+                    <a href="./noticeUpdate?num=${vo.num}" class="text-decoration-underline theme-color d-flex me-1" >수정</a>
+                    <p style="color: var(--theme-color);">|</p>
+                    <a href="#" class="text-decoration-underline theme-color d-flex ms-1" id="board-del" data-delete-id="${vo.num}" data-board-id="${board}">삭제</a>
+                </div>
+
 				<!-- 문의 작성 테이블 Section Start -->
 				<div class="tab-content" id="nav-tabContent">
 					<div class="tab-pane fade show active" id="account">
@@ -143,7 +149,7 @@
                                                     </div>
 												</tr>
                                                 <!-- 첨부파일 -->
-                                                <c:if test="${not empty vo.filePath }">
+                                                <c:if test="${not empty vo.fileName }">
 	                                                <tr>
 	                                                    <div class="row">
 	                                                        <td class="col-md-2">
@@ -154,7 +160,7 @@
 	                                                        </td>
 	                                                        <td class="col-md-10">
 	                                                            <div class="col-md-12 mt-1 mb-4 align-middle">
-	                                                                <a href="./fileDown?board=${board}&filePath=${vo.filePath}">다운받기</a>
+	                                                                <a href="./fileDown?board=${board}&fileName=${vo.fileName}">${vo.oriName}</a>
 	                                                            </div>
 	                                                        </td>
 	                                                    </div>
@@ -183,8 +189,7 @@
 								</div>
 							</div>
 							<div class="col-md-12 d-flex justify-content-end me-5 my-lg-5">
-								<a href="./noticeUpdate?num=${vo.num}" class="btn btn-solid-default mx-2 " type="submit">수정</a>
-								<button class="btn btn-solid-default " type="button">삭제</button>
+								<a href="./notice" class="btn btn-solid-default ">글 목록</a>
 							</div>
 						</div>
 					</div>
@@ -312,6 +317,7 @@
     </div>
     <!-- Quick view modal end -->
 <c:import url="../temp/footer.jsp"></c:import>
+<script src="/assets/js/boardFileManager.js"></script> 
 
 </body>
 
