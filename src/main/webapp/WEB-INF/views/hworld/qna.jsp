@@ -312,9 +312,15 @@
 	                                                                                    </div>
 	                                                                                </th>
 	                                                                                <td colspan="5">
-	                                                                                    <div class="mb-3">
-	                                                                                        <input class="form-control" type="file" id="formFile">
-	                                                                                    </div>
+																						<div class="fileList">
+																							<div class="mb-3">
+																								<input class="form-control" type="file" id="formFile">
+																								<div class="input-group">
+                                                                                                    <input type="text" disabled class="form-control" id="oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
+                                                                                                    <button class="btn btn-outline-danger deleteCheck" type="button" data-delete-id="${vo.num}">X</button>
+                                                                                                </div>
+																							</div>
+																						</div>
 	                                                                                    <div class="mt-lg-5" style="text-align: start;">
 	                                                                                        <p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
 	                                                                                        <p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>

@@ -35,6 +35,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		
 		<!-- Board -->
 		<typeAlias type="com.hworld.base.vo.BoardVO" alias="BoardVO"/>
+		<typeAlias type="com.hworld.base.vo.BoardFileVO" alias="BoardFileVO"/>
 		<typeAlias type="com.hworld.base.vo.NoticeVO" alias="NoticeVO"/>
 		<typeAlias type="com.hworld.base.vo.QnaVO" alias="QnaVO"/>
 		

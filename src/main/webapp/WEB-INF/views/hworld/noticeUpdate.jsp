@@ -203,18 +203,19 @@
 	                                                                                    </div>
 	                                                                                </th>
 	                                                                                <td colspan="5" class="align-middle">
-                                                                                        <div class="my-5">
+                                                                                        <div class="my-3" >
                                                                                             <c:if test="${!empty vo.fileName}">
                                                                                                 <div class="input-group">
-                                                                                                    <input type="text" disabled class="form-control oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
-                                                                                                    <button class="dels btn btn-outline-danger" type="button" data-delete-id="${vo.num}">X</button>
+                                                                                                    <input type="text" disabled class="form-control" id="oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
+                                                                                                    <button class="btn btn-outline-danger deleteCheck" type="button" data-delete-id="${vo.num}">X</button>
                                                                                                 </div>
-                                                                                            </c:if>     
+                                                                                            </c:if>  
+                                                                                            <div class="my-3">
+                                                                                                <input class="form-control" type="file" id="newFile" name="file">
+                                                                                            </div>       
  
                                                                                         </div> 
-                                                                                        <div class="my-3">
-                                                                                            <input class="form-control newFile" type="file" id="formFile" name="file">
-                                                                                        </div>    
+
 
 	                                                                                </td>
 	                                                                            </tr>   
@@ -372,6 +373,14 @@
           ['insert', ['link', 'picture', 'video']],
         ]
       });
+
+      console.log('${vo.fileName}');
+    
+      if('${vo.fileName == "" || not empty vo.fileName}' ) {
+        setCount(0);
+      } else {
+        setCount(1);
+      }
 
      
 

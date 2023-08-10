@@ -318,6 +318,7 @@
     <!-- Quick view modal end -->
 <c:import url="../temp/footer.jsp"></c:import>
 <script src="/assets/js/boardFileManager.js"></script> 
+<script src="/assets/js/boardFormManager.js"></script> 
 
 </body>
 

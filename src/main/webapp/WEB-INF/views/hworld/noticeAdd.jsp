@@ -203,7 +203,7 @@
 	                                                                                </th>
 	                                                                                <td colspan="5" class="align-middle">
 	                                                                                    <div class="">
-	                                                                                        <input class="form-control" type="file" id="formFile" name="file" value="">
+	                                                                                        <input class="form-control" type="file" id="newFile" name="file" value="">
 	                                                                                    </div>
 	                                                                                </td>
 	                                                                            </tr>   

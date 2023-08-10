@@ -1,6 +1,23 @@
 let board = $('#board').val();
 
-$('.dels').click(function(){
+let max = 1;
+let count = 0;
+let idx = 0;
+let param = '';
+
+function setMax(m) {
+    max = m;
+}
+
+function setParam(p) {
+    param = p;
+}
+
+function setCount(c) {
+    count = c;
+}
+
+$('.deleteCheck').click(function(){
     let result = confirm('파일이 영구 삭제 됩니다\n삭제하시겠습니까?');
     let ch = $(this);
     if(result) {
@@ -24,6 +41,8 @@ $('.dels').click(function(){
                     ch.parents('.file');
                     alert('삭제 되었습니다.');
 
+                    count--;
+
                     location.reload();
                 }
                 else {
@@ -38,45 +57,29 @@ $('.dels').click(function(){
     }
 })
 
-$('.newFile').click(function(event) {
-    let oriFile = $('.oriFile');
+$('#newFile').click(function(event) {
 
-    if(oriFile.val() != '' && oriFile.val() != undefined ) {
-        alert('(1개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
+    if($('#oriFile').val() != undefined) {
+        alert('('+max+'개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
         event.preventDefault();
         return;
     }
-})
 
-$('#board-del').click(function(event) {
-    event.preventDefault();
-    let result = confirm('글을 삭제하시겠습니까?');
-
-    if(result) {
-        let num = $(this).attr('data-delete-id');
-        let board = $(this).attr('data-board-id');
-
-        $.ajax({
-            type : 'POST',
-            url : './'+board+'Delete',
-            data : {
-                num : num,
-                board : board
-            },
-            success : function (response) {
-                if(response.trim() > 0) {
-                    alert('글이 삭제되었습니다');
-                    location.href = './'+board;
-                }
-                else {
-                    alert('삭제 실패');
-                }
-            },
-            error : function(){
-                alert("글 삭제중 에러 발생. 관리자에게 문의 요망")
-            }
-        })
+    if(count >= max) {
+        alert('('+max+'개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
+        event.preventDefault();
+        return;
     }
+
 })
+
+console.log('Count : ' + count);
+console.log('Max : ' + max);
+console.log('OriFile' + $('#oriFile').val());
+
+
+
+
+
 
 
