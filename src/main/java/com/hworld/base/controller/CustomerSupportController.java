@@ -49,16 +49,16 @@ public class CustomerSupportController {
 		ModelAndView modelAndView = new ModelAndView();
 		
 		List<BoardVO> list = csService.getNoticeList(pager);
-		log.info("공지사항 리스트 사이즈 =====================> {}", list.size());
 		modelAndView.setViewName("hworld/notice");
 		modelAndView.addObject("list", list);
+		modelAndView.addObject("board", "notice");
 		return modelAndView;
 	}
 	
 	
 	//글 상세
 	@GetMapping("noticeDetail")
-	public ModelAndView getNoticeDetail(NoticeVO noticeVO, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView getNoticeDetail(NoticeVO noticeVO, String board, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView mv = new ModelAndView();
 		
 		Cookie [] Cookies = request.getCookies();
@@ -83,17 +83,17 @@ public class CustomerSupportController {
 		}
 
 		mv.addObject("vo", csService.getDetail(noticeVO));
-		mv.addObject("board", "notice");
+		mv.addObject("board", board);
 		mv.setViewName("hworld/noticeDetail");
 		return mv;
 	}
 	
 	// 글 작성
 	@GetMapping("noticeAdd")
-	public ModelAndView setNoticeAdd() throws Exception {
+	public ModelAndView setNoticeAdd(String board) throws Exception {
 		ModelAndView mv = new ModelAndView();
 		
-		mv.addObject("board", "notice");
+		mv.addObject("board", board);
 		mv.setViewName("hworld/noticeAdd");
 		return mv;
 	}
@@ -120,11 +120,11 @@ public class CustomerSupportController {
 	
 	// 글 수정
 	@GetMapping("noticeUpdate")
-	public ModelAndView setBoardUpdate(NoticeVO noticeVO) throws Exception {
+	public ModelAndView setBoardUpdate(NoticeVO noticeVO, String board) throws Exception {
 		ModelAndView mv = new ModelAndView();
 		
 		mv.addObject("vo", csService.getDetail(noticeVO));
-		mv.addObject("board", "notice");
+		mv.addObject("board", board);
 		mv.setViewName("hworld/noticeUpdate");
 		return mv;
 	}
@@ -177,6 +177,7 @@ public class CustomerSupportController {
 	public ModelAndView setQnaAdd(HttpSession session) throws Exception{
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("hworld/qna");
+		modelAndView.addObject("board", "qna");
 		modelAndView.addObject("list", csService.getTelephoneList(session));
 		return modelAndView;
 	}

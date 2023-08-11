@@ -207,7 +207,7 @@
                                                                                             <c:if test="${!empty vo.fileName}">
                                                                                                 <div class="input-group">
                                                                                                     <input type="text" disabled class="form-control" id="oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
-                                                                                                    <button class="btn btn-outline-danger deleteCheck" type="button" data-delete-id="${vo.num}">X</button>
+                                                                                                    <button class="btn btn-outline-danger" id="deleteCheck" type="button" data-delete-id="${vo.num}">X</button>
                                                                                                 </div>
                                                                                             </c:if>  
                                                                                             <div class="my-3">
@@ -376,9 +376,9 @@
 
       console.log('${vo.fileName}');
     
-      if('${vo.fileName == "" || not empty vo.fileName}' ) {
+      if('${vo.fileName == "" || empty vo.fileName}' ) {
         setCount(0);
-      } else {
+      } else if ('${not empty vo.fileName}') {
         setCount(1);
       }
 

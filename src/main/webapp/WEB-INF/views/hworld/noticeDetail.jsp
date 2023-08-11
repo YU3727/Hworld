@@ -118,7 +118,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end detail-menu">
-                    <a href="./noticeUpdate?num=${vo.num}" class="text-decoration-underline theme-color d-flex me-1" >수정</a>
+                    <a href="./noticeUpdate?num=${vo.num}&board=${board}" class="text-decoration-underline theme-color d-flex me-1" >수정</a>
                     <p style="color: var(--theme-color);">|</p>
                     <a href="#" class="text-decoration-underline theme-color d-flex ms-1" id="board-del" data-delete-id="${vo.num}" data-board-id="${board}">삭제</a>
                 </div>

@@ -169,7 +169,7 @@
 		                                        </td>
 	                                    	</c:if>
 	                                        <td>
-	                                            <p class="fw-bold"><a href="noticeDetail?num=${boardVO.num}">${boardVO.title}</a></p>
+	                                            <p class="fw-bold"><a href="noticeDetail?num=${boardVO.num}&board=${board}">${boardVO.title}</a></p>
 	                                        </td>
 	                                        <td>
 	                                            <p>${boardVO.hit}</p>
@@ -209,7 +209,7 @@
                         </a>
                     </li>
                 </ul>
-                <a href="./noticeAdd" class="btn btn-solid-default m-1" style="position: absolute">글쓰기</a>
+                <a href="./noticeAdd?board=${board}" class="btn btn-solid-default m-1" style="position: absolute">글쓰기</a>
             </nav>
         </div>
     </section>

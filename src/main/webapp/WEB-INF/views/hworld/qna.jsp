@@ -148,6 +148,7 @@
                                             <div class="tab-content" id="nav-tabContent">
 	                                                <div class="tab-pane fade show active" id="account">
 													<form action="./qna" method="post" >
+														<input type="hidden" name="board" id="board" value="${board}">
 	                                                    <div class="row g-4">
 	                                                        <div class="col-12 overflow-visible">
 	                                                            <div class="tracker-table pt-0" >  
@@ -228,118 +229,119 @@
 
 	                                                <div class="tab-pane fade" id="fee">
                       									<form action="./qna" method="post" >
-	                                                    <div class="row g-4">
-	                                                        <div class="col-12 overflow-visible">
-	                                                            <div class="tracker-table pt-0" >  
-	                                                                <div class="table-responsive">
-	                                                                    <table class="table">
-	                                                                        <tbody>
-   	                                                                            <tr class="table-head">
-	                                                                                <th scope="row" rowspan="2" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">문의 번호</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5" >보유회선 ${fn:length(list)}건</td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <td colspan="5">
-	                                                                                	<c:forEach items="${list}" var="vo">
-		                                                                                    <div class="form-check custome-radio-box my-lg-5 ps-5 d-flex justify-content-start">
-		                                                                                        <h4>
-		                                                                                            <input class="form-check-input" type="radio" name="serialNum" value="${vo.serialNum}" id="credit">
-		                                                                                            <label class="form-check-label" for="credit"></label>
-		                                                                                        </h4>
-		                                                                                        
-		                                                                                            <div class="d-flex">
-		                                                                                                <h3 class="mx-2"><i class="fa fa-mobile"></i></h3>
-		                                                                                                <h5 class="title1 fw-bold">회선</h5>
-		                                                                                                <h6 class="ms-2"> ${vo.phoneNum} 갤럭시 ${vo.directName}</h6>
-		                                                                                            </div>
-		                                                                                        
-		                                                                                    </div>
-	                                                                                    </c:forEach>
-	                                                                                    <!-- 선택 완료 누르면 리스트에서 회선 하나만 보여줌(레퍼런스 : T World) -->
-	                                                                                    <!-- <div>
-	                                                                                        <button type="button" class="btn btn-solid-default btn-spacing">
-	                                                                                            <span>선택 완료</span>
-	                                                                                        </button>
-	                                                                                    </div> -->
-	                                                                                </td>
-	                                                                            </tr>
-	                                                                            <tr>
-	                                                                                <th scope="row" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">제목</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="col-md-12">
-	                                                                                        <input type="text" class="form-control" id="fname" name="title">
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">내용</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="col-md-12">
-	                                                                                        <textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
-	                                                                                    </div>
-	                                                                                    <div class="col-md-12">
-	                                                                                        <p style="text-align: right;">0 자 입력 / 최대 12,000 자</p>
-	                                                                                    </div>
-	                                                                                    <div style="text-align: start;">
-	                                                                                        <p style="line-height: 0.7;">* 2018년 10월 18일(목) 산업안전보건법 고객응대근로자 보호조치가 시행되었습니다.</p>
-	                                                                                        <p style="line-height: 0.7;">고객 응대 근로자에게 폭언, 폭행, 성희롱 등을 하지 말아 주세요.  </p>
-	                                                                                        <p style="line-height: 2;">* 문의 접수 시 내용에 폭언, 욕설, 비속어 등이 포함된 경우, 답변을 받으실 수 없습니다.</p>
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" rowspan="5" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">파일 첨부</h6>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-																						<div class="fileList">
-																							<div class="mb-3">
-																								<input class="form-control" type="file" id="formFile">
-																								<div class="input-group">
-                                                                                                    <input type="text" disabled class="form-control" id="oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
-                                                                                                    <button class="btn btn-outline-danger deleteCheck" type="button" data-delete-id="${vo.num}">X</button>
-                                                                                                </div>
+															<input type="hidden" name="board" id="board" value="${board}">
+															<div class="row g-4">
+																<div class="col-12 overflow-visible">
+																	<div class="tracker-table pt-0" >  
+																		<div class="table-responsive">
+																			<table class="table">
+																				<tbody>
+																					<tr class="table-head">
+																						<th scope="row" rowspan="2" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">문의 번호</h6>
+																								<i class="fa fa-star" ></i>
 																							</div>
-																						</div>
-	                                                                                    <div class="mt-lg-5" style="text-align: start;">
-	                                                                                        <p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
-	                                                                                        <p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                            </tr>
-	                                                                        </tbody>
-	                                                                    </table>
-	                                                                </div>
-	                                                            </div>
-	                                                        </div>
-	                                                        <div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
-	                                                            <button class="btn btn-solid-default mx-2 " type="submit">작성 완료</button>
-	                                                            <button class="btn btn-solid-default " type="button">취소</button>
-	                                                        </div>
-	                                                    </div>
+																						</th>
+																						<td colspan="5" >보유회선 ${fn:length(list)}건</td>
+																					</tr>
+												
+																					<tr>
+																						<td colspan="5">
+																							<c:forEach items="${list}" var="vo">
+																								<div class="form-check custome-radio-box my-lg-5 ps-5 d-flex justify-content-start">
+																									<h4>
+																										<input class="form-check-input" type="radio" name="serialNum" value="${vo.serialNum}" id="credit">
+																										<label class="form-check-label" for="credit"></label>
+																									</h4>
+																									
+																										<div class="d-flex">
+																											<h3 class="mx-2"><i class="fa fa-mobile"></i></h3>
+																											<h5 class="title1 fw-bold">회선</h5>
+																											<h6 class="ms-2"> ${vo.phoneNum} 갤럭시 ${vo.directName}</h6>
+																										</div>
+																									
+																								</div>
+																							</c:forEach>
+																							<!-- 선택 완료 누르면 리스트에서 회선 하나만 보여줌(레퍼런스 : T World) -->
+																							<!-- <div>
+																								<button type="button" class="btn btn-solid-default btn-spacing">
+																									<span>선택 완료</span>
+																								</button>
+																							</div> -->
+																						</td>
+																					</tr>
+																					<tr>
+																						<th scope="row" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">제목</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="col-md-12">
+																								<input type="text" class="form-control" id="fname" name="title">
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">내용</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="col-md-12">
+																								<textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
+																							</div>
+																							<div class="col-md-12">
+																								<p style="text-align: right;">0 자 입력 / 최대 12,000 자</p>
+																							</div>
+																							<div style="text-align: start;">
+																								<p style="line-height: 0.7;">* 2018년 10월 18일(목) 산업안전보건법 고객응대근로자 보호조치가 시행되었습니다.</p>
+																								<p style="line-height: 0.7;">고객 응대 근로자에게 폭언, 폭행, 성희롱 등을 하지 말아 주세요.  </p>
+																								<p style="line-height: 2;">* 문의 접수 시 내용에 폭언, 욕설, 비속어 등이 포함된 경우, 답변을 받으실 수 없습니다.</p>
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" rowspan="5" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">파일 첨부</h6>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="fileList">
+																								<div class="mb-3">
+																									<input class="form-control" type="file" id="formFile">
+																									<div class="input-group">
+																										<input type="text" disabled class="form-control" id="oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
+																										<button class="btn btn-outline-danger deleteCheck" type="button" data-delete-id="${vo.num}">X</button>
+																									</div>
+																								</div>
+																							</div>
+																							<div class="mt-lg-5" style="text-align: start;">
+																								<p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
+																								<p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</div>
+																</div>
+																<div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
+																	<button class="btn btn-solid-default mx-2 " type="submit">작성 완료</button>
+																	<button class="btn btn-solid-default " type="button">취소</button>
+																</div>
+															</div>
                                                    		</form>
 	                                                </div>
 										
@@ -348,230 +350,233 @@
 												
 	                                                <div class="tab-pane fade" id="plan" >
 	                                                	<form action="./qna" method="post" >
-	                                                    <div class="row g-4">
-	                                                        <div class="col-12 overflow-visible">
-	                                                            <div class="tracker-table pt-0" >  
-	                                                                <div class="table-responsive">
-	                                                                    <table class="table">
-	                                                                        <tbody>
-	                                                                            <tr class="table-head">
-	                                                                                <th scope="row" rowspan="2" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">문의 번호</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5" >보유회선 ${fn:length(list)}건</td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <td colspan="5">
-	                                                                                	<c:forEach items="${list}" var="vo">
-		                                                                                    <div class="form-check custome-radio-box my-lg-5 ps-5 d-flex justify-content-start">
-		                                                                                        <h4>
-		                                                                                            <input class="form-check-input" type="radio" name="serialNum" value="${vo.serialNum}" id="credit">
-		                                                                                            <label class="form-check-label" for="credit"></label>
-		                                                                                        </h4>
-		                                                                                        
-		                                                                                            <div class="d-flex">
-		                                                                                                <h3 class="mx-2"><i class="fa fa-mobile"></i></h3>
-		                                                                                                <h5 class="title1 fw-bold">회선</h5>
-		                                                                                                <h6 class="ms-2"> ${vo.phoneNum} 갤럭시 ${vo.directName}</h6>
-		                                                                                            </div>
-		                                                                                        
-		                                                                                    </div>
-	                                                                                    </c:forEach>
-	                                                                                    <!-- 선택 완료 누르면 리스트에서 회선 하나만 보여줌(레퍼런스 : T World) -->
-	                                                                                    <!-- <div>
-	                                                                                        <button type="button" class="btn btn-solid-default btn-spacing">
-	                                                                                            <span>선택 완료</span>
-	                                                                                        </button>
-	                                                                                    </div> -->
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">제목</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="col-md-12">
-	                                                                                        <input type="text" class="form-control" id="fname" name="title">
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">내용</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="col-md-12">
-	                                                                                        <textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
-	                                                                                    </div>
-	                                                                                    <div class="col-md-12">
-	                                                                                        <p style="text-align: right;">0 자 입력 / 최대 12,000 자</p>
-	                                                                                    </div>
-	                                                                                    <div style="text-align: start;">
-	                                                                                        <p style="line-height: 0.7;">* 2018년 10월 18일(목) 산업안전보건법 고객응대근로자 보호조치가 시행되었습니다.</p>
-	                                                                                        <p style="line-height: 0.7;">고객 응대 근로자에게 폭언, 폭행, 성희롱 등을 하지 말아 주세요.  </p>
-	                                                                                        <p style="line-height: 2;">* 문의 접수 시 내용에 폭언, 욕설, 비속어 등이 포함된 경우, 답변을 받으실 수 없습니다.</p>
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" rowspan="5" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">파일 첨부</h6>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="mb-3">
-	                                                                                        <input class="form-control" type="file" id="formFile">
-	                                                                                    </div>
-	                                                                                    <div class="mt-lg-5" style="text-align: start;">
-	                                                                                        <p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
-	                                                                                        <p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                            </tr>
-	                                                                        </tbody>
-	                                                                    </table>
-	                                                                </div>
-	                                                            </div>
-	                                                        </div>
-	                                                        <div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
-	                                                            <button class="btn btn-solid-default mx-2 " type="submit">작성 완료</button>
-	                                                            <button class="btn btn-solid-default " type="button">취소</button>
-	                                                        </div>
-	                                                    </div>
+															<input type="hidden" name="board" id="board" value="${board}">
+															<div class="row g-4">
+																<div class="col-12 overflow-visible">
+																	<div class="tracker-table pt-0" >  
+																		<div class="table-responsive">
+																			<table class="table">
+																				<tbody>
+																					<tr class="table-head">
+																						<th scope="row" rowspan="2" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">문의 번호</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5" >보유회선 ${fn:length(list)}건</td>
+																					</tr>
+												
+																					<tr>
+																						<td colspan="5">
+																							<c:forEach items="${list}" var="vo">
+																								<div class="form-check custome-radio-box my-lg-5 ps-5 d-flex justify-content-start">
+																									<h4>
+																										<input class="form-check-input" type="radio" name="serialNum" value="${vo.serialNum}" id="credit">
+																										<label class="form-check-label" for="credit"></label>
+																									</h4>
+																									
+																										<div class="d-flex">
+																											<h3 class="mx-2"><i class="fa fa-mobile"></i></h3>
+																											<h5 class="title1 fw-bold">회선</h5>
+																											<h6 class="ms-2"> ${vo.phoneNum} 갤럭시 ${vo.directName}</h6>
+																										</div>
+																									
+																								</div>
+																							</c:forEach>
+																							<!-- 선택 완료 누르면 리스트에서 회선 하나만 보여줌(레퍼런스 : T World) -->
+																							<!-- <div>
+																								<button type="button" class="btn btn-solid-default btn-spacing">
+																									<span>선택 완료</span>
+																								</button>
+																							</div> -->
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">제목</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="col-md-12">
+																								<input type="text" class="form-control" id="fname" name="title">
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">내용</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="col-md-12">
+																								<textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
+																							</div>
+																							<div class="col-md-12">
+																								<p style="text-align: right;">0 자 입력 / 최대 12,000 자</p>
+																							</div>
+																							<div style="text-align: start;">
+																								<p style="line-height: 0.7;">* 2018년 10월 18일(목) 산업안전보건법 고객응대근로자 보호조치가 시행되었습니다.</p>
+																								<p style="line-height: 0.7;">고객 응대 근로자에게 폭언, 폭행, 성희롱 등을 하지 말아 주세요.  </p>
+																								<p style="line-height: 2;">* 문의 접수 시 내용에 폭언, 욕설, 비속어 등이 포함된 경우, 답변을 받으실 수 없습니다.</p>
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" rowspan="5" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">파일 첨부</h6>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="mb-3">
+																								<input class="form-control" type="file" id="formFile">
+																							</div>
+																							<div class="mt-lg-5" style="text-align: start;">
+																								<p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
+																								<p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</div>
+																</div>
+																<div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
+																	<button class="btn btn-solid-default mx-2 " type="submit">작성 완료</button>
+																	<button class="btn btn-solid-default " type="button">취소</button>
+																</div>
+															</div>
 			                                            </form>
 	                                                </div>
 
 	                                                <div class="tab-pane fade" id="question" >
 														<form action="./qna" method="post" >
-	                                                    <div class="row g-4">
-	                                                        <div class="col-12 overflow-visible">
-	                                                            <div class="tracker-table pt-0" >  
-	                                                                <div class="table-responsive">
-	                                                                    <table class="table">
-	                                                                        <tbody>
-	                                                                            <tr class="table-head">
-	                                                                                <th scope="row" rowspan="2" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">문의 번호</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5" >보유회선 ${fn:length(list)}건</td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <td colspan="5">
-	                                                                                	<c:forEach items="${list}" var="vo">
-		                                                                                    <div class="form-check custome-radio-box my-lg-5 ps-5 d-flex justify-content-start">
-		                                                                                        <h4>
-		                                                                                            <input class="form-check-input" type="radio" name="serialNum" value="${vo.serialNum}" id="credit">
-		                                                                                            <label class="form-check-label" for="credit"></label>
-		                                                                                        </h4>
-		                                                                                        
-		                                                                                            <div class="d-flex">
-		                                                                                                <h3 class="mx-2"><i class="fa fa-mobile"></i></h3>
-		                                                                                                <h5 class="title1 fw-bold">회선</h5>
-		                                                                                                <h6 class="ms-2"> ${vo.phoneNum} 갤럭시 ${vo.directName}</h6>
-		                                                                                            </div>
-		                                                                                        
-		                                                                                    </div>
-	                                                                                    </c:forEach>
-	                                                                                    <!-- 선택 완료 누르면 리스트에서 회선 하나만 보여줌(레퍼런스 : T World) -->
-	                                                                                    <!-- <div>
-	                                                                                        <button type="button" class="btn btn-solid-default btn-spacing">
-	                                                                                            <span>선택 완료</span>
-	                                                                                        </button>
-	                                                                                    </div> -->
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">제목</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="col-md-12">
-	                                                                                        <input type="text" class="form-control" id="fname" name="title">
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">내용</h6>
-	                                                                                        <i class="fa fa-star" ></i>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="col-md-12">
-	                                                                                        <textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
-	                                                                                    </div>
-	                                                                                    <div class="col-md-12">
-	                                                                                        <p style="text-align: right;">0 자 입력 / 최대 12,000 자</p>
-	                                                                                    </div>
-	                                                                                    <div style="text-align: start;">
-	                                                                                        <p style="line-height: 0.7;">* 2018년 10월 18일(목) 산업안전보건법 고객응대근로자 보호조치가 시행되었습니다.</p>
-	                                                                                        <p style="line-height: 0.7;">고객 응대 근로자에게 폭언, 폭행, 성희롱 등을 하지 말아 주세요.  </p>
-	                                                                                        <p style="line-height: 2;">* 문의 접수 시 내용에 폭언, 욕설, 비속어 등이 포함된 경우, 답변을 받으실 수 없습니다.</p>
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                                <th scope="row" rowspan="5" class="text-center align-middle h-100" >
-	                                                                                    <div class="d-flex">
-	                                                                                        <h6 class="mx-2 fw-bold">파일 첨부</h6>
-	                                                                                    </div>
-	                                                                                </th>
-	                                                                                <td colspan="5">
-	                                                                                    <div class="mb-3">
-	                                                                                        <input class="form-control" type="file" id="formFile">
-	                                                                                    </div>
-	                                                                                    <div class="mt-lg-5" style="text-align: start;">
-	                                                                                        <p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
-	                                                                                        <p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
-	                                                                                    </div>
-	                                                                                </td>
-	                                                                            </tr>
-	                                        
-	                                                                            <tr>
-	                                                                            </tr>
-	                                                                        </tbody>
-	                                                                    </table>
-	                                                                </div>
-	                                                            </div>
-	                                                        </div>
-	                                                        <div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
-	                                                            <button class="btn btn-solid-default mx-2 " type="submit">작성 완료</button>
-	                                                            <button class="btn btn-solid-default " type="button">취소</button>
-	                                                        </div>
-	                                                    </div>
-		                                            </form>    
+															<input type="hidden" name="board" id="board" value="${board}">
+															<div class="row g-4">
+																<div class="col-12 overflow-visible">
+																	<div class="tracker-table pt-0" >  
+																		<div class="table-responsive">
+																			<table class="table">
+																				<tbody>
+																					<tr class="table-head">
+																						<th scope="row" rowspan="2" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">문의 번호</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5" >보유회선 ${fn:length(list)}건</td>
+																					</tr>
+												
+																					<tr>
+																						<td colspan="5">
+																							<c:forEach items="${list}" var="vo">
+																								<div class="form-check custome-radio-box my-lg-5 ps-5 d-flex justify-content-start">
+																									<h4>
+																										<input class="form-check-input" type="radio" name="serialNum" value="${vo.serialNum}" id="credit">
+																										<label class="form-check-label" for="credit"></label>
+																									</h4>
+																									
+																										<div class="d-flex">
+																											<h3 class="mx-2"><i class="fa fa-mobile"></i></h3>
+																											<h5 class="title1 fw-bold">회선</h5>
+																											<h6 class="ms-2"> ${vo.phoneNum} 갤럭시 ${vo.directName}</h6>
+																										</div>
+																									
+																								</div>
+																							</c:forEach>
+																							<!-- 선택 완료 누르면 리스트에서 회선 하나만 보여줌(레퍼런스 : T World) -->
+																							<!-- <div>
+																								<button type="button" class="btn btn-solid-default btn-spacing">
+																									<span>선택 완료</span>
+																								</button>
+																							</div> -->
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">제목</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="col-md-12">
+																								<input type="text" class="form-control" id="fname" name="title">
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">내용</h6>
+																								<i class="fa fa-star" ></i>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="col-md-12">
+																								<textarea class="form-control" name="contents" id="" cols="30" rows="10"></textarea>
+																							</div>
+																							<div class="col-md-12">
+																								<p style="text-align: right;">0 자 입력 / 최대 12,000 자</p>
+																							</div>
+																							<div style="text-align: start;">
+																								<p style="line-height: 0.7;">* 2018년 10월 18일(목) 산업안전보건법 고객응대근로자 보호조치가 시행되었습니다.</p>
+																								<p style="line-height: 0.7;">고객 응대 근로자에게 폭언, 폭행, 성희롱 등을 하지 말아 주세요.  </p>
+																								<p style="line-height: 2;">* 문의 접수 시 내용에 폭언, 욕설, 비속어 등이 포함된 경우, 답변을 받으실 수 없습니다.</p>
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																						<th scope="row" rowspan="5" class="text-center align-middle h-100" >
+																							<div class="d-flex">
+																								<h6 class="mx-2 fw-bold">파일 첨부</h6>
+																							</div>
+																						</th>
+																						<td colspan="5">
+																							<div class="mb-3">
+																								<input class="form-control" type="file" id="formFile">
+																							</div>
+																							<div class="mt-lg-5" style="text-align: start;">
+																								<p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
+																								<p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
+																							</div>
+																						</td>
+																					</tr>
+												
+																					<tr>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</div>
+																</div>
+																<div class="col-md-12 d-flex justify-content-center me-5 my-lg-5">
+																	<button class="btn btn-solid-default mx-2 " type="submit">작성 완료</button>
+																	<button class="btn btn-solid-default " type="button">취소</button>
+																</div>
+															</div>
+		                                            	</form>    
 	                                                </div>
 
 	                                                <div class="tab-pane fade" id="document" >
 													<form action="./qna" method="post" >
+														<input type="hidden" name="board" id="board" value="${board}">
 	                                                    <div class="row g-4">
 	                                                        <div class="col-12 overflow-visible">
 	                                                            <div class="tracker-table pt-0" >  
@@ -684,6 +689,7 @@
                                                 
 	                                                <div class="tab-pane fade" id="etc">
 													<form action="./qna" method="post" >
+														<input type="hidden" name="board" id="board" value="${board}">
 	                                                    <div class="row g-4">
 	                                                        <div class="col-12 overflow-visible">
 	                                                            <div class="tracker-table pt-0" >  

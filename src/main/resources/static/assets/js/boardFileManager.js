@@ -17,7 +17,9 @@ function setCount(c) {
     count = c;
 }
 
-$('.deleteCheck').click(function(){
+
+
+$('#deleteCheck').click(function(){
     let result = confirm('파일이 영구 삭제 됩니다\n삭제하시겠습니까?');
     let ch = $(this);
     if(result) {
@@ -59,23 +61,25 @@ $('.deleteCheck').click(function(){
 
 $('#newFile').click(function(event) {
 
-    if($('#oriFile').val() != undefined) {
-        alert('('+max+'개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
-        event.preventDefault();
-        return;
-    }
+    // if($('#oriFile').val() != undefined || count >= max) {
+    //     alert('('+max+'개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
+    //     event.preventDefault();
+    //     return;
+    // }
 
-    if(count >= max) {
-        alert('('+max+'개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
-        event.preventDefault();
-        return;
-    }
+    checkAddFileCount($('#oriFile'), event);
 
 })
 
-console.log('Count : ' + count);
-console.log('Max : ' + max);
-console.log('OriFile' + $('#oriFile').val());
+function checkAddFileCount(element, event) {
+    if(element.val() != undefined || count >= max) {
+        alert('('+max+'개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
+        event.preventDefault();
+        return;
+    }
+}
+
+
 
 
 
