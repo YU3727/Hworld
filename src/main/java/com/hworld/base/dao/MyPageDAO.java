@@ -42,4 +42,23 @@ public interface MyPageDAO {
 	
 	//checkOtherTP - 서비스에서 타통신사 번호 체크 실행
 	public String isChangeableNumOT(String phoneNum) throws Exception;
+	
+	//대표회선 변경
+	//serialNum 가져오기
+	public String getSerialNum(String phoneNum) throws Exception;
+	
+	//serialNum으로 memberNum 찾기
+	public String getMemberNum(String serialNum) throws Exception;
+	
+	//memberNum으로 kingCheck 초기화 하기
+	public int setKingCheckInit(String memberNum) throws Exception;
+	
+	//serialNum으로 kingCheck 업데이트 하기
+	public int setKingCheckUpdate(String serialNum) throws Exception;
+	
+	//일시정지
+	//일시정지 신청 : 일시정지 버튼이 나오고, 버튼을 누르면 일시정지가 시작됨
+	//일시정지 해제 : 정지해제 버튼이 나오고, 버튼을 누르면 일시정지가 해제됨
+	//일시정지 날짜 입력
+	public String
 }

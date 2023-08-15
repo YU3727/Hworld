@@ -228,5 +228,30 @@
 		SELECT TAPHONENUM AS PHONENUM FROM OTHERTELECOM
 		WHERE TAPHONENUM=#{phoneNum}
 	</select>
+	
+	<!-- 대표회선 변경 -->
+	<!-- getSerialNum -->
+	<select id="getSerialNum" parameterType="String" resultType="String">
+		SELECT SERIALNUM FROM TELEPHONE
+		WHERE PHONENUM=#{phoneNum}
+	</select>
+	
+	<!-- getMemberNum -->
+	<select id="getMemberNum" parameterType="String" resultType="String">
+		SELECT MEMBERNUM FROM TELEPHONE
+		WHERE SERIALNUM=#{serialNum}
+	</select>
+	
+	<!-- setKingCheckInit -->
+	<update id="setKingCheckInit" parameterType="String">
+		UPDATE TELEPHONE SET KINGCHECK=0
+		WHERE MEMBERNUM=#{memberNum}
+	</update>
+	
+	<!-- setKingCheckUpdate -->
+	<update id="setKingCheckUpdate" parameterType="String">
+		UPDATE TELEPHONE SET KINGCHECK=1
+		WHERE SERIALNUM=#{serialNum}
+	</update>
 
 </mapper>

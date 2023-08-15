@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hworld.base.dao.MyPageDAO;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Transactional(rollbackFor = Exception.class)
 public class MyPageService {
 	
 	@Autowired
@@ -154,6 +156,39 @@ public class MyPageService {
 		
 		
 		return check;
+	}
+	
+	
+	//대표 회선 변경 작업
+	public int setKingNumUpdate(String phoneNum) throws Exception{
+		
+		//받아온 phoneNum으로 serialNum조회
+		String serialNum = myPageDAO.getSerialNum(phoneNum);
+		
+		//해당 serialNum을 가진 memberNum 찾기
+		String memberNum = myPageDAO.getMemberNum(serialNum);
+		
+		//memberNum이 일치하는 모든 회선 kingCheck값을 0으로 업데이트
+		int result = myPageDAO.setKingCheckInit(memberNum);
+		
+		//저장해둔 serialNum의 kingCheck값을 1로 업데이트
+		result = myPageDAO.setKingCheckUpdate(serialNum);
+		
+		//리턴
+		return result;
+	}
+	
+	
+	//일시정지 작업
+	public int setStopTelephoneUpdate(String phoneNum) throws Exception{
+		
+		//받아온 phoneNum으로 serialNum 조회
+		String serialNum = myPageDAO.getSerialNum(phoneNum);
+		
+		//해당 serialNum에 일시정지 날짜 입력하기(확인 버튼을 누른 당일로)
+		
+		
+		return 0;
 	}
 	
 }

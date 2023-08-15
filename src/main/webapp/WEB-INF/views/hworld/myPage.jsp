@@ -669,6 +669,7 @@
                                                         id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">설정</a>
                                                     
                                                         <ul class="dropdown-menu col-md-6" aria-labelledby="dropdownMenuButton1">
+                                                        <input type="hidden" class="selectedValue" value="${telephoneVO.phoneNum}">
                                                             <li>
                                                                 <a class="dropdown-item numChange" href="javascript:void(0)" data-bs-toggle="modal"
                                                                 data-bs-target="#changeNumber">번호 변경</a>
@@ -681,7 +682,6 @@
                                                                 <a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal"
                                                                 data-bs-target="#cancelModal">해지</a>
                                                             </li>
-
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -731,20 +731,11 @@
                                         </div>
                                 	</c:if>
                                 </c:forEach>
-                                
-                                    <!-- 대표회선 card start -->
-                                        
-                                    <!-- 대표회선 card end -->
-                                    <!-- 일반회선1 card start -->
-                                        
-                                        <!-- 일반회선1 card end -->
-                                        <!-- 일반회선2 card start -->
-                                        <!-- 일반회선2 card end -->
-                                    </div>
                                 </div>
-                                <!-- 회선 리스트 end -->
                             </div>
-                            <!-- 회선 관리 end -->
+                            <!-- 회선 리스트 end -->
+                        </div>
+                        <!-- 회선 관리 end -->
 
                             <!-- 구매후기 start  -->
                             <div class="tab-pane fade dashboard" id="pay">
@@ -1075,12 +1066,12 @@
                     </form>
                 </div>
                 <div class="modal-footer pt-0 text-end d-block">
-                    <button class="btn btn-solid-default rounded-1" id="executiveChangeNumber" data-bs-toggle="modal" data-bs-dismiss="modal">변경</button>
-                    <!-- data-bs-target="#changeDoneModal"  -->
+                    <button class="btn btn-solid-default rounded-1" id="executiveChangeNumber">변경</button>
                 </div>
             </div>
         </div>
     </div>
+    
     <!-- 번호 변경 확인 -->
     <div class="modal delete-account-modal fade" id="changeDoneModal">
         <div class="modal-dialog modal-dialog-centered">
@@ -1099,9 +1090,9 @@
         </div>
     </div>
     <!-- 설정 - 번호변경 End -->
-
-     <!-- change king Number Modal Start -->
-     <div class="modal fade payment-modal" id="kingModal">
+    
+    <!-- 대표회선 원본 -->
+    <!-- <div class="modal fade payment-modal" id="kingModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1123,7 +1114,7 @@
                 </c:forEach>
                 </div>
                 <div class="modal-footer pt-0 text-end d-block">
-                    <button class="btn btn-solid-default rounded-1" data-bs-target="#kingchangeDoneModal" data-bs-toggle="modal" data-bs-dismiss="modal">변경</button>
+                    <button id="changeKingNum" class="btn btn-solid-default rounded-1" data-bs-target="#kingchangeDoneModal" data-bs-toggle="modal" data-bs-dismiss="modal">변경</button>
                 </div>
             </div>
         </div>
@@ -1140,6 +1131,65 @@
                 <div class="modal-footer d-block text-center mb-4">
                     <button class="btn btn-solid-default btn-sm fw-bold rounded" data-bs-target="#exampleModalToggle"
                         data-bs-toggle="modal" data-bs-dismiss="modal">확인</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+     <!-- change king Number Modal Start -->
+     <div class="modal fade payment-modal" id="kingModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                대표회선 설정
+                <c:forEach items="${TPList}" var="telephoneVO" varStatus="i">
+                	<c:if test="${telephoneVO.kingCheck eq 0}">
+	                    <div class="form-check mt-2">
+	                    <input class="form-check-input" type="radio" name="phoneNum" id="flexRadioDefault${i.index}" value="${telephoneVO.phoneNum}">
+	                        <label class="form-check-label" for="flexRadioDefault${i.index}">
+	                            <c:set var="phoneNum" value="${telephoneVO.phoneNum}" />
+                                <c:set var="formattedPhoneNum" value="${fn:substring(phoneNum, 0, 3)}-${fn:substring(phoneNum, 3, 7)}-${fn:substring(phoneNum, 7,11)}" />
+                                ${formattedPhoneNum}
+	                        </label>
+	                    </div>
+                    </c:if>
+                </c:forEach>
+                </div>
+                <div class="modal-footer pt-0 text-end d-block">
+                    <button id="changeKingNum" class="btn btn-solid-default rounded-1">변경</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal delete-account-modal fade" id="kingChangeDoneModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pb-3 text-center mt-4">
+                    <h4>대표 회선이 변경되었습니다.</h4>
+                </div>
+                <div class="modal-footer d-block text-center mb-4">
+                    <button class="btn btn-solid-default btn-sm fw-bold rounded kingCheck">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal delete-account-modal fade" id="kingChangeFailModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pb-3 text-center mt-4">
+                    <h4>회선 변경에 실패했습니다. 잠시 후 다시 시도해주세요.</h4>
+                </div>
+                <div class="modal-footer d-block text-center mb-4">
+                    <button class="btn btn-solid-default btn-sm fw-bold rounded kingCheck">확인</button>
                 </div>
             </div>
         </div>
@@ -1181,7 +1231,7 @@
     </div>
     <!-- Comfirm Delete Modal End -->
 
-
+	<!-- 일시정지 신청 -->
     <!-- Comfirm stop Modal Start -->
     <div class="modal delete-account-modal fade" id="stopModal">
         <div class="modal-dialog modal-dialog-centered">
@@ -1194,8 +1244,7 @@
                     <h6 class="mt-4">일시정지 요금 : 3650원/달</h6>
                 </div>
                 <div class="modal-footer d-block text-center mb-4">
-                    <button class="btn btn-solid-default btn-sm fw-bold rounded" data-bs-target="#stopDoneModal"
-                    data-bs-toggle="modal" data-bs-dismiss="modal">확인</button>
+                    <button class="btn btn-solid-default btn-sm fw-bold rounded" id="stopTelephone">확인</button>
                 </div>
             </div>
         </div>
