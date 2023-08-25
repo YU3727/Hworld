@@ -15,9 +15,10 @@
 	</select>	
 	
 	<select id="getList" parameterType="Pager" resultType="NoticeVO">
+		
 		SELECT NUM, NOTICECHECK, TITLE, REGDATE, HIT FROM NOTICE
 		<include refid="search1"></include>
-		ORDER BY NUM DESC
+		ORDER BY NOTICECHECK DESC, NUM DESC
 		LIMIT #{startRow}, #{perPage}
 	</select>
 	
@@ -25,5 +26,32 @@
 		SELECT * FROM NOTICE
 		WHERE NUM = #{num}
 	</select>
+	
+	<insert id="setAdd" parameterType="BoardVO">
+		INSERT INTO NOTICE (MEMBERNUM, NOTICECHECK, TITLE, CONTENTS, REGDATE, FILENAME, ORINAME, HIT)
+		VALUES (#{memberNum}, #{noticeCheck}, #{title}, #{contents}, NOW(), #{fileName}, #{oriName}, 0)
+	</insert>
+	
+	<update id="setUpdate" parameterType="BoardVO">
+		UPDATE NOTICE SET TITLE = #{title}, CONTENTS = #{contents}, FILENAME = #{fileName}, ORINAME = #{oriName}
+		WHERE NUM = #{num}
+	</update>
+	
+	<update id="setBoardHitUpdate" parameterType="BoardVO">
+		UPDATE NOTICE SET HIT = HIT + 1 
+		WHERE NUM = #{num}
+	</update>
+	
+	<update id="setFileDelete" parameterType="BoardVO">
+		UPDATE NOTICE SET FILENAME = NULL, ORINAME = NULL
+		WHERE NUM = #{num}
+	</update>
+	
+	<delete id="setDelete" parameterType="BoardVO">
+		DELETE FROM NOTICE 
+		WHERE NUM = #{num}
+	</delete>
+	
+	
 
 </mapper>

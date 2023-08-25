@@ -15,7 +15,8 @@ public class NoticeVO extends BoardVO {
     /**
      * 파일 경로
      */
-    private String filePath;
+    private String fileName;
+    private String oriName;
     private Integer noticeCheck;
     private Integer hit;
 

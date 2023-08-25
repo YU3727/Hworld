@@ -20,36 +20,63 @@ public class Schedule {
 
 	@Scheduled (cron = "0 0 0 1 * *")
 	public void paymentDetailUpdate () throws Exception {
-		Map<String, Integer> map = new HashMap<>();
+		Map<String, ?> map = new HashMap<>();
 		scheduleDAO.paymentDetailUpdate(map);
-		int result = map.get("result");
+		int result = (int)map.get("result");
 		if(result < 0) {
-			log.error("errorCode : {}", result);
-			log.error("요금 업데이트 중 오류가 발생하였습니다");
+			log.error("result : {}", result);
+			log.error((String)map.get("msg"));
 		}
 		else {
-			log.info("요금 업데이트 작업을 정상적으로 수행하였습니다");
+			log.info("result : {}", result);
+			log.info((String)map.get("msg"));
 		}
 
 	}
 	
 	@Scheduled (cron = "0 0 0 1 * *")
 	public void billInsert () throws Exception {
-		Map<String, Integer> map = new HashMap<>();
+		Map<String, ?> map = new HashMap<>();
 		scheduleDAO.billInsert(map);
-		int result = map.get("result");
+		int result = (int)map.get("result");
 		if(result < 0) {
-			log.error("errorCode : {}", result);
-			log.error("청구서 발급 중 오류가 발생하였습니다");
+			log.error("result : {}", result);
+			log.error((String)map.get("msg"));
 		}
-		else {
-			log.info("요금 업데이트 작업을 정상적으로 수행하였습니다");
+		else if(result > 0) {
+			log.info("result : {}", result);
+			log.info((String)map.get("msg"));
 		}
 
 	}
 	
-//	@Scheduled 
-//	public void billCheckUpdate () {
-//		
-//	}
+	@Scheduled (cron = "0 0 0 15 * *")
+	public void billCheckUpdate () throws Exception {
+		Map<String, ?> map = new HashMap<>();
+		scheduleDAO.billCheckUpdate(map);
+		int result = (int)map.get("result");
+		if(result < 0) {
+			log.error("result : {}", result);
+			log.error((String)map.get("msg"));
+		}
+		else if(result > 0) {
+			log.info("result : {}", result);
+			log.info((String)map.get("msg"));
+		}
+	}
+	
+	@Scheduled (cron = "0 3 * * * *")
+	public void expireDateCheckUpdate () throws Exception {
+		Map<String, ?> map = new HashMap<>();
+		scheduleDAO.expireDateCheckUpdate(map);
+		int result = (int)map.get("result");
+		if(result < 0) {
+			log.error("result : {}", result);
+			log.error((String)map.get("msg"));
+		}
+		else if(result > 0) {
+			log.info("result : {}", result);
+			log.info((String)map.get("msg"));
+		}
+	}
 }

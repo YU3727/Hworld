@@ -5,7 +5,7 @@
   
 <mapper namespace="com.hworld.base.dao.QnaDAO">
 
-	<insert id="setInsert" parameterType="QnaVO">
+	<insert id="setAdd" parameterType="QnaVO" useGeneratedKeys="true" keyProperty="num">
 		INSERT INTO QNA (MEMBERNUM, SERIALNUM , TITLE, CONTENTS,  REGDATE, STATE, CATEGORYCODE)
 		VALUES (#{memberNum}, #{serialNum, jdbcType=VARCHAR}, #{title}, #{contents}, NOW(), 0, #{categoryCode})
 	</insert>
@@ -15,16 +15,10 @@
 		WHERE MEMBERNUM = #{memberNum}
 	</select>
 	
-	<select id="prcTest" statementType="CALLABLE" parameterType="hashMap" resultType="hashMap">
+  	<insert id="setFileAdd" parameterType="BoardFileVO">
+  		INSERT INTO QNAFILES (NUM, FILENAME, ORINAME)
+  		VALUES(#{num}, #{fileName}, #{oriName})
+  	</insert>
 	
-		{
-			CALL pmd_calc_bfPlanPrice (
-				#{param1, mode=IN, jdbcType=INTEGER, javaType=INTEGER},
-				#{param2, mode=IN, jdbcType=VARCHAR, javaType=STRING},
-				#{param3, mode=IN, jdbcType=DATE, javaType=java.util.Date},
-				#{out_result, mode=OUT, jdbcType=INTEGER, javaType=INTEGER}
-			)
-		}
-	</select>
 	
 </mapper>

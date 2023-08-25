@@ -60,5 +60,5 @@ public interface MyPageDAO {
 	//일시정지 신청 : 일시정지 버튼이 나오고, 버튼을 누르면 일시정지가 시작됨
 	//일시정지 해제 : 정지해제 버튼이 나오고, 버튼을 누르면 일시정지가 해제됨
 	//일시정지 날짜 입력
-	public String
+//	public String
 }
