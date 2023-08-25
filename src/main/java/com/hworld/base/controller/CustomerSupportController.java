@@ -183,13 +183,13 @@ public class CustomerSupportController {
 	}
 	
 	@PostMapping("qna")
-	public ModelAndView setQnaAdd(QnaVO qnaVO, HttpSession session, MultipartFile file) throws Exception {
+	public ModelAndView setQnaAdd(QnaVO qnaVO, String board, HttpSession session, MultipartFile [] files) throws Exception {
 		
 		ModelAndView mv = new ModelAndView();
 		
 		String msg = "문의 등록 실패";
 		
-		int result = csService.setAdd(qnaVO, session, file);
+		int result = csService.setAdd(qnaVO, board, session, files);
 		
 		if(result > 0)  {
 			msg = "문의 등록 성공";

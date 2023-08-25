@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.hworld.base.util.Pager;
 import com.hworld.base.vo.BoardVO;
+import com.hworld.base.vo.FileVO;
 
 public interface BbsDAO {
 
@@ -18,4 +19,7 @@ public interface BbsDAO {
 
     // 게시물 등록
     public int setAdd(BoardVO boardVO) throws Exception;
+    
+    // 파일 등록
+    public int setFileAdd(FileVO fileVO) throws Exception;
 }

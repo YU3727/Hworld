@@ -5,7 +5,7 @@
   
 <mapper namespace="com.hworld.base.dao.QnaDAO">
 
-	<insert id="setAdd" parameterType="QnaVO">
+	<insert id="setAdd" parameterType="QnaVO" useGeneratedKeys="true" keyProperty="num">
 		INSERT INTO QNA (MEMBERNUM, SERIALNUM , TITLE, CONTENTS,  REGDATE, STATE, CATEGORYCODE)
 		VALUES (#{memberNum}, #{serialNum, jdbcType=VARCHAR}, #{title}, #{contents}, NOW(), 0, #{categoryCode})
 	</insert>
@@ -14,6 +14,11 @@
 		SELECT SERIALNUM, PHONENUM, DIRECTNAME FROM TELEPHONE
 		WHERE MEMBERNUM = #{memberNum}
 	</select>
+	
+  	<insert id="setFileAdd" parameterType="BoardFileVO">
+  		INSERT INTO QNAFILES (NUM, FILENAME, ORINAME)
+  		VALUES(#{num}, #{fileName}, #{oriName})
+  	</insert>
 	
 	
 </mapper>

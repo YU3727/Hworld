@@ -2,7 +2,7 @@ let board = $('#board').val();
 
 let max = 1;
 let count = 0;
-let idx = 0;
+let idx = 1;
 let param = '';
 
 function setMax(m) {
@@ -67,16 +67,59 @@ $('#newFile').click(function(event) {
     //     return;
     // }
 
-    checkAddFileCount($('#oriFile'), event);
+    checkAddFile($('#oriFile'), event);
 
 })
 
-function checkAddFileCount(element, event) {
+
+$('.fileAdd').click(function(){
+    let countChk = checkAddFiles();
+
+    if(!countChk) {
+        return;
+    }
+
+    count++;
+    idx++;
+
+    let child = '<div class="mb-3 d-flex justify-content-between" id="del'+idx+'">'
+    child += '<input class="form-control" type="file" id="formFile" name="'+param+'">';
+    child += '<button class="btn btn-solid-default dels" type="button" data-delete-id="'+idx+'">X</button>';
+    child += '</div>';
+
+    $(this).parent().siblings('.fileList').append(child);
+
+
+})
+
+$('.fileList').on('click', '.dels', function(){
+    let fileId = $(this).attr('data-delete-id');
+    $(this).parents('.fileList').find('#del'+fileId).remove();
+    count--;
+})
+
+function checkAddFile(element, event) {
+
     if(element.val() != undefined || count >= max) {
         alert('('+max+'개까지 등록 가능)\n기존 파일 삭제 후 등록 가능합니다');
         event.preventDefault();
-        return;
+        return ;
     }
+
+
+}
+
+function checkAddFiles() {
+
+    console.log('COUNT : ' + count);
+    console.log('MAX : ' + max);
+
+    if(count >= max) {
+        alert(max+'개까지 등록 가능');
+        return false;
+    }
+
+    return true;
 }
 
 

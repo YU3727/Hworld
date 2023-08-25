@@ -130,7 +130,7 @@
                                                     <button class="nav-link button active" id="nav-account-tab" data-bs-toggle="tab"
                                                         data-bs-target="#account" type="button">계정 문의</button>
 
-                                                    <button class="nav-link" id="nav-fee-tab" data-bs-toggle="tab"
+                                                    <button class="nav-link button" id="nav-fee-tab" data-bs-toggle="tab"
                                                         data-bs-target="#fee" type="button">요금조회/납부</button>
 
                                                     <button class="nav-link button" id="nav-plan-tab" data-bs-toggle="tab"
@@ -139,7 +139,7 @@
                                                     <button class="nav-link button" id="nav-document-tab" data-bs-toggle="tab"
                                                         data-bs-target="#document" type="button">서류 문의</button>
 
-                                                    <button class="nav-link" id="nav-etc-tab" data-bs-toggle="tab"
+                                                    <button class="nav-link button" id="nav-etc-tab" data-bs-toggle="tab"
                                                     data-bs-target="#etc" type="button">기타/불만 접수</button>
                                                 </div>
                                             </nav>
@@ -147,7 +147,7 @@
                                             <!-- 문의 작성 테이블 Section Start -->
                                             <div class="tab-content" id="nav-tabContent">
 	                                                <div class="tab-pane fade show active" id="account">
-													<form action="./qna" method="post" >
+													<form action="./qna" method="post" enctype="multipart/form-data" >
 														<input type="hidden" name="board" id="board" value="${board}">
 	                                                    <div class="row g-4">
 	                                                        <div class="col-12 overflow-visible">
@@ -198,13 +198,20 @@
 	                                                                                    </div>
 	                                                                                </th>
 	                                                                                <td colspan="5">
-	                                                                                    <div class="mb-3">
-	                                                                                        <input class="form-control" type="file" id="formFile" name="file">
-	                                                                                    </div>
+																						<div class="fileList">
+																							<div class="mb-3 d-flex justify-content-between" id="del1">
+																								<input class="form-control" type="file" id="formFile" name="files">
+																								<button class="btn btn-solid-default dels" type="button" data-delete-id="1">X</button>
+																							</div>
+																						</div>
+																						<div class="mt-3 d-flex justify-content-start">
+																							<button class="btn btn-solid-default fileAdd" type="button">Add</button>
+																						</div>
 	                                                                                    <div class="mt-lg-5" style="text-align: start;">
 	                                                                                        <p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
 	                                                                                        <p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
 	                                                                                    </div>
+
 	                                                                                </td>
 	                                                                            </tr>
 	                                        
@@ -228,7 +235,7 @@
 			
 
 	                                                <div class="tab-pane fade" id="fee">
-                      									<form action="./qna" method="post" >
+                      									<form action="./qna" method="post" enctype="multipart/form-data"  >
 															<input type="hidden" name="board" id="board" value="${board}">
 															<div class="row g-4">
 																<div class="col-12 overflow-visible">
@@ -315,13 +322,13 @@
 																						</th>
 																						<td colspan="5">
 																							<div class="fileList">
-																								<div class="mb-3">
-																									<input class="form-control" type="file" id="formFile">
-																									<div class="input-group">
-																										<input type="text" disabled class="form-control" id="oriFile" placeholder="" aria-label="Recipient's username with two button addons" value="${vo.oriName}">
-																										<button class="btn btn-outline-danger deleteCheck" type="button" data-delete-id="${vo.num}">X</button>
-																									</div>
+																								<div class="mb-3 d-flex justify-content-between" id="del1">
+																									<input class="form-control" type="file" id="formFile" name="files">
+																									<button class="btn btn-solid-default dels" type="button" data-delete-id="1">X</button>
 																								</div>
+																							</div>
+																							<div class="mt-3 d-flex justify-content-start">
+																								<button class="btn btn-solid-default fileAdd"  type="button">Add</button>
 																							</div>
 																							<div class="mt-lg-5" style="text-align: start;">
 																								<p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
@@ -349,7 +356,7 @@
 												
 												
 	                                                <div class="tab-pane fade" id="plan" >
-	                                                	<form action="./qna" method="post" >
+	                                                	<form action="./qna" method="post" enctype="multipart/form-data"  >
 															<input type="hidden" name="board" id="board" value="${board}">
 															<div class="row g-4">
 																<div class="col-12 overflow-visible">
@@ -436,8 +443,14 @@
 																							</div>
 																						</th>
 																						<td colspan="5">
-																							<div class="mb-3">
-																								<input class="form-control" type="file" id="formFile">
+																							<div class="fileList">
+																								<div class="mb-3 d-flex justify-content-between" id="del1">
+																									<input class="form-control" type="file" id="formFile" name="files">
+																									<button class="btn btn-solid-default dels" type="button" data-delete-id="1">X</button>
+																								</div>
+																							</div>
+																							<div class="mt-3 d-flex justify-content-start">
+																								<button class="btn btn-solid-default fileAdd"  type="button">Add</button>
 																							</div>
 																							<div class="mt-lg-5" style="text-align: start;">
 																								<p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
@@ -462,7 +475,7 @@
 	                                                </div>
 
 	                                                <div class="tab-pane fade" id="question" >
-														<form action="./qna" method="post" >
+														<form action="./qna" method="post" enctype="multipart/form-data"  >
 															<input type="hidden" name="board" id="board" value="${board}">
 															<div class="row g-4">
 																<div class="col-12 overflow-visible">
@@ -549,8 +562,14 @@
 																							</div>
 																						</th>
 																						<td colspan="5">
-																							<div class="mb-3">
-																								<input class="form-control" type="file" id="formFile">
+																							<div class="fileList">
+																								<div class="mb-3 d-flex justify-content-between" id="del1">
+																									<input class="form-control" type="file" id="formFile" name="files">
+																									<button class="btn btn-solid-default dels" type="button" data-delete-id="1">X</button>
+																								</div>
+																							</div>
+																							<div class="mt-3 d-flex justify-content-start">
+																								<button class="btn btn-solid-default fileAdd"  type="button">Add</button>
 																							</div>
 																							<div class="mt-lg-5" style="text-align: start;">
 																								<p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
@@ -575,7 +594,7 @@
 	                                                </div>
 
 	                                                <div class="tab-pane fade" id="document" >
-													<form action="./qna" method="post" >
+													<form action="./qna" method="post" enctype="multipart/form-data" >
 														<input type="hidden" name="board" id="board" value="${board}">
 	                                                    <div class="row g-4">
 	                                                        <div class="col-12 overflow-visible">
@@ -662,9 +681,15 @@
 	                                                                                    </div>
 	                                                                                </th>
 	                                                                                <td colspan="5">
-	                                                                                    <div class="mb-3">
-	                                                                                        <input class="form-control" type="file" id="formFile">
-	                                                                                    </div>
+																						<div class="fileList">
+																							<div class="mb-3 d-flex justify-content-between" id="del1">
+																								<input class="form-control" type="file" id="formFile" name="files">
+																								<button class="btn btn-solid-default dels" type="button" data-delete-id="1">X</button>
+																							</div>
+																						</div>
+																						<div class="mt-3 d-flex justify-content-start">
+																							<button class="btn btn-solid-default fileAdd"  type="button">Add</button>
+																						</div>
 	                                                                                    <div class="mt-lg-5" style="text-align: start;">
 	                                                                                        <p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
 	                                                                                        <p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
@@ -688,7 +713,7 @@
 	                                                </div>
                                                 
 	                                                <div class="tab-pane fade" id="etc">
-													<form action="./qna" method="post" >
+													<form action="./qna" method="post" enctype="multipart/form-data"  >
 														<input type="hidden" name="board" id="board" value="${board}">
 	                                                    <div class="row g-4">
 	                                                        <div class="col-12 overflow-visible">
@@ -739,9 +764,15 @@
 	                                                                                    </div>
 	                                                                                </th>
 	                                                                                <td colspan="5">
-	                                                                                    <div class="mb-3">
-	                                                                                        <input class="form-control" type="file" id="formFile">
-	                                                                                    </div>
+																						<div class="fileList">
+																							<div class="mb-3 d-flex justify-content-between" id="del1">
+																								<input class="form-control" type="file" id="formFile" name="files">
+																								<button class="btn btn-solid-default dels" type="button" data-delete-id="1">X</button>
+																							</div>
+																						</div>
+																						<div class="mt-3 d-flex justify-content-start">
+																							<button class="btn btn-solid-default fileAdd"  type="button">Add</button>
+																						</div>
 	                                                                                    <div class="mt-lg-5" style="text-align: start;">
 	                                                                                        <p style="line-height: 0.7;">* 첨부 파일 용량은 파일당 3MB를 초과하실 수 없으며, 최대 5개까지 등록하실 수 있습니다.</p>
 	                                                                                        <p style="line-height: 0.7;">* 이미지(jpg, jpeg, gif, png)파일을 첨부하실 수 있습니다.</p>
@@ -886,11 +917,64 @@
     </div>
     <!-- Quick view modal end -->
 <c:import url="../temp/footer.jsp"></c:import>
+<script src="/assets/js/boardFileManager.js"></script>
 <script type="text/javascript">
 	$('.tab-pane').click(function(){
 	    $('.tab-pane').removeClass('show active');
 	    $(this).addClass('show active');
+
+
+
 	})
+
+	$('.nav-link').click(function(event){
+
+
+		
+		/**네비 탭 메뉴를 클릭하면 nav-link 클래스를 가진 요소에 active 클래스가 추가되고 현재 메서드가 실행되기 때문에
+		 현재로썬 의미없는 로직
+		 */
+		
+		
+		// $(this).each(function(){
+		// 	let classNames = $(this).attr('class').split(" ");
+
+		// 	let hasKeyword = false;
+		// 	for (var i = 0; i < classNames.length; i++) {
+		// 		if (classNames[i].includes("active")) {
+		// 			hasKeyword = true;
+		// 			break;
+		// 		}
+   		// 	 }
+
+			 
+		// 	if (hasKeyword) {
+		// 		// 키워드가 포함된 경우의 처리
+		// 		console.log("키워드가 포함되어 있습니다.");
+		// 	} else {
+		// 		// 키워드가 포함되지 않은 경우의 처리
+		// 		console.log("키워드가 포함되어 있지 않습니다.");
+		// 	}
+
+		// })
+
+		// 나중에 active 클래스 추가전에 현재메서드 실행 가능한지 확인 및 수정
+		let child = '<div class="mb-3 d-flex justify-content-between" id="del1">'
+		child += '<input class="form-control" type="file" id="formFile" name="files">';
+		child += '<button class="btn btn-solid-default dels" type="button" data-delete-id="1">X</button>';
+		child += '</div>';
+
+		$('.fileList').html(child)
+		setMax(5);
+		setCount(1);
+	})
+
+	$( ()=> {
+		setMax(5);
+		setCount(1);
+		setParam('files');
+	})
+
 </script>
 </body>
 

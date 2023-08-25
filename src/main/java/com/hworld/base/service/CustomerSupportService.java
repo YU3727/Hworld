@@ -23,6 +23,7 @@ import com.hworld.base.dao.QnaDAO;
 import com.hworld.base.util.BoardFileManager;
 import com.hworld.base.util.Pager;
 import com.hworld.base.vo.BoardVO;
+import com.hworld.base.vo.FileVO;
 import com.hworld.base.vo.MemberVO;
 import com.hworld.base.vo.NoticeVO;
 import com.hworld.base.vo.QnaVO;
@@ -137,9 +138,39 @@ public class CustomerSupportService {
 		return qnaDAO.getTelephoneList(telephoneVO); 
 	}
 	
-	public int setAdd(QnaVO qnaVO, HttpSession session, MultipartFile multipartFile) throws Exception {
+	public int setAdd(QnaVO qnaVO, String board, HttpSession session, MultipartFile [] multipartFiles) throws Exception {
 		qnaVO.setMemberNum(((MemberVO)(session.getAttribute("memberVO"))).getMemberNum());
-		return qnaDAO.setAdd(qnaVO);
+		int result = qnaDAO.setAdd(qnaVO);
+		
+		if(result == 0) {
+			throw new Exception();
+		}
+		
+		
+		
+		
+		if(multipartFiles == null) {
+			return result;
+		}
+		
+		for (MultipartFile multipartFile : multipartFiles) {
+			
+			
+			FileVO fileVO = new FileVO();
+			fileVO.setFileName(boardFileManager.saveFile(path + board + "/", multipartFile));
+			fileVO.setNum(qnaVO.getNum());
+			fileVO.setOriName(multipartFile.getOriginalFilename());
+
+			result = qnaDAO.setFileAdd(fileVO);
+			
+			log.info("Result : {}", result);
+			
+			if(result == 0) {
+				throw new Exception();
+			}
+		}
+		
+		return result;
 	}
 	
 
