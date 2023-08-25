@@ -32,6 +32,15 @@
 		}
 	</select>
 	
+	<select id="expireDateCheckUpdate" statementType="CALLABLE" parameterType="hashMap" resultType="hashMap">
+		{
+			CALL check_expireDate (
+				#{result, mode=OUT, jdbcType=INTEGER, javaType=INTEGER},
+				#{msg, mode=OUT, jdbcType=VARCHAR, javaType=STRING}
+			)
+		}
+	</select>
+	
 	
 
 </mapper>

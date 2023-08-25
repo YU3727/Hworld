@@ -12,4 +12,8 @@ public interface ScheduleDAO {
 	public Map<String, ?> billInsert (Map<?, ?> map) throws Exception;
 	
 	public Map<String, ?> billCheckUpdate (Map<?, ?> map) throws Exception;
+	
+	public Map<String, ?> expireDateCheckUpdate (Map<?, ?> map) throws Exception;
+	
+
 }

@@ -64,4 +64,19 @@ public class Schedule {
 			log.info((String)map.get("msg"));
 		}
 	}
+	
+	@Scheduled (cron = "0 3 * * * *")
+	public void expireDateCheckUpdate () throws Exception {
+		Map<String, ?> map = new HashMap<>();
+		scheduleDAO.expireDateCheckUpdate(map);
+		int result = (int)map.get("result");
+		if(result < 0) {
+			log.error("result : {}", result);
+			log.error((String)map.get("msg"));
+		}
+		else if(result > 0) {
+			log.info("result : {}", result);
+			log.info((String)map.get("msg"));
+		}
+	}
 }
