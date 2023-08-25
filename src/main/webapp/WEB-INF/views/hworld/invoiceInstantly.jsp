@@ -45,8 +45,8 @@
 								<img src="/invoice/images/invoice.svg" class="img-fluid" alt="">
 							</div>
 							<div class="row header-content">
-								<div class="col-md-6">
-									<img src="/invoice/images/logo.png" class="img-fluid" alt="">
+								<div class="brand-logo col-md-6">
+									<h2><img src="/assets/images/logo.png"></h2>
 								</div>
 								<div class="col-md-6 text-md-end">
 									<h4 class="mb-3">
