@@ -154,4 +154,31 @@ public class MyPageController {
 	}
 	
 	
+	//번호 변경
+	
+	
+	
+	//대표 회선 설정
+	@ResponseBody
+	@PostMapping("changeKingNum")
+	public Integer setKingNumUpdate(@RequestParam("phoneNum") String phoneNum) throws Exception{
+		
+		log.error(":::::::::::::::::::: 받은 매개변수 : {}", phoneNum);
+		int result = myPageService.setKingNumUpdate(phoneNum);
+		
+		return result;
+	}
+	
+	
+	//일시정지
+	@ResponseBody
+	@PostMapping("stopTelephone")
+	public Integer setStopTelephoneUpdate(@RequestParam("phoneNum") String phoneNum) throws Exception{
+		
+		log.error(":::::::::::::::::::: 받은 매개변수 : {}", phoneNum); //여기까지 잘 받아와짐
+		
+		return 0;
+	}
+	
+	
 }

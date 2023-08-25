@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    console.log('myPage js 실행');
+    //console.log('myPage js 실행');
 
     //대표회선의 납부금액 합계 구하기 - 미납금액의 총합
     let totalPrice = 0;
@@ -195,6 +195,101 @@ $('#executiveChangeNumber').click(function() {
         console.log('이게 보이면 안됨');
     }
 });
+
+
+//대표회선 변경 changeKingNum
+$('#changeKingNum').click(function(){
+
+    //어떤 번호로 변경하려는지 라디오 버튼이 체크된 것의 value 가져오기 - 잘 가져와짐
+    let selPhoneNum = $("input[name='phoneNum']:checked"). val();
+    //console.log(selPhoneNum);
+
+    //selPhoneNum으로 대표 번호 변경하기 작업
+    //근데 이거 이렇게 할거면 모달을 만들 필요가 있나 싶기도 하고 흠; 나중에 체크하기
+    if(selPhoneNum){
+        //변경할 번호가 선택 되었을 때 
+        console.log('선택된 번호', selPhoneNum);
+        //대표회선을 변경을 요청하는 ajax
+        $.ajax({
+            type: 'post',
+            url: './changeKingNum',
+            dataType: 'JSON',
+            data: {
+                phoneNum: selPhoneNum
+            },
+            success: function(response) {
+                //변경에 성공하면 번호변경에 성공했다는 모달 띄우기
+                //업데이트 성공(result값이 1이상), 실패(0)로 구분짓기
+                console.log(response);
+                if(response == 1){
+                    //기존 모달창 숨기고 새 모달 띄우기
+                    $('#kingModal').modal('hide');
+                    $('#kingChangeDoneModal').modal('show');
+                    $('.kingCheck').click(function(){
+                        window.location.href = '/myPage/home';
+                    })
+                } else {
+                    //변경에 실패함
+                    $('#kingModal').modal('hide');
+                    $('#kingChangeFailModal').modal('show');
+                    $('.kingCheck').click(function(){
+                        window.location.href = '/myPage/home';
+                    })
+                }
+            },
+            error: function(error) {
+            //에러 발생
+            console.log(error);
+            alert('문제가 발생했습니다.');
+            window.location.href = '/myPage/home';
+            }
+        });
+    } else {
+        //변경할 번호가 선택 되지 않았을 때 동작
+        console.log('선택된 번호가 없어요');
+    }
+})
+
+
+//회선 일시정지
+$('#stopTelephone').click(function(){
+    console.log('일시정지 하기');
+    //정지를 눌렀을 때, 일시정지 상태인지 아닌지 판별해서 정지기능을 보여줄지, 해제기능을 보여줄지 정해야 함.
+    //우선 정지먼저 해보자
+
+    //어떤 번호를 일시정지 할지 선택(지금은 대표회선만 되긴 함 - 여기에 값 추가해야함)
+    //일시정지 하려는 번호를 선택자로 가져와야함 - 반복문 내에 input tag로 selectedValue를 class명으로넣고, value값을 각각 지정해서 선택자로 selectedValue 값을 가져오면 해당 번호를 받아올 수 있게끔 해봄
+    let selPhoneNum = $('.selectedValue').val();
+
+    //마지막 일시정지 날로부터 기간 계산 후 조건에 맞으면 ajax 요청이 실행되고, 조건에 맞지 않으면 안내 문구 출력
+
+    //일시정지 요청 ajax - 조건에 만족하는 경우
+    $.ajax({
+        type: 'post',
+        url: './stopTelephone',
+        dataType: 'JSON',
+        data: {
+            phoneNum: selPhoneNum
+        },
+        success: function(response) {
+            //일시정지 시작날짜 컬럼에 값 추가하기 - 시작 날짜에 값이 있고, 종료날짜에 값이 없으면 취소가 나오게끔
+            //업데이트 성공(result값이 1이상), 실패(0)로 구분짓기
+            console.log(response);
+            if(response == 1){
+                //기존 모달창 숨기고 새 모달 띄우기
+            } else {
+                //변경에 실패함
+            }
+        },
+        error: function(error) {
+        //에러 발생
+        console.log(error);
+        alert('문제가 발생했습니다.');
+        window.location.href = '/myPage/home';
+        }
+    });
+})
+
 
 
 //유효성 검사
