@@ -25,34 +25,34 @@ class MyPageDAOTest {
 	private MyPageDAO myPageDAO;
 	
 	
-	//getTotalBill
-	//@Test
-	void getTotalBill() throws Exception{
-		Pager pager = new Pager();
-		pager.setMemberNum(98);
-		Long totalCount = myPageDAO.getTotalBill(pager);
-		
-		assertEquals(0, totalCount);
-	}
-	
-	
-	//getPMDList
-	//@Test
-	void getPMDList() throws Exception{
-		Pager pager = new Pager();
-		
-		//pager 처리할 총 갯수 선택
-		pager.setMemberNum(98);
-		Long totalCount = myPageDAO.getTotalBill(pager);
-		
-		pager.makeNum(totalCount);
-		pager.makeStartRow();
-		List<BillVO> ar =  myPageDAO.getPMDList(pager);
-		
-		assertEquals(0, ar.size());
-		
-	}
-	
+//	//getTotalBill
+//	//@Test
+//	void getTotalBill() throws Exception{
+//		Pager pager = new Pager();
+//		pager.setMemberNum(98);
+//		Long totalCount = myPageDAO.getTotalBill(pager);
+//		
+//		assertEquals(0, totalCount);
+//	}
+//	
+//	
+//	//getPMDList
+//	//@Test
+//	void getPMDList() throws Exception{
+//		Pager pager = new Pager();
+//		
+//		//pager 처리할 총 갯수 선택
+//		pager.setMemberNum(98);
+//		Long totalCount = myPageDAO.getTotalBill(pager);
+//		
+//		pager.makeNum(totalCount);
+//		pager.makeStartRow();
+//		List<BillVO> ar =  myPageDAO.getPMDList(pager);
+//		
+//		assertEquals(0, ar.size());
+//		
+//	}
+//	
 	
 	//getPMDList2
 	@Test

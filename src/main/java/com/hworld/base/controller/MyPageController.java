@@ -1,6 +1,7 @@
 package com.hworld.base.controller;
 
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,10 @@ public class MyPageController {
 		////요금 청구/납부 - 납부내역, 미납내역, 대표회선정보를 나타내야함
 		//납부/미납 리스트
 		//List<BillVO> billList = myPageService.getPMDList(pager, session);
-		List<TelephoneVO> TPList = myPageService.getTPList(pager, session);
+		List<TelephoneVO> tpList = myPageService.getTPList(pager, session);
+		
+		//납부|미납 리스트
+		List<TelephoneVO> pmdList = myPageService.getPMDList(pager, session);
 		
 		//대표회선 정보
 		Map<String, Object> kingTP = myPageService.getKingDetail(session);
@@ -65,11 +69,25 @@ public class MyPageController {
 		
 		//정보 담기
 		//mv.addObject("billList", billList);
-		mv.addObject("TPList", TPList);
+		mv.addObject("tpList", tpList);
+		mv.addObject("pmdList", pmdList);
 		mv.addObject("kingTP", kingTP);
 		
 		mv.setViewName("hworld/myPage");
 		return mv;
+	}
+	
+	@GetMapping("pmdList")
+	@ResponseBody
+	public Map<String, Object> getPmdList(Pager pager, HttpSession session) throws Exception {
+		List<TelephoneVO> pmdList = myPageService.getPMDList(pager, session);
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("pmdList", pmdList);
+		map.put("pager", pager);
+			
+		return map;
 	}
 	
 	
@@ -78,17 +96,17 @@ public class MyPageController {
 	public ModelAndView setPaymentAdd(Pager pager, HttpSession session) throws Exception{
 		ModelAndView mv = new ModelAndView();
 		
-		List<TelephoneVO> TPList = myPageService.getTPList(pager, session);
+		List<TelephoneVO> pmdList = myPageService.getPMDList(pager, session);
 		Map<String, Object> kingTP = myPageService.getKingDetail(session);
 		
-		for (TelephoneVO telephoneVO : TPList) {
+		for (TelephoneVO telephoneVO : pmdList) {
 			for (BillVO billVO : telephoneVO.getBillVOs()) {
 				log.error(" :::::::::::::::: ePlanPrice : {} ", billVO.getEPlanPrice());
 				
 			}
 		}
 		
-		mv.addObject("TPList", TPList);
+		mv.addObject("pmdList", pmdList);
 		mv.addObject("kingTP", kingTP);
 		mv.setViewName("hworld/invoiceInstantly");
 		return mv;

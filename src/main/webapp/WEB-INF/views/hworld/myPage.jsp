@@ -124,7 +124,7 @@
                                                     <div class="box">
                                                         <div class="box-title d-flex">
                                                             <h5 class="me-1">대표회선</h5>
-                                                            <c:forEach items="${TPList}" var="telephoneVO">
+                                                            <c:forEach items="${pmdList}" var="telephoneVO">
                                                             	<c:if test="${telephoneVO.kingCheck eq 1}">
                                                             		<c:set var="phoneNum" value="${telephoneVO.phoneNum}" />
 	                                                                <c:set var="formattedPhoneNum" value="${fn:substring(phoneNum, 0, 3)}-${fn:substring(phoneNum, 3, 7)}-${fn:substring(phoneNum, 7,11)}" />
@@ -193,7 +193,7 @@
                                                         <tbody>
                                                             <!-- 납부금액 출력부 -->
                                                             <!-- list안의 list 값 꺼내기 -->
-                                                            <c:forEach items="${TPList}" var="telephoneVO">
+                                                            <c:forEach items="${pmdList}" var="telephoneVO">
                                                             	<c:if test="${telephoneVO.kingCheck eq 1}">
                                                             	<c:forEach items="${telephoneVO.billVOs}" var="billVO">
                                                             		<c:if test="${billVO.billCheck eq 1 && billVO.paidCheck eq 1}">
@@ -221,36 +221,36 @@
                                                             </c:forEach>
                                                         </tbody>
                                                     </table>
-                                                    <!-- Pagination Box Start -->
-                                                    <!-- <nav class="page-section">
-                                                        <ul class="pagination">
-                                                            <li class="page-item">
-                                                                <a class="page-link" href="javascript:void(0)" aria-label="Previous">
-                                                                    <span aria-hidden="true">
-                                                                        <i class="fas fa-chevron-left"></i>
-                                                                    </span>
-                                                                </a>
-                                                            </li>
-                                                            <li class="page-item active">
-                                                                <a class="page-link" href="javascript:void(0)">1</a>
-                                                            </li>
-                                                            <li class="page-item">
-                                                                <a class="page-link" href="javascript:void(0)">2</a>
-                                                            </li>
-                                                            <li class="page-item">
-                                                                <a class="page-link" href="javascript:void(0)">3</a>
-                                                            </li>
-                                                            <li class="page-item">
-                                                                <a class="page-link" aria-label="Next">
-                                                                    <span aria-hidden="true">
-                                                                        <i class="fas fa-chevron-right"></i>
-                                                                    </span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </nav> -->
-                                                    <!-- Pagination Box End -->
                                                 </div>
+                                                <!-- Pagination Box Start -->
+                                                <nav class="page-section">
+                                                    <ul class="pagination">
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="javascript:void(0)" aria-label="Previous">
+                                                                <span aria-hidden="true">
+                                                                    <i class="fas fa-chevron-left"></i>
+                                                                </span>
+                                                            </a>
+                                                        </li>
+                                                        <li class="page-item active">
+                                                            <a class="page-link" href="javascript:void(0)" data-page-num="1">1</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="javascript:void(0)" data-page-num="2">2</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="javascript:void(0)" data-page-num="3">3</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" aria-label="Next">
+                                                                <span aria-hidden="true">
+                                                                    <i class="fas fa-chevron-right"></i>
+                                                                </span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                                <!-- Pagination Box End -->
                                             </div> 
                                             <!-- 납부내역 end -->
                                             <!-- 미납내역 tab start -->
@@ -265,7 +265,7 @@
                                                         </thead>
                                                         <tbody>
                                                             <!-- 미납 금액 출력부 -->
-                                                            <c:forEach items="${TPList}" var="telephoneVO">
+                                                            <c:forEach items="${pmdList}" var="telephoneVO">
                                                             	<c:if test="${telephoneVO.kingCheck eq 1}">
                                                             	<c:forEach items="${telephoneVO.billVOs}" var="billVO">
                                                             		<c:if test="${billVO.billCheck eq 1 && billVO.paidCheck eq 0}">
@@ -283,40 +283,41 @@
                                                             </c:forEach>
                                                         </tbody>
                                                     </table>
-                                                    <!-- Pagination Box Start -->
-                                                    <!-- <nav class="page-section">
-                                                        <ul class="pagination">
-                                                            <li class="page-item">
-                                                                <a class="page-link" href="javascript:void(0)" aria-label="Previous">
-                                                                    <span aria-hidden="true">
-                                                                        <i class="fas fa-chevron-left"></i>
-                                                                    </span>
-                                                                </a>
-                                                            </li>
-                                                            <li class="page-item active">
-                                                                <a class="page-link" href="javascript:void(0)">1</a>
-                                                            </li>
-                                                            <li class="page-item">
-                                                                <a class="page-link" href="javascript:void(0)">2</a>
-                                                            </li>
-                                                            <li class="page-item">
-                                                                <a class="page-link" href="javascript:void(0)">3</a>
-                                                            </li>
-                                                            <li class="page-item">
-                                                                <a class="page-link" aria-label="Next">
-                                                                    <span aria-hidden="true">
-                                                                        <i class="fas fa-chevron-right"></i>
-                                                                    </span>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </nav> -->
-                                                    <!-- Pagination Box End -->
                                                 </div>
+                                                <!-- Pagination Box Start -->
+                                                <nav class="page-section">
+                                                    <ul class="pagination">
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="javascript:void(0)" aria-label="Previous">
+                                                                <span aria-hidden="true">
+                                                                    <i class="fas fa-chevron-left"></i>
+                                                                </span>
+                                                            </a>
+                                                        </li>
+                                                        <li class="page-item active">
+                                                            <a class="page-link" href="javascript:void(0)" data-page-num="1">1</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="javascript:void(0)" data-page-num="2">2</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="javascript:void(0)" data-page-num="3">3</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" aria-label="Next">
+                                                                <span aria-hidden="true">
+                                                                    <i class="fas fa-chevron-right"></i>
+                                                                </span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                                <!-- Pagination Box End -->
                                             </div>
                                             <!-- 미납내역 tab end -->
                                         </div>
                                         <!-- 납부 미납내역 tab 부모 div end -->
+
                                     </div>
                                 </div>
                             </div>
@@ -387,13 +388,13 @@
                                                 </a>
                                             </li>
                                             <li class="page-item active">
-                                                <a class="page-link" href="javascript:void(0)">1</a>
+                                                <a class="page-link" href="javascript:void(0)" data-page-num="1">1</a>
                                             </li>
                                             <li class="page-item">
-                                                <a class="page-link" href="javascript:void(0)">2</a>
+                                                <a class="page-link" href="javascript:void(0)" data-page-num="2">2</a>
                                             </li>
                                             <li class="page-item">
-                                                <a class="page-link" href="javascript:void(0)">3</a>
+                                                <a class="page-link" href="javascript:void(0)" data-page-num="3">3</a>
                                             </li>
                                             <li class="page-item">
                                                 <a class="page-link" aria-label="Next">
@@ -644,7 +645,7 @@
                             <div class="save-details-box">
                                 <div class="row g-3">
                                 
-                                <c:forEach items="${TPList}" var="telephoneVO" varStatus="i">
+                                <c:forEach items="${tpList}" var="telephoneVO" varStatus="i">
                                 <c:choose>
                                 	<c:when test="${telephoneVO.kingCheck eq 1}">
                                 		<div class="col-xl-4 col-md-6">
@@ -1150,7 +1151,7 @@
                 </div>
                 <div class="modal-body">
                 대표회선 설정
-                <c:forEach items="${TPList}" var="telephoneVO" varStatus="i">
+                <c:forEach items="${tpList}" var="telephoneVO" varStatus="i">
                 	<c:if test="${telephoneVO.kingCheck eq 0}">
 	                    <div class="form-check mt-2">
 	                    <input class="form-check-input" type="radio" name="phoneNum" id="flexRadioDefault${i.index}" value="${telephoneVO.phoneNum}">
@@ -1299,7 +1300,10 @@ $(document).ready(function(){
 	if(msg != ""){
         alert(msg);    
 	}
+    
 })
+
+
 </script>
 <c:import url="../temp/footer.jsp"></c:import>
 </body>

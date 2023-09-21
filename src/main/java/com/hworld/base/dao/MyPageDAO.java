@@ -14,10 +14,10 @@ import com.hworld.base.vo.TelephoneVO;
 public interface MyPageDAO {
 	
 	//페이저 처리용 billVO 갯수 구하기
-	public Long getTotalBill(Pager pager) throws Exception;
+	public Long getTotalCount(Map<String, ?> map) throws Exception;
 	
 	//회원의 모든 billVO 불러오기
-	public List<BillVO> getPMDList(Pager pager) throws Exception;
+	public List<TelephoneVO> getPMDList(Pager pager) throws Exception;
 	
 	//회원의 청구서가 있는 Telephone 정보 가져오기
 	public List<TelephoneVO> getTPList(Pager pager) throws Exception;

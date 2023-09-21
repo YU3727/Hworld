@@ -75,7 +75,10 @@
 						
 						<!-- form Start -->
 						<!-- 미납금이 있는 모든 회선 갯수 구하기 -->
-						<c:set var="TPCount" value="${TPList.size()}"/>
+						<c:set var="TPCount" value="${pmdList.size()}"/>
+						<script>
+							console.log('회선 갯수 : ' + '${TPCount}');
+						</script>
 						<!-- <p> 미납금이 있는 telephoneVO 개수 : ${TPCount}</p> -->
 						
 						<!-- 작동 안하는 되돌리기 조건 -->
@@ -92,10 +95,13 @@
 						<c:forEach begin="0" end="${TPCount - 1}" varStatus="tpStatus">
 							<!-- <p> =============== 회선 구분 ============== </p> -->
 							<!-- telephoneVO의 index사용 -->
-							<c:set var="telephoneVO" value="${TPList[tpStatus.index]}"/>
+							<c:set var="telephoneVO" value="${pmdList[tpStatus.index]}"/>
 							
 							<!-- telephoneVO 안에 있는 billVO의 갯수 파악 -->
 							<c:set var="billCount" value="${telephoneVO.billVOs.size()}"/>
+							<script>
+								console.log('청구서 갯수 : ' + '${billCount}');
+							</script>
 
 							<!-- 각 telephoneVO 안의 billVO 갯수만큼 반복문 돌리기 -->
 							<c:forEach begin="0" end="${billCount - 1}" varStatus="billStatus">

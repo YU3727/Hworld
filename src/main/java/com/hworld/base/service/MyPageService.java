@@ -1,5 +1,6 @@
 package com.hworld.base.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,26 +33,42 @@ public class MyPageService {
 	private BCryptPasswordEncoder pwEncoder;
 	
 	//납부, 미납내역 출력하기
-//	public List<BillVO> getPMDList(Pager pager, HttpSession session) throws Exception{
-//		
-//		MemberVO memberVO = (MemberVO)session.getAttribute("memberVO");
-//		pager.setMemberNum(memberVO.getMemberNum());
-//		
-//		Long totalCount = myPageDAO.getTotalBill(pager);
-//		pager.makeNum(totalCount);
-//		pager.makeStartRow();
-//		
-//		
-//		return myPageDAO.getPMDList(pager);
-//	}
+	public List<TelephoneVO> getPMDList(Pager pager, HttpSession session) throws Exception{
+		
+		MemberVO memberVO = (MemberVO)session.getAttribute("memberVO");
+		pager.setMemberNum(memberVO.getMemberNum());
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("memberNum", memberVO.getMemberNum());
+		map.put("flag", null);
+		
+		Long totalCount = myPageDAO.getTotalCount(map);
+		
+		log.error("====================================> PAYMENTDETAILS TOTALCOUNT : {}", totalCount);
+		
+		pager.makeNum(totalCount);
+		pager.makeStartRow();
+		
+		
+		return myPageDAO.getPMDList(pager);
+	}
 	
-	//telephoneVO 기반 납부, 미납내역 출력하기
+	//회선 리스트 출력하기
 	public List<TelephoneVO> getTPList(Pager pager, HttpSession session) throws Exception{
 		
 		MemberVO memberVO = (MemberVO)session.getAttribute("memberVO");
 		pager.setMemberNum(memberVO.getMemberNum());
 		
-		Long totalCount = myPageDAO.getTotalBill(pager);
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("memberNum", memberVO.getMemberNum());
+		map.put("flag", true);
+		
+		Long totalCount = myPageDAO.getTotalCount(map);
+		
+		log.error("====================================> TELEPHONE TOTALCOUNT : {}", totalCount);
+		
 		pager.makeNum(totalCount);
 		pager.makeStartRow();
 		

@@ -23,6 +23,35 @@ $('#insPayment').click(function(){
 })
 
 
+let chkPage;
+
+//납부/미납 내역 페이징 처리(비동기)
+$('.page-item').on('click', '.page-link', function(){
+
+    let page = $(this).attr("data-page-num");
+    chkPage = page;
+
+
+    $.ajax({
+        type: 'GET',
+        url: './pmdList',
+        dataType: 'JSON',
+        data: {
+            page: page
+        },
+        success: function(data) {
+            if(data.trim() != '') {
+                console.log(data.trim());
+            }
+
+        },
+        error: function(error) {
+            console.log('요청 실패');
+        }
+    });
+})
+
+
 //비밀번호 변경 버튼을 누르고, 확인을 누른 경우
 $('#updatePwBtn').click(function(){
     console.log('비밀번호 변경 클릭');

@@ -104,6 +104,11 @@ public class Pager {
          this.next=false;
       }
       
+      
+      if(this.page > getLastNum()) {
+    	  this.page = getLastNum();
+      }
+      
    }
    
    
@@ -114,12 +119,13 @@ public class Pager {
       if(this.page == null || this.page < 1) {
          this.page = 1L;
       }
+
       return this.page;
    }
    
    public Long getPerPage() {
       if(this.perPage == null || this.perPage == 0) {
-         this.perPage = 10L;
+         this.perPage = 1L;
       }
       return this.perPage;
    }
