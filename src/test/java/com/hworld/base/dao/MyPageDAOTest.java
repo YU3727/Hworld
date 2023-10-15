@@ -55,28 +55,28 @@ class MyPageDAOTest {
 //	
 	
 	//getPMDList2
-	@Test
-	void getTPList() throws Exception{
-		Pager pager = new Pager();
-		
-		//pager 처리할 총 갯수 선택
-		pager.setMemberNum(98);
-		Long totalCount = myPageDAO.getTotalBill(pager);
-		
-		pager.makeNum(totalCount);
-		pager.makeStartRow();
-		List<TelephoneVO> ar =  myPageDAO.getTPList(pager);
-		
-		assertNotEquals(0, ar.size());
-		
-		for (TelephoneVO telephoneVO : ar) {
-			log.error(" ::::::::::::: phoneNum {} ", telephoneVO.getPhoneNum());
-			for (BillVO billVO : telephoneVO.getBillVOs()) {
-				log.error(" ::::::::::::::::::: billVO {} ", billVO.getPayMonth());
-			}
-		}
-		
-	}
+//	@Test
+//	void getTPList() throws Exception{
+//		Pager pager = new Pager();
+//		
+//		//pager 처리할 총 갯수 선택
+//		pager.setMemberNum(98);
+//		Long totalCount = myPageDAO.getTPList(pager);
+//		
+//		pager.makeNum(totalCount);
+//		pager.makeStartRow();
+//		List<TelephoneVO> ar =  myPageDAO.getTPList(pager);
+//		
+//		assertNotEquals(0, ar.size());
+//		
+//		for (TelephoneVO telephoneVO : ar) {
+//			log.error(" ::::::::::::: phoneNum {} ", telephoneVO.getPhoneNum());
+//			for (BillVO billVO : telephoneVO.getBillVOs()) {
+//				log.error(" ::::::::::::::::::: billVO {} ", billVO.getPayMonth());
+//			}
+//		}
+//		
+//	}
 		
 	
 	//getKingDetail

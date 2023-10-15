@@ -25,7 +25,8 @@ $('#insPayment').click(function(){
 
 let chkPage;
 
-//납부/미납 내역 페이징 처리(비동기)
+//납부
+//미납 내역 페이징 처리(비동기)
 $('.page-item').on('click', '.page-link', function(){
 
     let page = $(this).attr("data-page-num");
