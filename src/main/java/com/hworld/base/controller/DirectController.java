@@ -112,7 +112,7 @@ public class DirectController {
 			mv.addObject("wList", wList);
 			mv.addObject("hList", hList);    
 	        
-	        
+		
 		mv.addObject("list", ar);
 		mv.setViewName("hworld/phoneList2");
 		
