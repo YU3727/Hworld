@@ -88,7 +88,7 @@
 
                 <!-- 회원가입 페이지 이동 -->
                 <p style="margin-top: 0px">아직 회원이 아니신가요? <a href="precheck" class="theme-color">가입하기</a></p>
-				<div class="g-recaptcha" data-sitekey="6Lexf60oAAAAAK0VGS4cNSwKLcHM9NDUqUawDWyA" style="margin-left: 50px; padding-top: 465px;"></div>
+				<div class="g-recaptcha" data-sitekey="6LfBzbAoAAAAAGTTIhGWmubV0OSbwpF4T74QXVZb" style="margin-left: 50px; padding-top: 465px;"></div>
             </div>
         </div>
     </div>
