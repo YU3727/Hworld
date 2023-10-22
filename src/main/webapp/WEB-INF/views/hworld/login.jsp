@@ -9,6 +9,7 @@
 	<meta charset="UTF-8">
     <c:import url="../temp/style.jsp"></c:import>
     <title>로그인</title>
+
 </head>
 
 <body class="theme-color2 light ltr">
@@ -88,7 +89,7 @@
 
                 <!-- 회원가입 페이지 이동 -->
                 <p style="margin-top: 0px">아직 회원이 아니신가요? <a href="precheck" class="theme-color">가입하기</a></p>
-				<div class="g-recaptcha" data-sitekey="6LfBzbAoAAAAAGTTIhGWmubV0OSbwpF4T74QXVZb" style="margin-left: 50px; padding-top: 465px;"></div>
+				<div class="g-recaptcha" data-sitekey="6LepVMAoAAAAAEsQJvh-zHqxNwbyQLWFXZN39uGU" style="margin-left: 50px; padding-top: 465px;"></div>
             </div>
         </div>
     </div>
@@ -102,17 +103,18 @@
 <script type="text/javascript">
      
 $(function() {
-    $('#login_btn').click(function() {                      
+    $('#login_btn').click(function() { 
+             
         $.ajax({
             url: '/VerifyRecaptcha',
             type: 'post',
             data: {recaptcha: $("#g-recaptcha-response").val()},
             success: function(res) {
                 const data=JSON.parse(res);
-                if(data.success){                       
+                if(data.success){          
 		$("#loginForm").submit();
                 }else{
-                    alert("자동가입방지 봇을 확인한 후 진행해주세요.");                               
+                    alert("자동가입방지 봇을 확인한 후 진행해주세요.");                       
                 }               
             }
         });   

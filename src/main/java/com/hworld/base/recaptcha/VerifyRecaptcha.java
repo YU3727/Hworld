@@ -12,6 +12,9 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.net.ssl.HttpsURLConnection;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class VerifyRecaptcha {
 	public static final String url = "https://www.google.com/recaptcha/api/siteverify";
     private final static String USER_AGENT = "Mozilla/5.0";
@@ -25,7 +28,6 @@ public class VerifyRecaptcha {
         if (gRecaptchaResponse == null || "".equals(gRecaptchaResponse)) {
             return false;
         }
- 
         try {
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
