@@ -13,7 +13,7 @@ public class RecaptchaController {
 	@ResponseBody
 	@PostMapping(value = "VerifyRecaptcha")
 	public ResponseEntity<?> VerifyRecaptcha(String recaptcha) throws IOException {
-        VerifyRecaptcha.setSecretKey("6LfiGXwmAAAAANF_1kXksG6h3Vw0_7bMyV1IXU_A");     
+        VerifyRecaptcha.setSecretKey("6LfBzbAoAAAAAGTTIhGWmubV0OSbwpF4T74QXVZb");     
         return ResponseEntity.status(HttpStatus.OK).body(VerifyRecaptcha.verify(recaptcha));
     }
 }
