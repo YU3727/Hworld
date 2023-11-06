@@ -1,7 +1,98 @@
--- H WORLD PROCEDURE
---
--- CALC_BFPLANUSEDAY
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_bfplanUseDay`(
+CREATE OR REPLACE PROCEDURE calc_bfPhonePayPrice(
+	IN in_serialNum INT,
+	OUT out_bfPhonePayPrice INT
+)
+proc_body : BEGIN 
+	DECLARE V_bfSerialNum INT;
+	DECLARE V_bfPhonePayPrice INT DEFAULT 0;
+	DECLARE V_bfPhoneSplitPrice INT DEFAULT 0;
+	DECLARE V_bfPhoneSplitTax INT DEFAULT 0;
+
+	DECLARE endOfRow Boolean DEFAULT FALSE;
+
+	-- 커서 선언
+	DECLARE CUR_BFSERIALNUM_SELECT CURSOR FOR
+	SELECT bfSerialNum FROM TEMP;
+
+	-- 더이상 데이터 없을 때 반복 종료
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET endOfRow = TRUE;
+
+	-- SQL문이 잘못되었을 때 롤백
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+	   	RESIGNAL;
+    END;
+	
+   
+	CREATE TEMPORARY TABLE TEMP (
+		bfserialNum INT
+	);
+	
+	-- 현재회선 청구서에 재귀쿼리를 사용해서 이전회선들을 조회해 위약금 합산 후 업데이트
+	INSERT INTO TEMP (bfSerialNum)
+	WITH RECURSIVE TELEPHONES AS (
+	    SELECT
+	        SERIALNUM ,
+	        BFSERIALNUM ,
+	        CANCELPRICE 
+	    FROM
+	        TELEPHONE
+	    WHERE
+	        SERIALNUM = in_serialNum AND PHONECHANGECHECK = 1
+	    UNION ALL
+	    SELECT
+	        tp.SERIALNUM ,
+	        tp.BFSERIALNUM ,
+	        tp.CANCELPRICE 
+	    FROM
+	        TELEPHONE tp
+	    JOIN
+	        TELEPHONES tps ON tp.SERIALNUM = tps.BFSERIALNUM
+	    WHERE 
+	    	tp.PHONECHANGECHECK = 0
+	)
+	SELECT 
+	    SERIALNUM  
+	FROM
+	    TELEPHONES
+	LIMIT 100000 OFFSET 1;
+
+
+
+ 	-- 커서 오픈
+   	OPEN CUR_BFSERIALNUM_SELECT ;
+   
+   	-- 커서 실행
+	cursor_loop : LOOP
+		FETCH CUR_BFSERIALNUM_SELECT INTO V_bfSerialNum;
+		IF endOfRow THEN
+			LEAVE cursor_loop;
+		END IF;
+	
+		
+	-- 이전 기기(회선) 하나씩 기기값 계산
+		CALL calc_phonePayPrice_total (V_bfSerialNum, @bfPhonePayPrice, V_bfPhoneSplitPrice, V_bfPhoneSplitTax);
+		SET V_bfPhonePayPrice = V_bfPhonePayPrice + @bfPhonePayPrice;
+	
+		SELECT V_bfPhonePayPrice, V_bfSerialNum;
+	
+	-- 커서 실행문 종료
+	END LOOP cursor_loop;
+
+	-- 커서 클로즈
+	CLOSE CUR_BFSERIALNUM_SELECT;
+
+	SET out_bfPhonePayPrice = V_bfPhonePayPrice;
+
+	
+	DROP TEMPORARY TABLE IF EXISTS TEMP;
+END
+
+
+CREATE OR REPLACE PROCEDURE calc_bfplanUseDay(
+	IN in_contractDate DATE,
+	IN in_expireDate DATE,
+	IN in_endDate DATE,
 	IN in_stopStartDate DATE,
 	IN in_stopEndDate DATE,
 	IN in_payMonth DATE,
@@ -21,21 +112,58 @@ proc_body : BEGIN
 	-- 일시정지 일 수를 계산하기 위한 프로시저
 	CALL check_telephone_stop(in_stopStartDate, in_stopEndDate, in_payMonth, V_pauseResult, V_stopDay ); 
 	
-	-- 일시정지 내역이 없거나 시작 내역만 있을 때 
-	SET V_bfUseDay = DAY(in_planChangeDate);
+
+	-- 1. 일시정지 내역이 없거나 시작 내역만 있을 때 
+	IF V_pauseResult < 2 THEN
+		SET V_bfUseDay = DAY(in_planChangeDate);
 	
-	-- 일시정지 시작/해제 내역이 있을 때 
-	IF V_pauseResult = 2 THEN
+		-- 해지했을 때의 이전요금제 사용일 수 
+		IF in_endDate IS NOT NULL AND MONTH(in_endDate) = MONTH(in_planChangeDate) THEN 
+			SET V_bfUseDay = DAY(in_endDate) - V_bfUseDay;
+		END IF;
 	
+		-- 약정시작기간과 요금제 변경 날짜의 월이 같을 때의 이전요금제 사용일 수
+		IF MONTH(in_contractDate) = MONTH(in_planChangeDate) THEN
+			SET V_bfUseDay = V_bfUseDay - DAY(in_contractDate);
+		END IF;
+	
+	 	-- 약정만료기간과 요금제 변경 날짜의 월이 같을 때의 이전요금제 사용일 수
+		IF MONTH(in_expireDate) = MONTH(in_planChangeDate) THEN
+			IF in_expireDate = in_planChangeDate THEN
+				SET V_bfUseDay = 1; 
+			
+			ELSEIF in_expireDate < in_planChangeDate THEN
+				SET V_bfUseDay = DAY(in_expireDate) - DAY(in_planChangeDate);
+			ELSEIF in_expireDate < in_planChangeDate THEN
+				SET V_bfUseDay = DAY(LAST_DAY(in_planChangeDate)) - DAY(in_planChangeDate) - (DAY(in_planChangeDate) - DAY(in_expireDate)); 
+			
+			END IF;
+		END IF;
+	
+	-- 2. 일시정지 시작/해제 내역이 있을 때 
+	ELSEIF V_pauseResult = 2 THEN
+		-- 일시정지 해제 날짜 > 요금제 변경 날짜 AND 일시정지 해제 날짜(월) = 요금제 변경 날짜(월)
 		IF in_stopEndDate > in_planChangeDate AND MONTH(in_stopEndDate) = MONTH (in_planChangeDate) THEN
 			SET V_bfUseDay = DAY(in_planChangeDate);
+		
+		-- 일시정지 해제 날짜 < 요금제 변경 날짜 AND 일시정지 해제 날짜(월) = 요금제 변경 날짜(월)
 		ELSEIF in_stopEndDate < in_planChangeDate AND MONTH(in_stopEndDate) = MONTH (in_planChangeDate) THEN
+		
+			-- 일시정지 시작 날짜(월) = 일시정지 해제 날짜(월)
 			IF MONTH(in_stopStartDate) = MONTH(in_stopEndDate) THEN 
 				SET V_bfUseDay = DAY(in_planChangeDate) - V_stopDay;
+			
+				-- 약정시작기간과 요금제 변경 날짜의 월이 같을 때의 이전요금제 사용일 수
+				IF MONTH(in_contractDate) = MONTH(in_stopEndDate) THEN
+					SET V_bfUseDay = V_bfUseDay - DAY(in_contractDate);
+				END IF;
+			
+			-- 일시정지 시작 날짜(월) != 일시정지 해제 날짜(월)
 			ELSE 
 				SET V_bfUseDay = DAY(in_planChangeDate) - DAY(in_stopEndDate);
 			END IF;
-		 	
+		
+		-- 일시정지 해제 날짜 = 요금제 변경 날짜 	
 		ELSEIF in_stopEndDate = in_planChangeDate THEN
 			SET V_bfUseDay = 1;
 
@@ -49,22 +177,23 @@ proc_body : BEGIN
 		END IF;
 	
 	END IF;
+
+
 	
 	SET out_bfUseday = V_bfUseDay;
 
+
+
 END
 
-
---
--- CALC_CANCELPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_cancelPrice`(
+CREATE OR REPLACE PROCEDURE calc_cancelPrice(
 	IN in_serialNum INT,
 	IN in_payMonth DATE,
-	-- 요금제 변경/회선 해지 구분 코드
+	-- 요금제 변경 / 회선 해지(기기 변경) 구분 코드
 	IN in_requestCode INT,
 	-- 바꾸고싶은 요금제 번호
 	IN in_newPlanNum VARCHAR(50),
-	-- 해지시 위약금
+	-- 해지(기변)시 위약금
 	OUT out_cancelPrice INT
 )
 proc_body : BEGIN 
@@ -89,6 +218,10 @@ proc_body : BEGIN
 	DECLARE V_monthCount INT DEFAULT 0;
 
 	DECLARE V_endOfRow BOOLEAN DEFAULT TRUE;
+	
+
+	
+
 
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 		BEGIN
@@ -146,12 +279,12 @@ proc_body : BEGIN
 				
 			END IF;
 		
-		-- 회선 해지시
+		-- 회선 해지(기기 변경)시
 		ELSEIF in_requestCode = 2 THEN
 			
 			-- 유지기간 충족 못했을 때
 			IF DATE_ADD(DATE_ADD(V_contractDate, INTERVAL V_splitMonth/4 MONTH ), INTERVAL V_stopDate DAY) > in_payMonth THEN
-				-- 할인받았던 기기값 전액 반환
+				-- 위약금 = 원래 기기값 - 최종 기기값 (할인금액 전액 반환)
 				SET V_cancelPrice = V_phoneOriPrice - V_phoneSubPrice;
 			
 			-- 유지기간 충족했을 때
@@ -160,7 +293,7 @@ proc_body : BEGIN
 				-- 일할계산 후 남은 약정기간만큼 곱한 가격이 위약금
 				SET V_cancelPrice = (V_phoneOriPrice - V_phoneSubPrice) * (DATEDIFF(DATE_SUB(V_expireDate, INTERVAL V_stopDate DAY), DATE_SUB(in_payMonth, INTERVAL V_stopDate DAY)) /DATEDIFF(DATE_SUB(V_expireDate, INTERVAL (180+V_stopDate) DAY),V_contractDate));
 			
-				SELECT V_phoneOriPrice , V_phoneSubPrice, V_cancelPrice;
+				SELECT V_phoneOriPrice, V_phoneSubPrice, V_cancelPrice;
 			END IF;
 		END IF;
 	
@@ -172,7 +305,7 @@ proc_body : BEGIN
 			-- 위약금 0
 			SET out_cancelprice = 0;
 		
-		-- 회선 해지시
+		-- 회선 해지(기기 변경)시
 		ELSEIF in_requestCode = 2 THEN 
 		
 			-- 매달 요금 할인액을 모두 더해서 사용자에게 할인반환금 출력
@@ -249,14 +382,44 @@ proc_body : BEGIN
 	-- 최종 위약금/할인반환금
 	SET out_cancelPrice = V_cancelPrice;
 	SELECT out_cancelPrice;
-
-
 END
 
+CREATE OR REPLACE PROCEDURE calc_cancelPrice_bfPhone(
+	IN in_serialNum INT,
+	OUT out_cancelPrice_total INT
+)
+proc_body : BEGIN 
+		WITH RECURSIVE TELEPHONES AS (
+	    SELECT
+	        SERIALNUM ,
+	        BFSERIALNUM ,
+	        CANCELPRICE 
+	    FROM
+	        TELEPHONE
+	    WHERE
+	        SERIALNUM = in_serialNum
+	    UNION ALL
+	    SELECT
+	        tp.SERIALNUM ,
+	        tp.BFSERIALNUM ,
+	        tp.CANCELPRICE 
+	    FROM
+	        TELEPHONE tp
+	    JOIN
+	        TELEPHONES tpss ON tp.SERIALNUM = tpss.BFSERIALNUM
+	    WHERE 
+	    	tp.PHONECHANGECHECK = 0
+	)
+	SELECT 
+	    SUM(CANCELPRICE) 
+	INTO 
+		out_cancelPrice_total
+	FROM
+	    TELEPHONES;
+			    
+END
 
---
--- CALC_FEE_ADDSERV
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_fee_addServ`(
+CREATE OR REPLACE PROCEDURE calc_fee_addServ(
 	IN in_extraPlanNum VARCHAR(50),
 	OUT out_fee INT
 )
@@ -264,14 +427,10 @@ proc_body : BEGIN
 	SELECT EXTRAPRICE  INTO out_fee
 	FROM EPLAN e 
 	WHERE EXTRAPLANNUM = in_extraPlanNum;
-
-
 END
 
 
---
--- CALC_FEE_PHONE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_fee_phone`(
+CREATE OR REPLACE PROCEDURE calc_fee_phone(
 	IN in_serialNum INT
 )
 proc_body : BEGIN 
@@ -287,13 +446,10 @@ proc_body : BEGIN
 						  
 -- 	DECLARE V_phonePayPrice = V_phoneSubPrice/
 	
-						  
+	
 END
 
-
---
--- CALC_MONTHLYPAY
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_monthlyPay`(
+CREATE OR REPLACE PROCEDURE calc_monthlyPay(
 	IN in_directCode VARCHAR(200),
 	IN in_disKind INT,
 	IN in_planNum VARCHAR(50),
@@ -314,20 +470,19 @@ proc_body : BEGIN
 	CALL calc_phoneSubPrice(V_oriPrice, in_disKind, in_planNum, V_subPrice) ;
 	CALL calc_totalTax(V_subPrice, V_splitMonth, V_totalTax);
 	CALL calc_phoneTotalPrice(V_subPrice, V_splitMonth, V_totalPrice); 
+
 	CALL calc_phonePayPrice (V_totalPrice, V_splitMonth, out_phonePayPrice);
 
-	-- 예상 월 요금예상 값
+	-- 예상 월 요금 값
 	CALL calc_monthlyPlanPrice (in_planNum, in_disKind, out_planPrice);
 
 	SELECT V_oriPrice, V_subPrice, V_totalTax, V_totalPrice, out_phonePayPrice, out_planPrice;
-
-
+	
+	
+	
 END
 
-
---
--- CALC_MONTHLYPLANPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_monthlyPlanPrice`(
+CREATE OR REPLACE PROCEDURE calc_monthlyPlanPrice(
 	IN in_planNum VARCHAR(50),
 	IN in_disKind INT,
 	OUT out_planPrice INT
@@ -348,9 +503,7 @@ proc_body : BEGIN
 END
 
 
---
--- CALC_PHONEORIPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_phoneOriPrice`(
+CREATE OR REPLACE PROCEDURE calc_phoneOriPrice(
 -- 원 기기값(출고값) 계산
 	-- 상품코드
 	IN in_directCode VARCHAR(50),
@@ -395,22 +548,69 @@ proc_body : BEGIN
 END
 
 
---
--- CALC_PHONEPAYPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_phonePayPrice`(
-	IN in_totalPrice INT,
+CREATE OR REPLACE PROCEDURE calc_phonePayPrice(
+	IN in_phoneTotalPrice INT,
 	IN in_splitMonth INT,
 	OUT out_phonePayPrice INT
 )
 proc_body : BEGIN 
+	DECLARE V_phonePayPrice INT DEFAULT 0;
 	
-	SET out_phonePayPrice = TRUNCATE(in_totalPrice/in_splitMonth, -1); 
+	SET V_phonePayPrice = TRUNCATE(in_phoneTotalPrice/in_splitMonth, -1); 
+
+	IF V_phonePayPrice <= 0 THEN
+		SET V_phonePayPrice = 0;
+	END IF;
+
+
+	SET out_phonePayPrice = V_phonePayPrice;
+
 END
 
+CREATE OR REPLACE PROCEDURE calc_phonePayPrice_total (
+	IN in_serialNum INT,
+	OUT out_phonePayPrice INT,
+	OUT out_phoneSplitPrice INT,
+	OUT out_phoneSplitTax INT
+)
+proc_body : BEGIN 
+	DECLARE V_phoneBalance INT DEFAULT 0;
+	DECLARE V_phoneTotalPrice INT DEFAULT 0;
+	DECLARE V_splitMonth INT DEFAULT 0;
+	DECLARE V_disKind INT DEFAULT 0;
+	DECLARE V_phonePayPrice INT DEFAULT 0;
+	DECLARE V_phoneSplitPrice INT DEFAULT 0;
+	DECLARE V_phoneSplitTax INT DEFAULT 0;
+	
+	-- 기기값 계산에 필요한 정보들 고유번호로 조회
+	SELECT  PHONEBALANCE , PHONETOTALPRICE , DISKIND
+	INTO  V_phoneBalance, V_phoneTotalPrice, V_disKind
+	FROM TELEPHONE t 
+	WHERE SERIALNUM = in_serialNum;
 
---
--- CALC_PHONESUBPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_phoneSubPrice`(
+	SET V_phonePayPrice = V_phoneBalance, V_phoneSplitPrice = V_phoneBalance;
+
+	IF V_disKind != -1 THEN
+	-- 할부개월수 계산
+		CALL calc_splitMonth(V_disKind, V_splitMonth); 
+	
+	-- 단말 균등상환금 계산(월 기기값 + 월 수수료)
+		CALL calc_phonePayPrice(V_phoneTotalPrice, V_splitMonth, V_phonePayPrice);
+		
+		-- 잔여할부금에 따른 균등상환 수수료 계산
+		CALL calc_tax(V_phoneBalance, V_phoneSplitTax);
+	
+		-- 월 기기 값 계산
+		SET V_phoneSplitPrice = V_phonePayPrice - V_phoneSplitTax;
+	END IF;
+
+
+	-- 월 기기값, 월 수수료, 기기 균등상환금 
+	SET out_phonePayPrice = V_phonePayPrice, out_phoneSplitPrice = V_phoneSplitPrice, out_phoneSplitTax = V_phoneSplitTax;
+
+END
+
+CREATE OR REPLACE PROCEDURE calc_phoneSubPrice(
 	IN in_oriPrice INT,
 	IN in_disKind INT,
 	IN in_planNum VARCHAR(50),
@@ -435,9 +635,7 @@ proc_body : BEGIN
 END
 
 
---
--- CALC_PHONETOTALPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_phoneTotalPrice`(
+CREATE OR REPLACE PROCEDURE calc_phoneTotalPrice(
 	IN in_subPrice INT,
 	IN in_splitMonth INT,
 	OUT out_totalPrice INT
@@ -451,13 +649,11 @@ proc_body : BEGIN
 END
 
 
--- 
--- CALC_PLANPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_planPrice`(
+CREATE OR REPLACE PROCEDURE calc_planPrice(
 -- 사용일에 따른 요금계산 프로시저
 	IN in_planNum VARCHAR(50),
 	IN in_payMonth DATE,
-	IN in_useDate INT,
+	IN in_useDay INT,
 	IN in_disKind INT,
 	OUT out_planPrice INT,
 	OUT out_disPrice INT
@@ -479,7 +675,7 @@ proc_body : BEGIN
 	END IF;
 
 	-- 사용월의 말일기준으로 일할계산하고 사용일만큼 합산  
-	SET out_planPrice = (out_planPrice / DAY(LAST_DAY(in_payMonth))) *  in_useDate;
+	SET out_planPrice = (out_planPrice / DAY(LAST_DAY(in_payMonth))) *  in_useDay;
 
 	IF in_disKind = 1 OR in_disKind = 2 THEN
 		SET V_disPrice = out_planPrice * 0.25;
@@ -491,9 +687,8 @@ proc_body : BEGIN
 END
 
 
---
--- CALC_SPLITMONTH
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_splitMonth`(
+
+CREATE OR REPLACE PROCEDURE calc_splitMonth(
 	IN in_disKind INT,
 	OUT out_splitMonth INT
 )
@@ -501,7 +696,7 @@ proc_body : BEGIN
 	
 	-- 할인 X
 	IF in_disKind = -1 THEN
-	SET out_splitMonth = 0;
+	SET out_splitMonth = 1;
 
 	-- 약정(할부) 12개월
 	ELSEIF in_disKind = 1 THEN 
@@ -512,25 +707,26 @@ proc_body : BEGIN
 	SET out_splitMonth = 24;
 	END IF;
 	
+	
 
 END
 
 
---
--- CALC_TAX
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_tax`(
+CREATE OR REPLACE PROCEDURE calc_tax(
 	IN in_balance INT,
 	OUT out_tax FLOAT
 )
 proc_body : BEGIN 
 	-- 수수료 계산
 	SET out_tax = in_balance * 0.00492;
+
+	IF out_tax <= 0 THEN
+		SET out_tax = 0;
+	END IF;
 END
 
 
---
--- CALC_TOTALTAX
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`calc_totalTax`(
+CREATE OR REPLACE PROCEDURE calc_totalTax(
 	IN in_subPrice INT,
 	IN in_splitMonth INT,
 	OUT out_totalTax FLOAT
@@ -565,9 +761,9 @@ proc_body : BEGIN
 END
 
 
---
--- CHECK_CHANGEPLAN
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`check_changePlan`(
+
+
+CREATE OR REPLACE PROCEDURE check_changePlan(
 	IN in_serialNum INT,
 	-- 바꿀요금제코드
 	IN in_newPlanNum VARCHAR(50),
@@ -588,8 +784,8 @@ proc_body : BEGIN
 	
 	-- 최근 요금제 변경날짜가 1달 이상 경과했을 때
 	IF DATE_ADD(V_oldPlanChangeDate, INTERVAL 1 MONTH) <= NOW() OR V_oldPlanChangeDate IS NULL THEN
-			SET out_result = 1;
-			CALL calc_cancelPrice (in_serialNum, NOW(), 1, in_newPlanNum, V_cancelPrice);
+		SET out_result = 1;
+		CALL calc_cancelPrice (in_serialNum, NOW(), 1, in_newPlanNum, V_cancelPrice);
 		
 	-- 최근 변경 날짜가 지금으로부터 1달이 경과하지 않았을 때
 	ELSE 
@@ -603,9 +799,84 @@ proc_body : BEGIN
 END
 
 
---
--- CHECK_TELEPHONE_STOP
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`check_telephone_stop`(
+CREATE OR REPLACE PROCEDURE check_expireDate(
+	OUT out_result INT,
+	OUT out_msg VARCHAR(255)
+)
+proc_body : BEGIN 
+	DECLARE V_payMonth DATE DEFAULT NOW();
+	DECLARE V_serialNum INT;
+	DECLARE V_cnt INT DEFAULT 0;
+
+	DECLARE endOfRow BOOLEAN DEFAULT FALSE;
+	DECLARE V_result INT DEFAULT 0;
+
+	-- 커서 선언
+	DECLARE CUR_EXPIREDATE_SELECT CURSOR FOR
+	SELECT SUM(SERIALNUM),SERIALNUM FROM TELEPHONE t
+	WHERE EXPIREDATE = DATE(V_payMonth);
+
+	-- 더이상 데이터 없을 때 반복 종료
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET endOfRow = TRUE;
+
+	-- SQL문이 잘못되었을 때 롤백
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+    	SET V_result = -1;
+    END;
+   
+   	START TRANSACTION;
+   
+   	-- 커서 오픈
+   	OPEN CUR_EXPIREDATE_SELECT ;
+   
+   	-- 커서 실행
+	cursor_loop : LOOP
+		FETCH CUR_EXPIREDATE_SELECT INTO V_cnt, V_serialNum;
+		IF endOfRow THEN
+			LEAVE cursor_loop;
+		END IF;
+	
+	-- 약정만료 회선이 1개 이상 있을 때 결과값 1
+		IF V_cnt > 0 THEN
+			SET V_result = 1;
+		END IF;
+	-- 회원 한명씩 청구서 발급
+		CALL pmd_calc_fee(V_serialNum, V_payMonth);
+		SET V_cnt = V_cnt + 1;
+	
+		-- 
+		IF V_result = -1 THEN
+			LEAVE cursor_loop;
+		END IF;
+		
+	-- 커서 실행문 종료
+	END LOOP cursor_loop;
+
+	-- 커서 클로즈
+	CLOSE CUR_EXPIREDATE_SELECT;
+
+
+
+	IF V_result > 0 THEN
+		SET out_msg = '약정만료 회선 요금 업데이트 ';
+		COMMIT;
+	ELSEIF V_result = 0 THEN
+		SET out_msg = '현재일자와 일치하는 약정만료 회선 미존재';
+	ELSEIF V_result < 0 THEN
+		SET out_msg = '약정만료 회선 요금 업데이트 작업 중 예기치 못한 오류 발생';
+		ROLLBACK;
+	END IF;
+
+	SET out_result = V_result;
+
+	SELECT V_serialNum, V_cnt;
+
+	
+END
+
+
+CREATE OR REPLACE PROCEDURE check_telephone_stop(
 	IN in_stopStartDate DATE,
 	IN in_stopEndDate DATE,
 	IN in_payMonth DATE,
@@ -654,10 +925,7 @@ proc_body : BEGIN
 
 END
 
-
---
--- INSERT_ADDSERV
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`insert_addServ`(
+CREATE OR REPLACE PROCEDURE insert_addServ(
 	IN in_serialNum INT,
 	IN in_extraPlanNum VARCHAR(50) 
 )
@@ -675,7 +943,7 @@ proc_body : BEGIN
 	-- 값이 없으면 인서트와 청구서에 요금 업데이트
 	ELSEIF V_useCheck = 0 THEN
 		INSERT INTO TELEPHONE_EPLAN (SERIALNUM, EXTRAPLANNUM) VALUES (in_serialNum, in_extraPlanNum);	
-		CALL pmd_calc_addServ (in_serialNum);
+-- 		CALL pmd_calc_addServ (in_serialNum);
 		SELECT '가입 완료';
 	END IF;
 	
@@ -683,9 +951,7 @@ proc_body : BEGIN
 END
 
 
---
--- INSERT_BILL
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`insert_bill`(
+CREATE OR REPLACE PROCEDURE insert_bill(
 	-- 회선 고유번호
 	IN in_serialNum INT,
 	-- 해당 청구월
@@ -703,16 +969,26 @@ proc_body : BEGIN
 	-- 납부 기한
 	DECLARE V_payMaxDate DATE;
 
-	DECLARE V_result INT DEFAULT 0;
+	DECLARE V_endDate DATE;
+	DECLARE V_phoneChangeCheck INT DEFAULT 1;
+	DECLARE V_phoneBalance INT DEFAULT 0;
+	DECLARE V_cancelPrice INT DEFAULT 0;
 
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
 		BEGIN 
    			ROLLBACK;
   			RESIGNAL;
-
 		END;
 
+	SELECT ENDDATE , PHONECHANGECHECK , PHONEBALANCE , CANCELPRICE INTO V_endDate, V_phoneChangeCheck, V_phoneBalance, V_cancelPrice
+	FROM TELEPHONE t 
+	WHERE SERIALNUM = in_serialNum;
 
+	IF V_endDate IS NOT NULL OR V_phoneChangeCheck = 0 THEN 
+		IF V_phoneBalance <= 0 AND V_cancelPrice <= 0 THEN 
+			LEAVE proc_body;
+		END IF;
+	END IF;
 
 
 	-- 청구서 발급 여부 확인
@@ -720,6 +996,7 @@ proc_body : BEGIN
   	FROM PAYMENTDETAILS p 
     WHERE SERIALNUM = in_serialNum 
     AND PAYMONTH = DATE_FORMAT(in_payMonth, '%y/%m') ;
+   
 	-- 청구서 발급 되어 있을 때
 	IF V_cnt > 0 THEN
 		SELECT '청구서 이미 존재';
@@ -732,25 +1009,32 @@ proc_body : BEGIN
 	
 		SET V_payMaxDate = LAST_DAY(DATE_ADD(in_payMonth, INTERVAL 1 MONTH));
 	
+		SELECT V_planNum;
+	
 		
 					
-		INSERT INTO PAYMENTDETAILS (SERIALNUM, PLANNUM, PAYMONTH, phonePayPrice , phoneSplitPrice , phoneSplitTax, ePlanPrice , disPlanPrice, totalPrice , overduePrice,  billCheck, paidCheck, bfPlanPrice, disPrice, payMaxDate) 
-		VALUES (in_serialNum, V_planNum, DATE_FORMAT(in_payMonth, '%y/%m'), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, V_payMaxDate);
+		INSERT INTO PAYMENTDETAILS (SERIALNUM, PLANNUM, PAYMONTH, phonePayPrice, phoneSplitPrice ,phoneSplitTax, ePlanPrice, disPlanPrice, totalPrice, overduePrice, billCheck, paidCheck, bfPlanPrice, disPrice, cancelPrice, bfPhonePayPrice, payMaxDate) 
+		VALUES (in_serialNum, V_planNum, DATE_FORMAT(in_payMonth, '%y/%m'), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, V_payMaxDate);
 		SELECT '청구서 발급완료';
 	END IF;
 
 
+
+	
 	
 
 END
 
 
---
--- INSERT_BILL_ALL
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`insert_bill_all`()
+
+CREATE OR REPLACE PROCEDURE insert_bill_all(
+	OUT out_result INT,
+	OUT out_msg VARCHAR(255)
+)
 proc_body : BEGIN 
 	DECLARE V_serialNum INT DEFAULT 0;
 	DECLARE V_payMonth DATE;
+	DECLARE V_result INT DEFAULT 1;
 	DECLARE endOfRow Boolean DEFAULT FALSE;
 
 	-- 커서 선언
@@ -761,14 +1045,15 @@ proc_body : BEGIN
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET endOfRow = TRUE;
 
 	-- SQL문이 잘못되었을 때 롤백
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
     BEGIN
-        ROLLBACK;
+    	SET V_result = -1;
     END;
    
    	SET V_payMonth = NOW();
 --    	SET V_payMonth = DATE_SUB(NOW(), INTERVAL 1 MONTH) ;
    
+   	START TRANSACTION;
    
    	-- 커서 오픈
    	OPEN CUR_PMD_SELECT ;
@@ -781,20 +1066,32 @@ proc_body : BEGIN
 		END IF;
 	-- 회원 한명씩 청구서 발급
 		CALL insert_bill(V_serialNum, V_payMonth);
-
+	
+		IF V_result = -1 THEN
+			LEAVE cursor_loop;
+		END IF;
 	-- 커서 실행문 종료
 	END LOOP cursor_loop;
 
 	-- 커서 클로즈
 	CLOSE CUR_PMD_SELECT;
+
+
+	IF V_result > 0 THEN
+		SET out_msg = '정상적으로 청구서 발급';
+		COMMIT;
+	ELSEIF V_result < 0 THEN
+		SET out_msg = '청구서 발급 중 오류가 발생하였습니다';
+		ROLLBACK;
+	END IF;
+
+	SET out_result = V_result;
 	
 	
 END
 
 
---
--- INSERT_PHONESUBPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`insert_phoneSubPrice`(
+CREATE OR REPLACE PROCEDURE insert_phoneSubPrice(
 	IN in_serialNum INT
 )
 proc_body : BEGIN 
@@ -843,10 +1140,7 @@ proc_body : BEGIN
 		
 END
 
-
---
--- INSERT_PHONETOTALPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`insert_phoneTotalPrice`(
+CREATE OR REPLACE PROCEDURE insert_phoneTotalPrice(
 	IN in_serialNum INT
 )
 proc_body : BEGIN 
@@ -886,9 +1180,8 @@ proc_body : BEGIN
 END
 
 
---
--- INSERT_TELEPHONE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`insert_telephone`(
+
+CREATE OR REPLACE PROCEDURE insert_telephone(
 	IN in_appNum INT,
 	IN in_memberNum INT
 
@@ -898,7 +1191,7 @@ proc_body : BEGIN
 	DECLARE V_planNum VARCHAR(50) DEFAULT '';
 	DECLARE V_phoneNum VARCHAR(200) DEFAULT '';
 	DECLARE V_contractDate DATE DEFAULT NOW();
-	DECLARE V_expireDate DATE DEFAULT DATE_ADD(NOW(), INTERVAL 2 YEAR);
+	DECLARE V_expireDate DATE;
 	DECLARE V_kingCheck INT DEFAULT 0;
 	DECLARE V_directCode VARCHAR(200) DEFAULT '';
 	DECLARE V_directName VARCHAR(200) DEFAULT '';
@@ -909,8 +1202,10 @@ proc_body : BEGIN
 	DECLARE V_disKind INT DEFAULT 0;
 	DECLARE V_serialNum INT DEFAULT 0;
 	DECLARE V_startDate DATE;
+	DECLARE V_cancelPrice INT DEFAULT 0;
 	-- 임시수정
 	DECLARE V_payMonth VARCHAR(50) DEFAULT NOW();
+	
 
 	-- 내부 로직을 위한 변수
 	DECLARE V_splitMonth INT DEFAULT 0;
@@ -946,41 +1241,80 @@ proc_body : BEGIN
 	END IF;
 
 
-	-- 회원번호로 조회해서 기존 회선이 있는지 확인
+	-- 회원번호로 조회해서 기존 회선중에 대표회선이 있는지 확인
 	SELECT COUNT(SERIALNUM) INTO V_phoneCount
 	FROM TELEPHONE t 
-	WHERE MEMBERNUM = in_memberNum;
+	WHERE MEMBERNUM = in_memberNum AND KINGCHECK = 1;
 
 	-- 없으면 대표회선으로 입력
 	IF V_phoneCount = 0 THEN
 	SET V_kingCheck = 1;
 	END IF ;
 
-	-- 12개월 약정인 경우 할부개월 수 12개월로 설정
-	IF V_disKind = 1 THEN
-	SET V_expireDate = DATE_SUB(V_expireDate, INTERVAL 1 YEAR); 
-	END IF;
+	-- 약정시작일 부터 할부개월수 만큼 증가 => 약정만료기간
+	SET V_expireDate = DATE_ADD(V_contractDate, INTERVAL V_splitMonth MONTH); 
 
-	
--- 	회선 인서트
-	INSERT IGNORE INTO TELEPHONE (MEMBERNUM, APPNUM, PLANNUM, PHONENUM, CONTRACTDATE, EXPIREDATE, KINGCHECK, DIRECTNAME, PHONEORIPRICE, PHONESUBPRICE, PHONETOTALPRICE, PHONEBALANCE, DISKIND, DIRECTCODE, STARTDATE  )
-	VALUES (in_memberNum, in_appNum, V_planNum, V_phoneNum, V_contractDate, V_expireDate, V_kingCheck, V_directName, V_phoneOriPrice, V_phoneSubPrice, V_phoneTotalPrice, V_phoneSubPrice, V_disKind, V_directCode, V_startDate);
+
+	START TRANSACTION;
+
+	-- 	회선 인서트
+	INSERT IGNORE INTO TELEPHONE (MEMBERNUM, APPNUM, PLANNUM, PHONENUM, CONTRACTDATE, EXPIREDATE, KINGCHECK, DIRECTNAME, PHONEORIPRICE, PHONESUBPRICE, PHONETOTALPRICE, PHONEBALANCE, DISKIND, DIRECTCODE, STARTDATE, PHONECHANGECHECK  )
+	VALUES (in_memberNum, in_appNum, V_planNum, V_phoneNum, V_contractDate, V_expireDate, V_kingCheck, V_directName, V_phoneOriPrice, V_phoneSubPrice, V_phoneTotalPrice, V_phoneSubPrice, V_disKind, V_directCode, V_startDate, 1);
 
 	SELECT in_memberNum, in_appNum, V_planNum, V_phoneNum, V_contractDate, V_expireDate, V_kingCheck, V_directName, V_phoneoriPrice, V_phoneSubPrice, V_phoneTotalPrice, V_phoneSubPrice, V_disKind, V_directCode, V_startDate;
 	
 	-- 금방 인서트한 회선의 회선고유번호를 조회.
 	SELECT MAX(SERIALNUM) INTO V_serialNum FROM TELEPHONE t;
+
+
+
 	
 	-- 조회한 회선고유번호로 해당월 청구서 발급(V_payMonth 임시수정)
 	CALL insert_bill(V_serialNum, V_payMonth);
 
 
+
+	COMMIT;
+
+
 END
 
 
---
--- PMD_CALC_ADDSERV
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_calc_addServ`(
+CREATE OR REPLACE PROCEDURE pmd_billCheck_update_all(
+	OUT out_result INT,
+	OUT out_msg VARCHAR(255)
+)
+proc_body : BEGIN 
+	DECLARE V_result INT DEFAULT 1;
+	DECLARE V_payMonth DATE ;
+
+	-- SQL문이 잘못되었을 때 롤백
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+    	SET V_result = -1;
+    END;
+   
+    SET V_payMonth = DATE_SUB(NOW(), INTERVAL 1 MONTH); 
+   
+   	START TRANSACTION;
+   
+	UPDATE PAYMENTDETAILS SET billCheck = 1
+	WHERE payMonth = DATE_FORMAT(V_payMonth, '%y/%m');
+
+	IF V_result > 0 THEN
+		SET out_msg = '사용자에게 청구서 발송 완료';
+		COMMIT;
+	ELSEIF V_result < 0 THEN
+		SET out_msg = '청구서 발송 과정 중 오류 발생';
+		ROLLBACK;
+	END IF;
+
+	SET out_result = V_result;
+	
+END
+
+
+CREATE OR REPLACE PROCEDURE pmd_calc_addServ(
 	-- 회선 고유번호(입력 변수) 선언
 	IN in_serialNum INT,
 	IN in_payMonth DATE
@@ -1008,7 +1342,10 @@ proc_body : BEGIN
 	-- SQL문이 잘못되었을 때 롤백
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
+    	
         ROLLBACK;
+       
+       	RESIGNAL;
     END;
    
    	 
@@ -1045,21 +1382,26 @@ proc_body : BEGIN
 		-- 커서 클로즈
 		CLOSE CUR_TPN_EP_SELECT;
 	
-		-- 청구서의 이전 부가서비스 요금 계산
-		SELECT EPLANPRICE INTO V_beforePrice 
-						FROM PAYMENTDETAILS p
-						WHERE SERIALNUM = in_serialNum
-						AND PAYMONTH = DATE_FORMAT(in_payMonth, '%y/%m');
-
-		-- 이전 금액과 현재 조회 금액 비교
-		IF V_beforePrice > V_totalFee THEN
-			SELECT '이전 요금이 더 많음';
-			LEAVE proc_body;
-			END IF;
+-- 		청구서의 이전 부가서비스 요금 계산
+-- 		SELECT EPLANPRICE INTO V_beforePrice 
+-- 						FROM PAYMENTDETAILS p
+-- 						WHERE SERIALNUM = in_serialNum
+-- 						AND PAYMONTH = DATE_FORMAT(in_payMonth, '%y/%m');
+-- 
+-- 		이전 금액과 현재 조회 금액 비교
+-- 		IF V_beforePrice > V_totalFee THEN
+-- 			SELECT '이전 요금이 더 많음';
+-- 			LEAVE proc_body;
+-- 			END IF;
+	
+		START TRANSACTION;
 	
 		-- 요금 업데이트
 		UPDATE PAYMENTDETAILS SET ePlanPrice = V_totalFee
 		WHERE serialNum = in_serialNum AND payMonth = DATE_FORMAT(in_payMonth, '%y/%m');
+	
+		DELETE FROM TELEPHONE_EPLAN 
+		WHERE SERIALNUM = in_serialNum AND ISUSED = 1;
 		SELECT '부가서비스 가입 O';
 	END IF;
 	
@@ -1067,9 +1409,7 @@ proc_body : BEGIN
 END
 
 
---
--- PMD_CALC_BFPLANPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_calc_bfPlanPrice`(
+CREATE OR REPLACE PROCEDURE pmd_calc_bfPlanPrice(
 -- 요금제 변경 시 실행할 프로시저
 	-- 회선 고유번호
 	IN in_serialNum INT,
@@ -1080,13 +1420,17 @@ CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_calc_bfPlanPrice`(
 )
 proc_body : BEGIN 
 	DECLARE V_payMonth DATE;
+	DECLARE V_contractDate DATE;
+	DECLARE V_expireDate DATE;
+	DECLARE V_endDate DATE;
 	DECLARE V_stopStartDate DATE;
 	DECLARE V_stopEndDate DATE;
 	DECLARE V_planChangeDate DATE;
 	DECLARE V_bfUseDay INT DEFAULT 0;
 	DECLARE V_bfPrice INT DEFAULT 0;
 	DECLARE V_disKind INT DEFAULT 0;
-	DECLARE V_disPrice INT;
+	DECLARE V_oldDisPrice INT DEFAULT 0;
+	DECLARE V_newDisPrice INT DEFAULT 0;
 	DECLARE V_planNum VARCHAR(50) DEFAULT '';
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 		BEGIN
@@ -1096,32 +1440,34 @@ proc_body : BEGIN
 		END;	
 
 	-- 회선테이블에서 필요한 정보들 조회
-	SELECT STOPSTARTDATE , STOPENDDATE, DISKIND INTO V_stopStartDate, V_stopEndDate, V_disKind
+	SELECT CONTRACTDATE, ENDDATE, STOPSTARTDATE , STOPENDDATE, DISKIND INTO V_contractDate, V_endDate, V_stopStartDate, V_stopEndDate, V_disKind
 	FROM TELEPHONE t 
 	WHERE SERIALNUM = in_serialNum;
 
-	SELECT planNum INTO V_planNum
-	FROM PAYMENTDETAILS p 
+	SELECT planNum, disPrice INTO V_planNum, V_oldDisPrice 
+	FROM PAYMENTDETAILS p
 	WHERE serialNum = in_serialNum AND payMonth = DATE_FORMAT(in_payMonth, '%y/%m');  
 
 	-- 요금제 변경날짜
 	SET V_planChangeDate = in_payMonth;
 
 	-- 일시정지 날짜와 연산해서 변경 전 요금제를 얼마나 썼는지 계산
-	CALL calc_bfplanUseDay(V_stopStartDate, V_stopEndDate, in_payMonth, V_planChangeDate, V_bfUseDay);
+	CALL calc_bfplanUseDay(V_contractDate, V_expireDate, V_endDate, V_stopStartDate, V_stopEndDate, in_payMonth, V_planChangeDate, V_bfUseDay);
 	
 	-- 사용일 수에 따라 사용 요금 계산
-	CALL calc_planPrice (V_planNum, in_payMonth, V_bfUseDay, V_disKind, V_bfPrice, V_disPrice);
+	CALL calc_planPrice (V_planNum, in_payMonth, V_bfUseDay, V_disKind, V_bfPrice, V_newDisPrice);
 
-	SELECT V_bfPrice, V_disPrice, V_bfUseDay, V_planChangeDate;
+	START TRANSACTION;
 
 	-- 청구서 테이블에 청구월에 해당하는 로우에 요금제변경날짜, 이전요금제 사용요금 업데이트
-	UPDATE PAYMENTDETAILS SET PLANCHANGEDATE = V_planChangeDate, bfPlanPrice = V_bfPrice, planNum = in_newPlanNum, disPrice = V_disPrice
+	UPDATE PAYMENTDETAILS SET PLANCHANGEDATE = V_planChangeDate, bfPlanPrice = V_bfPrice, planNum = in_newPlanNum, bfDisPrice = V_newDisPrice
 	WHERE serialNum = in_serialNum AND payMonth = DATE_FORMAT(in_payMonth, '%y/%m');  
 
 	-- 회선테이블에 변경하고픈 요금제, 변경날짜 업데이트
 	UPDATE TELEPHONE SET PLANNUM = in_newPlanNum, PLANCHANGEDATE = V_planChangeDate
 	WHERE SERIALNUM = in_serialNum;
+
+	COMMIT;
 
 
 
@@ -1130,9 +1476,22 @@ proc_body : BEGIN
 END
 
 
---
--- PMD_CALC_FEE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_calc_fee`(
+
+CREATE OR REPLACE PROCEDURE pmd_calc_cancelPrice_bfPhone(
+	IN in_serialNum INT,
+	IN in_payMonth DATE
+)
+proc_body : BEGIN 
+	DECLARE V_cancelPrice_total INT DEFAULT 0;
+
+	CALL calc_cancelPrice_bfPhone (in_serialNum, V_cancelPrice_total);
+
+	UPDATE PAYMENTDETAILS SET CANCELPRICE = V_cancelPrice_total
+	WHERE serialNum = in_serialNum AND payMonth = DATE_FORMAT(in_payMonth, '%y/%m'); 
+END
+
+
+CREATE OR REPLACE PROCEDURE pmd_calc_fee(
 	IN in_serialNum INT,
 	IN in_payMonth DATE
 )
@@ -1141,21 +1500,25 @@ proc_body : BEGIN
 	DECLARE V_stopEndDate DATE;
 	DECLARE V_contractDate DATE;
 	DECLARE V_expireDate DATE;
+	DECLARE V_endDate DATE;
 	DECLARE V_pauseResult INT;
 	DECLARE V_pausePrice INT;
 	DECLARE V_stopDay INT;
 	DECLARE V_useDay INT;
 	DECLARE V_disKind INT;
 	DECLARE V_planNum VARCHAR(50);
-	DECLARE V_beforePrice INT DEFAULT 0;
 	DECLARE V_beforeUseDay INT DEFAULT 0;
 	DECLARE V_planChangeDate DATE ;
-	DECLARE V_planPrice INT;
+	DECLARE V_disPlanPrice INT;
 	DECLARE V_disPrice INT;
 	DECLARE V_paymentCount INT DEFAULT 0;
+	DECLARE V_msg VARCHAR(255);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 		BEGIN
+			GET DIAGNOSTICS CONDITION 1 
+       			V_msg = MESSAGE_TEXT;
 			ROLLBACK;
+			SELECT V_msg;
   				
   			RESIGNAL;
 		END;	
@@ -1172,14 +1535,14 @@ proc_body : BEGIN
 	END IF;
 
 	-- 일시정지 시작일, 일시정지 종료일, 가입요금제번호, 할인유형 조회
-	SELECT STOPSTARTDATE , STOPENDDATE, DISKIND, CONTRACTDATE, EXPIREDATE INTO V_stopStartDate, V_stopEndDate,  V_disKind, V_contractDate, V_expireDate
+	SELECT STOPSTARTDATE , STOPENDDATE, DISKIND, CONTRACTDATE, EXPIREDATE, ENDDATE INTO V_stopStartDate, V_stopEndDate,  V_disKind, V_contractDate, V_expireDate, V_endDate
 	FROM TELEPHONE t 
 	WHERE SERIALNUM = in_serialNum;
 
 
 	-- 청구월에 요금제 변경사항 체크를 위한 변경전 요금/변경날짜 조회 
 	-- 요금 게산을 위한 현재 요금제 조회
-	SELECT bfPlanPrice, planChangeDate, planNum, disPrice  INTO V_beforePrice, V_planChangeDate, V_planNum, V_disPrice
+	SELECT planChangeDate, planNum, disPrice, disPlanPrice  INTO V_planChangeDate, V_planNum, V_disPrice, @disPlanPrice
 	FROM PAYMENTDETAILS p 
 	WHERE serialNum = in_serialNum AND payMonth = DATE_FORMAT(in_payMonth, '%y/%m') ;
 
@@ -1192,48 +1555,93 @@ proc_body : BEGIN
 	CALL check_telephone_stop (V_stopStartDate, V_stopEndDate, in_payMonth, V_pauseResult, V_stopDay);
 
 	-- 약정시작 월과 청구요금 계산 월이 같은 경우
-	IF MONTH(V_contractDate) = MONTH(in_payMonth) THEN
-		SET V_useDay = DAY(in_payMonth) - DAY(V_contractDate) - V_stopDay;
+	IF MONTH(V_contractDate) = MONTH(in_payMonth) AND YEAR(V_contractDate) = YEAR(in_payMonth) THEN
+		SET V_useDay = DAY(in_payMonth) - DAY(V_contractDate);
 	
 	-- 약정만료 월과 청구요금 계산 월이 같은 경우
 	ELSEIF MONTH(V_expireDate) = MONTH(in_payMonth) THEN
-		SET V_useDay = DAY(V_expireDate)  - V_stopDay;
+	
+		-- 스케쥴링을 이용해 약정만료기간까지의 요금을 계산하는 경우
+		IF DAY(V_expireDate) = DAY(in_payMonth) THEN		
+			SET V_useDay = DAY(V_expireDate);
+		
+		-- 기존 요금 계산 방식대로 매월 말일 기준으로 계산하는 경우
+		ELSEIF V_disKind = -1 THEN
+			-- 만료기간이 지나고 해지 했을 시
+			IF V_endDate IS NOT NULL THEN
+				SET V_useDay = DAY(V_endDate) - DAY(V_expireDate);	
+			
+			-- 일반적인 약정만료 후 요금 계산
+			ELSE
+				SET V_useDay = DAY(in_payMonth) - DAY(V_expireDate);
+			END IF;
+		
+		ELSEIF V_endDate IS NOT NULL THEN
+			SET V_useDay = DAY(V_endDate);	
+
+		END IF;
+	
+	
+							SELECT V_useDay;
+
+	
+	-- 해지날짜 월과 청구요금 계산 월이 같은 경우
+	ELSEIF MONTH(V_endDate) = MONTH(in_payMonth) THEN
+		SET V_useDay = DAY(V_endDate);
 	-- 다른 경우
 	ELSE
 		-- 일시정지 적용되어있던 날 만큼 월 사용일에서 차감
-		SET V_useDay = DAY(in_payMonth) -  V_stopDay;
+		SET V_useDay = DAY(in_payMonth);
 	END IF;
 
-	SELECT V_useDay;
+	SET V_useDay = V_useDay - V_stopDay;
+
+
 
 	-- 요금제 변경 이력이 있다면 날짜 합산 후 그만큼 사용일에서 차감
 	IF V_planChangeDate IS NOT NULL THEN
-		CALL calc_bfplanUseDay (V_stopStartDate, V_stopEndDate, in_payMonth, V_planChangeDate, V_beforeUseDay);
+		CALL calc_bfplanUseDay (V_contractDate, V_expireDate, V_endDate, V_stopStartDate, V_stopEndDate, in_payMonth, V_planChangeDate, V_beforeUseDay);
 		SET V_useDay = V_useDay - V_beforeUseDay;
 	END IF;
 
-	-- 사용일(V_useDate)로 사용 요금 계산, V_planPrice가 리턴값
-	CALL calc_planPrice(V_planNum, in_payMonth, V_useDay, V_disKind, V_planPrice, @disPrice);
-	SET V_disPrice = @disPrice + V_disPrice;
-	
 
-	-- 요금 변경 이력이 없으면 0으로 대입 
-	IF V_beforePrice IS NULL THEN
-		SET V_beforePrice = 0;
+
+	-- 사용일(V_useDate)로 사용 요금 계산, V_planPrice가 리턴값
+	CALL calc_planPrice(V_planNum, in_payMonth, V_useDay, V_disKind, V_disPlanPrice, V_disPrice);
+
+	-- 약정만료기간(월)과 청구계산날짜(월)이 같고 
+	-- 청구계산날짜가 말일이면서 가입유형이 -1(무약정)인 경우 
+	-- 내부 로직에 따라 만료전의 요금과 후의 요금을 합산
+	IF MONTH(V_expireDate) = MONTH(in_payMonth) THEN
+		IF DAY(in_payMonth) = DAY(LAST_DAY(in_payMonth)) AND V_disKind = -1 THEN
+			SET V_disPlanPrice = V_disPlanPrice + @disPlanPrice;
+		END IF;
 	END IF;
 	
+
 	-- 일시정지요금 일할계산 후 일시정지 일 수 만큼 곱함
 	SET V_pausePrice = (3850/DAY(LAST_DAY(in_payMonth))) * V_stopDay;
 	
 	-- 총 요금 = 사용 요금 + 요금제 변경 전 요금 + 일시정지 요금
-	SET V_planPrice = V_planPrice + V_beforePrice + V_pausePrice;
+	SET V_disPlanPrice = V_disPlanPrice + V_pausePrice;
+
+	SELECT V_useDay, V_disPlanPrice;
+
+
+	
+	START TRANSACTION;
+
 
 	-- 청구서에 요금 업데이트
-	UPDATE PAYMENTDETAILS SET DISPLANPRICE = V_planPrice, disPrice = V_disPrice
+	UPDATE PAYMENTDETAILS SET DISPLANPRICE = V_disPlanPrice, disPrice = V_disPrice
 	WHERE serialNum = in_serialNum AND payMonth = DATE_FORMAT(in_payMonth, '%y/%m') ;
+
+
 
 	-- 일시정지기간만큼 약정만료기간 증가
 	UPDATE TELEPHONE SET EXPIREDATE = DATE_ADD(EXPIREDATE, INTERVAL V_stopDay DAY); 
+
+
 
 -- 	일시정지 해제 내역이 있을때 위의 과정을 거치고 마지막으로 일시정지 내역 NULL로 업데이트
 	IF V_pauseResult = 2 THEN
@@ -1242,15 +1650,26 @@ proc_body : BEGIN
 	END IF;
 
 
-	SELECT V_pauseResult, V_stopDay, V_beforePrice, V_planPrice, V_pausePrice, V_useDay, DAY(V_planChangeDate), V_beforeUseDay, V_disPrice, @disPrice;
+
+	-- 요금 계산이 끝나고 약정 만료기간이 청구요금계산 날짜와 같으면 가입유형을 -1로 업데이트
+	IF MONTH(V_expireDate) = MONTH(in_payMonth) THEN
+		IF DAY(V_expireDate) = DAY(in_payMonth) THEN		
+			UPDATE TELEPHONE SET DISKIND = -1 
+			WHERE SERIALNUM = in_serialNum;
+		END IF;
+	END IF;
+
+
 
 	COMMIT;
+
+
+
+	SELECT V_pauseResult, V_stopDay, V_disPlanPrice, V_pausePrice, V_useDay, DAY(V_planChangeDate), V_beforeUseDay, V_disPrice, @disPrice;
 END
 
 
---
--- PMD_CALC_OVERDUE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_calc_overDue`(
+CREATE OR REPLACE PROCEDURE pmd_calc_overDue(
 	IN in_serialNum INT,
 	IN in_payMonth DATE
 )
@@ -1280,21 +1699,19 @@ proc_body : BEGIN
 END
 
 
---
--- PMD_CALC_PHONE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_calc_phone`(
+CREATE OR REPLACE PROCEDURE pmd_calc_phone(
 	IN in_serialNum INT,
 	IN in_payMonth DATE
 )
 proc_body : BEGIN
 	DECLARE V_phoneSubPrice INT DEFAULT 0;
 	DECLARE V_phoneBalance INT DEFAULT 0;
-	DECLARE V_phoneTotalPrice INT DEFAULT 0;
 	DECLARE V_disKind INT DEFAULT 0;
 	DECLARE V_splitMonth INT DEFAULT 0;
 	DECLARE V_phonePayPrice FLOAT DEFAULT 0;
 	DECLARE V_phoneSplitPrice FLOAT DEFAULT 0;
 	DECLARE V_phoneSplitTax FLOAT DEFAULT 0;
+	DECLARE V_bfPhonePayPrice INT DEFAULT 0;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 		BEGIN 
    			ROLLBACK;
@@ -1302,51 +1719,67 @@ proc_body : BEGIN
 		END;	
 	
 	-- 기기값 계산에 필요한 정보들 고유번호로 조회
-	SELECT PHONESUBPRICE , PHONEBALANCE , PHONETOTALPRICE , DISKIND
-	INTO V_phoneSubPrice, V_phoneBalance, V_phoneTotalPrice, V_disKind
+	SELECT PHONESUBPRICE , PHONEBALANCE , DISKIND
+	INTO V_phoneSubPrice, V_phoneBalance, V_disKind
 	FROM TELEPHONE t 
 	WHERE SERIALNUM = in_serialNum;
 
-	-- 할부잔여금이 0이 아니거나 NULL이 아닐때만 월 할부금 계싼
-	IF V_phoneBalance != 0 || V_phoneBalance IS NOT NULL THEN
+	START TRANSACTION;
+
+	-- 할부잔여금이 0보다 크거 NULL이 아닐때만 월 할부금 계싼
+	IF V_phoneBalance > 0 || V_phoneBalance IS NOT NULL THEN
+	
+
 		-- 할부개월수 가져오기
 		CALL calc_splitMonth(V_disKind, V_splitMonth); 
 	
-	 	-- 월 기기값 납부금액 계산(수수료 포함)
-		CALL calc_phonePayPrice(V_phoneTotalPrice, V_splitMonth, V_phonePayPrice);
+
+	 	-- 월 기기값 납부금액 계산(월 분할상환금, 월 단말기 값,월 수수료 )
+		CALL calc_phonePayPrice_total (in_serialNum, V_phonePayPrice, V_phoneSplitPrice, V_phoneSplitTax);
 	
-		-- 잔여할부금에 따른 균등상환 수수료 계산
-		CALL calc_tax(V_phoneBalance, V_phoneSplitTax);
+-- 		잔여할부금에 따른 균등상환 수수료 계산
+-- 		CALL calc_tax(V_phoneBalance, V_phoneSplitTax);
+-- 	
+-- 		월 단말기 균등상환금 납부금액
+-- 		SET V_phoneSplitPrice = V_phonePayPrice - V_phoneSplitTax;
 	
-		-- 월 단말기 균등상환금 납부금액
-		SET V_phoneSplitPrice = V_phonePayPrice - V_phoneSplitTax;
+
+		-- 기변 이전 기기 월 균등상환금 합산(회선번호, 이전기기 월 할부금 합산금액)
+		CALL calc_bfPhonePayPrice (in_serialNum, V_bfPhonePayPrice);
+
 	
-		-- 청구서에 월 단말기값, 월 수수료값, 월 상환금 업데이트
-		UPDATE PAYMENTDETAILS SET PHONEPAYPRICE = V_phonePayPrice, phoneSplitPrice = V_phoneSplitPrice, phoneSplitTax = V_phoneSplitTax
+		-- 청구서에 월 단말기값, 월 수수료값, 월 상환금, 기변 이전 기기 월 균등상환금 업데이트
+		UPDATE PAYMENTDETAILS SET PHONEPAYPRICE = V_phonePayPrice, phoneSplitPrice = V_phoneSplitPrice, phoneSplitTax = V_phoneSplitTax, bfPhonePayPrice = V_bfPhonePayPrice
 		WHERE serialNum = in_serialNum AND payMonth = DATE_FORMAT(in_payMonth, '%y/%m') ;
+
+		-- 할인을 받지 않을 때
+		IF V_disKind = -1 THEN
+			SET V_phoneBalance = V_phoneBalance - V_phoneBalance;
+		
+		-- 기기 or 요금 할인을 받을 때
+		ELSE
+			SET V_phoneBalance = V_phoneBalance - (V_phoneSubPrice/V_splitMonth);
+		END IF;
+
+
+		IF V_phoneBalance < 100 THEN
+			SET V_phoneBalance = 0;
+		END IF;
+
 	
 		-- 할부원금을 할부개월수만큼 나눈 값을 할부잔여금에 업데이트
-		UPDATE TELEPHONE  SET PHONEBALANCE = V_phoneBalance - (V_phoneSubPrice/V_splitMonth)
+		UPDATE TELEPHONE  SET PHONEBALANCE = V_phoneBalance
 		WHERE SERIALNUM = in_serialNum;
 	
 	END IF;
 
-	SELECT PHONEBALANCE INTO V_phoneBalance
-	FROM TELEPHONE t 
-	WHERE SERIALNUM = in_serialNum;
-
-	IF V_phoneBalance < 100 THEN
-		UPDATE TELEPHONE  SET PHONEBALANCE = 0
-		WHERE SERIALNUM = in_serialNum;
-	END IF;
-
+	COMMIT;
 	
 END
 
 
---
--- PMD_CALC_TOTALPRICE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_calc_totalPrice`(
+
+CREATE OR REPLACE PROCEDURE pmd_calc_totalPrice(
 	IN in_serialNum INT,
 	IN in_payMonth DATE
 )
@@ -1354,12 +1787,18 @@ proc_body : BEGIN
 	DECLARE V_totalPrice INT DEFAULT 0;
 	DECLARE V_phonePayPrice INT DEFAULT 0;
 	DECLARE V_disPlanPrice INT DEFAULT 0;
+	DECLARE V_disPrice INT DEFAULT 0;
 	DECLARE V_ePlanPrice INT DEFAULT 0;
+	DECLARE V_bfPlanPrice INT DEFAULT 0;
+	DECLARE V_bfDisPRice INT DEFAULT 0;
 	
-	SELECT PHONEPAYPRICE, DISPLANPRICE, EPLANPRICE INTO V_phonePayPrice, V_disPlanPrice, V_ePlanPrice
+	SELECT PHONEPAYPRICE, DISPLANPRICE, DISPRICE ,EPLANPRICE, IFNULL(BFPLANPRICE, 0) AS BFPLANPRICE, IFNULL(BFDISPRICE , 0) AS BFDISPRICE 
+	INTO V_phonePayPrice, V_disPlanPrice, V_disPrice, V_ePlanPrice, V_bfPlanPrice, V_bfDisPrice
 	FROM PAYMENTDETAILS p 
 	WHERE SERIALNUM = in_serialNum AND PAYMONTH = DATE_FORMAT(in_payMonth, '%y/%m'); 
 
+	SET V_disPlanPrice = V_disPlanPrice + V_bfPlanPrice;
+	SET V_disPrice = V_disPrice + V_bfDisPrice;
 	SET V_totalPrice = V_phonePayPrice + V_disPlanPrice + V_ePlanPrice;
 
 	SELECT V_totalPrice;
@@ -1369,49 +1808,111 @@ proc_body : BEGIN
 
 END
 
+CREATE OR REPLACE PROCEDURE update_telePhone_change(
+	IN in_memberNum INT,
+	IN in_oriSerialNum INT,
+	IN in_newAppNum INT,
+	OUT out_result INT
+	-- OUT out_msg VARCHAR(255)
+)
+proc_body : BEGIN 
+	DECLARE V_result INT DEFAULT 1;
+	
+	DECLARE V_cancelPrice INT DEFAULT 0;
+	DECLARE V_payMonth DATE DEFAULT NOW();
+	DECLARE V_newSerialNum INT DEFAULT 0;
+	DECLARE V_cancelPrice_total INT DEFAULT 0;
 
---
--- PMD_UPDATE
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_update`(
+	-- 예외처리 핸들러
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION 
+		BEGIN
+			SET V_result = -1;
+		END;
+		
+	CALL calc_cancelPrice(in_oriSerialNum, V_payMonth, 2, NULL, V_cancelPrice); 
+		
+	START TRANSACTION;
+
+	-- 이전 기기(회선)는 대표회선 해제, 위약금 업데이트, 기변 여부 O 
+	UPDATE TELEPHONE SET PHONENUM = NULL, KINGCHECK = 0, CANCELPRICE = V_cancelPrice, PHONECHANGECHECK = 0
+	WHERE MEMBERNUM = in_memberNum AND SERIALNUM = in_oriSerialNum;
+
+	-- 새로운 기기 정보로 회선 추가
+	CALL insert_telephone(in_newAppNum, in_memberNum);
+
+	-- 금방 인서트한 회선의 회선고유번호를 조회.
+	SELECT MAX(SERIALNUM) INTO V_newSerialNum FROM TELEPHONE t;
+
+	-- 새로운 기기(회선)을 대표회선으로 변경, 이전회선번호컬럼 업데이트
+	UPDATE TELEPHONE SET kingCheck = 1, BFSERIALNUM = in_oriSerialNum
+	WHERE MEMBERNUM = in_memberNum AND SERIALNUM = V_newSerialNum;
+
+
+	
+	-- 현재회선 청구서에 재귀쿼리를 사용해서 이전회선들을 조회해 위약금 합산 후 업데이트
+	CALL calc_cancelPrice_bfPhone (V_newSerialNum, V_cancelPrice_total);
+
+	UPDATE PAYMENTDETAILS SET CANCELPRICE = V_cancelPrice_total
+	WHERE serialNum = V_newSerialNum AND payMonth = DATE_FORMAT(V_payMonth, '%y/%m'); 
+	
+	-- 예외처리 및 결과 작업
+	IF V_result > 0 THEN
+		COMMIT;
+		-- SET out_msg = '기기 변경 완료';
+	ELSEIF V_result < 0 THEN
+		ROLLBACK;
+		-- SET out_msg = '기기 변경 작업 수행 중 오류 발생';
+	END IF;
+
+	SET out_result = V_result;
+END
+
+
+
+CREATE OR REPLACE PROCEDURE pmd_update(
 	IN in_serialNum INT,
 	IN in_payMonth DATE
 )
 proc_body : BEGIN 
-	DECLARE V_phonePayPrice INT DEFAULT 0;
-	DECLARE V_disPlanPrice INT DEFAULT 0;
- 	DECLARE V_ePlanPrice INT DEFAULT 0;
- 	DECLARE V_totalPrice INT DEFAULT 0;
- 	DECLARE V_payMonth DATE;
- 	DECLARE V_paidCheck INT DEFAULT 0;
- 	DECLARE V_overdue INT DEFAULT 0;
+	DECLARE V_phoneChangeCheck INT DEFAULT 1;
 
-	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
 		BEGIN 
    			ROLLBACK;
    			RESIGNAL;
 		END;	
 	
+	SELECT PHONECHANGECHECK INTO V_phoneChangeCheck
+	FROM TELEPHONE t 
+	WHERE SERIALNUM = in_serialNum;
  	 
--- 	SET V_payMonth = LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH));  	-- 실제로 배포했을 때 써야하는 로직, 청구월 다음달 1일에 사용요금 최종 업데이트 
--- 	SET V_payMonth = LAST_DAY(NOW()); 
-
 	CALL pmd_calc_phone(in_serialNum, in_payMonth) ;
+	
+	IF V_phoneChangeCheck = 0 THEN
+		LEAVE proc_body;
+	END IF;
 	CALL pmd_calc_fee (in_serialNum, in_payMonth);
  	CALL pmd_calc_addServ (in_serialNum, in_payMonth);
+ 	CALL pmd_calc_cancelPrice_bfPhone (in_serialNum, in_payMonth);
  	CALL pmd_calc_totalPrice(in_serialNum, in_payMonth);
  	CALL pmd_calc_overDue(in_serialNum, in_payMonth);
+
+
 
  
  
 END
 
 
---
--- PMD_UPDATE_ALL
-CREATE DEFINER=`admin`@`%` PROCEDURE `db`.`pmd_update_all`()
+
+CREATE OR REPLACE PROCEDURE pmd_update_all(
+	OUT out_result INT,
+	OUT out_msg VARCHAR(255)
+)
 proc_body : BEGIN 
 	DECLARE V_serialNum INT DEFAULT 0;
 	DECLARE V_payMonth DATE;
+	DECLARE V_result INT DEFAULT 1;
 	DECLARE endOfRow Boolean DEFAULT FALSE;
 
 	-- 커서 선언
@@ -1422,14 +1923,17 @@ proc_body : BEGIN
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET endOfRow = TRUE;
 
 	-- SQL문이 잘못되었을 때 롤백
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
     BEGIN
-        ROLLBACK;
+	           GET DIAGNOSTICS CONDITION 1 
+	          	out_msg = MESSAGE_TEXT;
+	    SET V_result = -1;
     END;
    
 	SET V_payMonth = LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH));  	-- 실제로 배포했을 때 써야하는 로직, 청구월 다음달 1일에 사용요금 최종 업데이트 
 -- 	SET V_payMonth = LAST_DAY(NOW());
 
+   	START TRANSACTION;
    
    	-- 커서 오픈
    	OPEN CUR_PMD_SELECT ;
@@ -1442,11 +1946,26 @@ proc_body : BEGIN
 		END IF;
 	-- 회원 한명씩 청구서 업데이트
 		CALL pmd_update (V_serialNum, V_payMonth);
-
+	
+		IF V_result = -1 THEN
+			LEAVE cursor_loop;
+		END IF;
+	
+		SELECT V_serialNum;
 	-- 커서 실행문 종료
 	END LOOP cursor_loop;
 
 	-- 커서 클로즈
 	CLOSE CUR_PMD_SELECT;
+
+	IF V_result > 0 THEN
+		COMMIT;
+		SET out_msg = '요금 정산 완료';
+	ELSEIF V_result < 0 THEN
+		ROLLBACK;
+ 		SET out_msg = '요금 정산 중 오류 발생';
+	END IF;
+
+	SET out_result = V_result;
 	
 END
