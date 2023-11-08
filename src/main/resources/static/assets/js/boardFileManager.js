@@ -111,8 +111,6 @@ function checkAddFile(element, event) {
 
 function checkAddFiles() {
 
-    console.log('COUNT : ' + count);
-    console.log('MAX : ' + max);
 
     if(count >= max) {
         alert(max+'개까지 등록 가능');

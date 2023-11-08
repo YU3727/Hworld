@@ -83,9 +83,9 @@ public class CustomerSupportService {
 
 		boolean fileResult = boardFileManager.deleteFile(path + board + "/", noticeVO.getFileName());
 		
-		if(!fileResult) {
-			throw new Exception();
-		}
+//		if(!fileResult) {
+//			throw new Exception();
+//		}
 		
 
 		
@@ -119,9 +119,9 @@ public class CustomerSupportService {
 		if(noticeVO.getFileName() != null) {
 			boolean fileResult = boardFileManager.deleteFile(path + board + "/", noticeVO.getFileName());
 			
-			if(!fileResult) {
-				throw new Exception();
-			}
+//			if(!fileResult) {
+//				throw new Exception();
+//			}
 		}
 		
 		return result;

@@ -209,8 +209,9 @@ public class CustomerSupportController {
 	// ----------------------------------------------------------------------------------------------------
 	// 신청서/자료실
 	@GetMapping("archive")
-	public ModelAndView c4() throws Exception{
+	public ModelAndView getArchive() throws Exception{
 		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("board", "archive");
 		modelAndView.setViewName("hworld/archive");
 		return modelAndView;
 	}

@@ -153,7 +153,7 @@
 .search-section .search-bar input:focus {
   border-color: #ced4da; }
     </style>
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 
 <body class="theme-color2 light ltr">
@@ -247,9 +247,9 @@
                             <img src="/assets/images/inner-page/faq/guides.png" class="img-fluid blur-up lazyload"
                                 alt="">
                         </div>
-                        <h2 class="mb-2 fw-bold"><a href="./notice.html">가입</a></h2>
-                        <h5 class="mb-3">H World 유무선 통합 신청서</h5>
-                            <a class="btn btn-solid-default btn-spacing" href="#" onclick="window.print();">
+                        <h2 class="mb-2 fw-bold"><a href="#">가입</a></h2>
+                        <h5 class="mb-3">H World 통합 신청서</h5>
+                            <a class="btn btn-solid-default btn-spacing" href="./fileDown?board=${board}&fileName=FT_freeT_subscription(20230103)_pp_on.pdf" >
                                 다운로드 <i class="bi bi-download"></i>
                             </a>
                     </div>
@@ -260,11 +260,11 @@
                         <div class="archive-image">
                             <img src="/assets/images/inner-page/faq/faq.png" class="img-fluid blur-up lazyload" alt="">
                         </div>
-                        <h2 class="mb-2 fw-bold"><a href="./notice.html">변경</a></h2>
+                        <h2 class="mb-2 fw-bold"><a href="#">변경</a></h2>
                         <h5 class="mb-3">휴대폰 114 번호안내 신청서</h5>
-                            <button type="button" class="btn btn-solid-default btn-spacing">
+                            <a class="btn btn-solid-default btn-spacing" href="./fileDown?board=${board}&fileName=skt 번호 변경 신청서.pdf" >
                                 다운로드 <i class="bi bi-download"></i>
-                            </button>
+                            </a>
                     </div>
                 </div>
 
@@ -275,9 +275,9 @@
                         </div>
                         <h2 class="mb-2 fw-bold"><a href="#">해지</a></h2>
                         <h5 class="mb-3">KT 모바일 해지 신청서</h5>
-                            <button type="button" class="btn btn-solid-default btn-spacing">
+                            <a class="btn btn-solid-default btn-spacing" href="./fileDown?board=${board}&fileName=개인정보_처리_위임장.pdf" >
                                 다운로드 <i class="bi bi-download"></i>
-                            </button>
+                            </a>
                     </div>
                 </div>
             </div>
