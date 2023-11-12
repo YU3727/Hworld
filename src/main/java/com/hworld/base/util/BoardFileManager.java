@@ -29,8 +29,6 @@ public class BoardFileManager extends AbstractView {
 	@Value("${app.upload}")
 	private String path;
 	
-	@Value("${app.upload.base}")
-	private String downloadPath;
 	
 		@Override
 		protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
@@ -41,7 +39,7 @@ public class BoardFileManager extends AbstractView {
 			String board = (String) model.get("board");
 			
 			
-			 File file = new File(downloadPath+board, fileName);
+			 File file = new File(path+board, fileName);
 			 
 			 //한글 처리
 			 response.setCharacterEncoding("UTF-8");
@@ -83,6 +81,7 @@ public class BoardFileManager extends AbstractView {
 			
 		    	//1. 폴더 생성
 		    	File folder = new File(path); // 저장할 폴더
+
 		    	if (!folder.exists()) {
 		    		folder.mkdirs();
 		    	}
