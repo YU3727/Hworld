@@ -33,7 +33,7 @@
 	</insert>
 	
 	<update id="setUpdate" parameterType="BoardVO">
-		UPDATE NOTICE SET TITLE = #{title}, CONTENTS = #{contents}, FILENAME = #{fileName}, ORINAME = #{oriName}
+		UPDATE NOTICE SET TITLE = #{title}, CONTENTS = #{contents}, FILENAME = #{fileName}, ORINAME = #{oriName}, NOTICECHECK = #{noticeCheck}
 		WHERE NUM = #{num}
 	</update>
 	
