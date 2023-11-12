@@ -68,7 +68,9 @@ public class CustomerSupportService {
 	
 	public int setAdd(NoticeVO noticeVO, String board, HttpSession session, MultipartFile file) throws Exception {
 		noticeVO.setMemberNum(((MemberVO)(session.getAttribute("memberVO"))).getMemberNum());
-		noticeVO.setFileName(boardFileManager.saveFile(path + board + "/", file));
+		String realPath = path + board + "/";
+		log.error("=============> realPath:{}",realPath);
+		noticeVO.setFileName(boardFileManager.saveFile(realPath, file));
 		noticeVO.setOriName(file.getOriginalFilename());
 		return noticeDAO.setAdd(noticeVO);
 	}
