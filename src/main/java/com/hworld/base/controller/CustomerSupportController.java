@@ -143,7 +143,7 @@ public class CustomerSupportController {
 		}
 		
 		mv.addObject("result", msg);
-		mv.addObject("url", "./noticeDetail?num="+noticeVO.getNum());
+		mv.addObject("url", "./noticeDetail?num="+noticeVO.getNum()+"&board="+board);
 		mv.setViewName("common/result");
 		
 		
