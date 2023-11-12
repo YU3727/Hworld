@@ -80,7 +80,8 @@ public class BoardFileManager extends AbstractView {
 			
 		    	//1. 폴더 생성
 		    	File folder = new File(path); // 저장할 폴더
-		    	
+		    	log.error("==================> AbsolutePath : {}",folder.getAbsolutePath());
+		    	log.error("==================> Path : {}",folder.getPath());
 		    	if (!folder.exists()) {
 		    		folder.mkdirs();
 		    	}
