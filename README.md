@@ -69,14 +69,9 @@ http://ec2-15-164-221-8.ap-northeast-2.compute.amazonaws.com/
 
 <br />
 
-# 📊 ERD & Structure
+# 📊 산출물
 
-<details>
-<summary>ERD</summary>
-<div markdown="1" style="padding-left: 15px;">
-<img src="https://user-images.githubusercontent.com/68724828/186067947-f255f9a4-d92d-45cd-ab7c-419ec92943f8.png" width="800px"/>
-</div>
-</details>
+<a href="https://github.com/qwdfd1/Hworld/blob/master/document/%5BH%20world%5D%201%EC%A1%B0%20ERD.png"><h3>ERD</h3></a>
 
 <br />
 
