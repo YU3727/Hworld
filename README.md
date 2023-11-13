@@ -72,7 +72,7 @@ http://ec2-15-164-221-8.ap-northeast-2.compute.amazonaws.com/
 # 📊 산출물
 
 > ### [ERD](https://github.com/qwdfd1/Hworld/blob/master/document/%5BH%20world%5D%201%EC%A1%B0%20ERD.png)  
-### [ERD](https://github.com/qwdfd1/Hworld/blob/master/document/%5BH%20world%5D%201%EC%A1%B0%20ERD.png)
+> ### [ERD](https://github.com/qwdfd1/Hworld/blob/master/document/%5BH%20world%5D%201%EC%A1%B0%20ERD.png)
 
 <br />
 
