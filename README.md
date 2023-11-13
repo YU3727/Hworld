@@ -55,14 +55,17 @@ http://ec2-15-164-221-8.ap-northeast-2.compute.amazonaws.com/
 
 ### 1. Back-end
 
-> python3  
-> Django  
-> Django-rest-framwork
+> Java
+> Spring Boot
+> Maven
+> MyBatis  
 
 ### 2. Front-end
 
-> React.js  
-> Node.js
+> Javascript
+> JQuery
+> BootStrap
+> JSTL
 
 <br />
 
