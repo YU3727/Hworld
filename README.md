@@ -1,4 +1,4 @@
-# :iphone: Hworld1
+# :iphone: Hworld
 
 프로젝트 홈페이지  
 http://ec2-15-164-221-8.ap-northeast-2.compute.amazonaws.com/
@@ -92,11 +92,4 @@ http://ec2-15-164-221-8.ap-northeast-2.compute.amazonaws.com/
 > 요금제 변경시에도 대표 회선의 약정 가입 경과 기간이 일정 기간 미만이어도 가격이 더 높은 요금제로 변경시에는 위약금 청구를 하지 않음
 
 
-<br />
 
-align="center" src="https://user-images.githubusercontent.com/68724828/186087151-e0f0ebed-08c1-4a99-9af0-a8c48c536205.png" width="300" >
-        </a>
-      </td>
-    </tr>
-  </tbody>
-</table>
