@@ -45,9 +45,9 @@ http://ec2-15-164-221-8.ap-northeast-2.compute.amazonaws.com/
 
 > 관리자 페이지 (회원/회선 목록, 총 주문 목록, 상품 목록/리뷰, 상품/일반 문의 목록) 서비스 구현
 
-### 4. 역할 분담
+### 4. 담당 업무
 
-> 홍석주  : : ERD 설계, 요금 계산(프로시저), 고객 지원
+> 홍석주  : ERD 설계, 요금 계산(프로시저), 고객 지원
 
 <br />
 
@@ -72,59 +72,29 @@ http://ec2-15-164-221-8.ap-northeast-2.compute.amazonaws.com/
 # 📊 산출물
 
 > ### [ERD](https://github.com/qwdfd1/Hworld/blob/master/document/%5BH%20world%5D%201%EC%A1%B0%20ERD.png)  
-> ### [ERD](https://github.com/qwdfd1/Hworld/blob/master/document/%5BH%20world%5D%201%EC%A1%B0%20ERD.png)
-
-<br />
-
-<details>
-<summary>Structure</summary>
-<div markdown="1" style="padding-left: 15px;">
-<img src="https://user-images.githubusercontent.com/68724828/186079270-28793ba1-466e-421f-baf2-563b890c926f.png" />
-</div>
-</details>
+> ### [WBS](https://docs.google.com/spreadsheets/d/1xE4jRKLFEU27EqwXrsK8vfSPTPpoXk-l569Sb15y5Y4/edit?pli=1#gid=0)
+> ### [테이블 정의서](https://docs.google.com/spreadsheets/d/15VTFBERtNjGcpZN2Rqf4JbR0gOryPjXt9aymFSTHnkQ/edit#gid=0)
+> ### [기능](https://docs.google.com/spreadsheets/d/1xE4jRKLFEU27EqwXrsK8vfSPTPpoXk-l569Sb15y5Y4/edit?pli=1#gid=892840114)
+> ### [요금 계산 공식](https://docs.google.com/spreadsheets/d/1xE4jRKLFEU27EqwXrsK8vfSPTPpoXk-l569Sb15y5Y4/edit?pli=1#gid=819264824)
 
 <br />
 
 # 🔑 핵심기능
 
-### 1. 여행장소 검색
+### 1. 서비스 가입 유형 및 사용 요금제 별 요금 청구
 
-> 사용자가 여행장소를 검색하면 DB에서 여행장소를 검색하고  
-> DB에 없는 장소이면 네이버지도에서 검색하여 최상단의 장소의 정보를 가져오고 DB에 저장합니다.  
-> [코드 보러가기](https://github.com/kimphysicsman/MyLittelTrip_backend/blob/5aa46e9ed2065045df17cc45baa41a9a2901b46b/recommend/functions/parsing.py#L64)
+> 사용자는 신규가입/기기변경/번호이동 유형 중 선택 가입.<br />
+> 기기변경시 대표 회선의 약정 가입 경과 기간이 일정 기간 미만일 시 위약금/할인반환금 청구  
 
-### 2. 최단 여행경로 찾기 & 여행일정 만들기
+### 2. 대표 회선 설정 및 요금제 변경
 
-> 사용자가 입력한 여행장소들을 바탕으로 여행일정을 만듭니다.  
-> [코드 보러가기](https://github.com/kimphysicsman/MyLittelTrip_backend/blob/5aa46e9ed2065045df17cc45baa41a9a2901b46b/recommend/functions/schedule.py#L14)
+> 기기 구매 및 모든 요금 관련 서비스를 이용하기위해선 해당 회선을 대표회선으로 설정 후 이용 가능
+> 요금제 변경시에도 대표 회선의 약정 가입 경과 기간이 일정 기간 미만이어도 가격이 더 높은 요금제로 변경시에는 위약금 청구를 하지 않음
+
 
 <br />
 
-# 📕 기타 자료
-
-### 1. 기획문서
-
-> [MyLittleTrip - Notion](https://www.notion.so/kimphysicsman/MLT-My-Little-Trip-716433a2fc8940d9870bd83b63570646?v=0c42e849923d4449aade69046bf597d1)
-
-### 2. 여행추천 알고리즘
-
-> [Travel_recommedation - Github](https://github.com/kimphysicsman/Travel_recommedation)
-
-### 3. 발표영상
-
-<table>
-  <tbody>
-    <tr>
-      <td>
-        <p align="center"> 22.08.05 발표 </p>
-        <a href="https://www.youtube.com/watch?v=6B0DSjvsqj0&t=1s" title="MyLittleTrip 중간발표">
-          <img align="center" src="https://user-images.githubusercontent.com/68724828/186087151-e0f0ebed-08c1-4a99-9af0-a8c48c536205.png" width="300" >
-        </a>
-      </td>
-      <td>
-        <p align="center"> 22.08.16 발표 </p>
-        <a href="https://youtu.be/9eoYpRqTZUU" title="MyLittleTrip 최종발표">
-          <img align="center" src="https://user-images.githubusercontent.com/68724828/186087151-e0f0ebed-08c1-4a99-9af0-a8c48c536205.png" width="300" >
+align="center" src="https://user-images.githubusercontent.com/68724828/186087151-e0f0ebed-08c1-4a99-9af0-a8c48c536205.png" width="300" >
         </a>
       </td>
     </tr>
