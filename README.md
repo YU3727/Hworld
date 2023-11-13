@@ -1,49 +1,145 @@
-# H world
+# 📜 김동우 포트폴리오
 
-통신사 홈페이지 구축 
+> 김동우(Dongwoo Kim) - kimphysicsman 포트폴리오
 
-1. 기술정의서
-2. WBS
-3. 화면정의서
+<br />
 
-[Hworld.pptx](https://github.com/zinny912/Hworld/files/12428709/Hworld.pptx)
-![001](https://github.com/zinny912/Hworld/assets/121842675/1a0c6153-b5fe-44d4-96f6-b982386fadd4)
-![002](https://github.com/zinny912/Hworld/assets/121842675/1fa0c6ea-5547-43e7-9bbd-4d24ddecf2f1)
-![003](https://github.com/zinny912/Hworld/assets/121842675/d98e96dc-a1e8-45d8-90ac-723a7da97a86)
-![004](https://github.com/zinny912/Hworld/assets/121842675/25b9e9a8-67ce-4c3e-8def-080018f1d25d)
-![005](https://github.com/zinny912/Hworld/assets/121842675/cd6921b6-080d-4187-b57c-65de01c3048d)
-![006](https://github.com/zinny912/Hworld/assets/121842675/fd0ba251-75d1-40fa-b7e2-43cda99d88d4)
-![007](https://github.com/zinny912/Hworld/assets/121842675/4ad365b1-6ac3-48a7-bdd0-9f0a49d093dc)
-![008](https://github.com/zinny912/Hworld/assets/121842675/eab35628-ae5c-4a82-9dce-517c8ade8e66)
-![009](https://github.com/zinny912/Hworld/assets/121842675/5c9a3b57-1c45-4975-8cbf-31ed6d97d78c)
-![010](https://github.com/zinny912/Hworld/assets/121842675/6bc17b51-e842-4005-a85f-c332f0a30260)
-![011](https://github.com/zinny912/Hworld/assets/121842675/4473f4f6-f5fb-485e-bf38-8afaec3d697a)
-![012](https://github.com/zinny912/Hworld/assets/121842675/ee91e87c-6a43-409e-90d3-731a123b0fc1)
-![013](https://github.com/zinny912/Hworld/assets/121842675/e01b57f2-d626-4b71-8eda-bb5cc4642070)
-![014](https://github.com/zinny912/Hworld/assets/121842675/9452fc9f-021d-437d-b976-aae0991f4bf1)
-![015](https://github.com/zinny912/Hworld/assets/121842675/9d6bd9d9-5099-4836-bb09-8d8222ff1ae1)
-![016](https://github.com/zinny912/Hworld/assets/121842675/aba5c4dc-148a-4b74-87f4-dd3038d66407)
-![017](https://github.com/zinny912/Hworld/assets/121842675/f428497e-659a-4a0c-bc9d-2ad1015b4048)
-![018](https://github.com/zinny912/Hworld/assets/121842675/de067955-46d1-42d2-a301-4ee4cad6c6b5)
-![019](https://github.com/zinny912/Hworld/assets/121842675/a284c949-8725-4357-9adf-75a7092df6fe)
-![020](https://github.com/zinny912/Hworld/assets/121842675/8d8118fa-3947-4d29-a7eb-90bffc568f5a)
-![021](https://github.com/zinny912/Hworld/assets/121842675/3cad1ad4-8915-494d-970e-523807fb3a8f)
-![022](https://github.com/zinny912/Hworld/assets/121842675/67bb3bfe-70bb-41d5-a410-65252b2aa85f)
-![023](https://github.com/zinny912/Hworld/assets/121842675/7b613fc8-c5e0-4f8a-a9bd-82e213b054be)
-![024](https://github.com/zinny912/Hworld/assets/121842675/78a35c9c-45c2-490b-a79b-4c5a28449908)
-![025](https://github.com/zinny912/Hworld/assets/121842675/e666360a-68a6-4c0b-9afb-7e7716079b16)
-![026](https://github.com/zinny912/Hworld/assets/121842675/dc7eb3a2-5485-4467-b5ae-50208c75a240)
-![027](https://github.com/zinny912/Hworld/assets/121842675/4e5c8615-f326-4a4c-8b1f-165cf45322bd)
-![028](https://github.com/zinny912/Hworld/assets/121842675/ed3e0cf3-c8e6-4976-b81c-dee314d77931)
-![029](https://github.com/zinny912/Hworld/assets/121842675/f97e0587-3cd2-4bb6-bd5d-9a09cbcc9061)
-![030](https://github.com/zinny912/Hworld/assets/121842675/1c8505b4-b735-487c-963e-1ecfaec170dd)
-![031](https://github.com/zinny912/Hworld/assets/121842675/56eb7297-acbb-43d1-a829-f047817de674)
-![032](https://github.com/zinny912/Hworld/assets/121842675/c0805d60-e761-4dee-9be5-c18216b8baf5)
-![033](https://github.com/zinny912/Hworld/assets/121842675/f8dba3e6-e03e-4504-a35d-57711f2ec5c3)
-![034](https://github.com/zinny912/Hworld/assets/121842675/8fb42e44-a823-4627-8b83-0c24c294d13a)
-![035](https://github.com/zinny912/Hworld/assets/121842675/d9b1d6de-f533-4499-94c9-4ee9fc3d762b)
-![036](https://github.com/zinny912/Hworld/assets/121842675/8baa86a1-e15e-4d18-bf74-773791205fbf)
-![037](https://github.com/zinny912/Hworld/assets/121842675/5f5db059-3074-4fd3-9a44-14fdf4158e4e)
-![038](https://github.com/zinny912/Hworld/assets/121842675/bd6ad7eb-b067-4725-ad70-7cfdfec12811)
-![039](https://github.com/zinny912/Hworld/assets/121842675/876d10ec-256e-4a4f-8bd3-ed4eb31f803f)
-![040](https://github.com/zinny912/Hworld/assets/121842675/997ed58e-0e8a-431d-b462-b2ae59c53320)
+# 👋 Intro
+
+> 안녕하세요! ***"항상 새로운 것을 배우고 도전하고 싶은"*** 김동우입니다!  
+> 5개월간 ***팀장***을 맡으며 팀 프로젝트를 진행하여 백엔드 개발자 역량을 길렀고  
+> 내가 이해한 내용을 다른 사람들에게 설명하며 함께 성장할 수 있도록 ***영상***으로 기록했습니다.  
+> 저에 대한 더 자세한 내용은 <a href="https://www.notion.so/kimphysicsman/PROFILE-6bf254d419af4910b776c111efb371e4"> <img src="https://img.shields.io/badge/-Profile-8AC926?style=for-the-badge" height="20px" style="margin-bottom: -5px" /> </a>이곳을 통해 확인 하실 수 있습니다!
+
+<br />
+
+# 📝Projects
+5개월간 진행했던 프로젝트들 입니다!  
+팀장으로서는 운영적인 면과 ***팀원들 학습 관리***, 프로젝트 일정 관리 등 많은 경험을 할 수 있었고,  
+프로젝트 역할면에서는 ***프로젝트 MVP와 관련된 핵심 기능과 알고리즘 개발***을 맡아 진행했습니다.
+
+## 1. 🛫 MyLittleTrip
+
+> 여행일정 추천 _(내일배움캠프 - 4416조 팀프로젝트)_
+>
+> - 개발기간 : 2022.07.07-09.02
+> - 핵심 역할 : 팀장, TSP 알고리즘을 활용한 여행추천 알고리즘 작성, React를 사용한 SPA 개발
+>
+>> Back-end
+>> - Language : python3  
+>> - Skill : Django, Django-rest-framework, PostgreSQL
+>> 
+>> [프로젝트 상세 설명(Back-end)](https://github.com/kimphysicsman/MyLittelTrip_backend)  
+>
+>> Front-end
+>> - Language : javascript
+>> - Skill : React.js
+>>
+>> [프로젝트 상세 설명(Front-end)](https://github.com/kimphysicsman/MyLittelTrip_frontend_react)
+
+<br />
+
+## 2. 👞 MyLittleShoes
+
+> 신발 스타일링 _(내일배움캠프 - 4520조 팀프로젝트)_
+>
+> - 개발기간 : 2022.06.28-07.06
+> - 핵심 역할 : 팀장, Generative model를 이용한 신발 스타일링 기능 구현
+> - Language : python3
+> - Skill : Django, Django-rest-framework
+>
+> [프로젝트 상세 설명](https://github.com/kimphysicsman/mylittleshoes_backend)
+
+<br />
+
+## 3. 🍻 MyLittleBeer
+
+> 맥주 추천 _(내일배움캠프 - 판타스틱4조 팀프로젝트)_
+>
+> - 개발기간 : 2022.06.02-13
+> - 핵심 역할 : 팀장, 맥주 Data 전처리 및 자카드 알고리즘을 이용한 추천 기능 구현 
+> - Language : python3, javascript
+> - Skill : Django, MySQL
+>
+> [프로젝트 상세 설명](https://github.com/kimphysicsman/mylittlebeer/)
+
+<br />
+
+## 4. 👊 MyLittelHero
+
+> 닮은 마블 캐릭터 찾기 _(내일배움캠프 - 판타스틱4조 팀프로젝트)_
+>
+> - 개발기간 : 2022.05.18-25
+> - 핵심 역할 : 팀장, CNN 모델별 학습 및 성능 비교, 닮은 마블 캐릭터 찾기 기능 구현
+> - Language : python3   
+> - Skill : flask, mongoDB
+>
+> [프로젝트 상세 설명](https://github.com/kimphysicsman/mylittlehero_backend)
+
+<br />
+
+## 5. 🎮 Sparta Fighter
+
+> 2d 횡스크롤 격투 게임 _(내일배움캠프 - 개인 프로젝트)_
+>
+> - 개발기간 : 2022.04.25-27
+> - 핵심 역할 : 캐릭터 클래스 구현 및 이벤트 루프 작성
+> - Language : python3
+>
+> [프로젝트 상세 설명](https://github.com/kimphysicsman/sparta_fighter)
+
+<br />
+
+## 6. 🎶 RE:TRO | 그때 그 시절, 당신의 음악
+
+> 1980-2010년 뮤직 웹사이트 _(메이킹챌린지 - 코딩왕조 팀프로젝트)_
+>
+> - 개발기간 : 2022.03.02-17
+> - 핵심 역할 : 팀장, 노래 재생 기능, 좋아요 기능
+> - Language : python3, javascript
+> - Skill : flask, mongoDB
+>
+> [프로젝트 상세 설명](https://github.com/kimphysicsman/retro_main)
+
+<br />
+
+# 🎞 Youtube
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <a href="https://youtu.be/BYKYpyyJfKU" title="판타스틱4조 - 머신러닝기초 4주차 스터디영상">
+          <img align="center" src="https://user-images.githubusercontent.com/68724828/186108751-0ad77c13-2115-4621-af8d-f4a11e5b3652.png" width="300" alt-text="판타스틱4조 - 머신러닝기초 4주차 스터디영상">
+        </a>
+      </td>
+      <td>
+        <a href="https://youtu.be/HR1b2hrxvbY" title="사오이십조 - DRF 5일차 스터디영상">
+          <img align="center" src="https://user-images.githubusercontent.com/68724828/186109362-b40c300c-0906-4062-9bc3-8229e692af8e.png" width="300" alt-text="사오이십조 - DRF 5일차 스터디영상">
+        </a>
+      </td>
+      <td>
+        <a href="https://youtu.be/nXTzsSGfIbg" title="사오이십조 - 220624아침퀴즈 스터디영상">
+        <img align="center" src="https://user-images.githubusercontent.com/68724828/186110013-b5c77cf3-0bbc-481a-897b-d3a30bc74be6.png" width="300" alt-text="사오이십조 - 220624아침퀴즈 스터디영상">
+          </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+> <b><em><a href="https://www.youtube.com/channel/UCdnXRtn_xnRWzZxUGY0yyWg/videos">More videos...</a></em></b>
+
+
+<br />
+<br />
+
+# 📞 Contact
+
+- 이메일 : kimphysicsman@gmail.com
+- 블로그 : <a href="https://velog.io/@kimphysicsman">
+  <img src="https://user-images.githubusercontent.com/68724828/185885678-8f619bfa-1160-4bb4-a026-f758a4014f82.png" height="26px" style="margin-top: 10px" />
+  </a>
+- 깃허브 : <a href="https://github.com/kimphysicsman">
+  <img src="https://user-images.githubusercontent.com/68724828/185908612-22f4d219-78a7-4de7-bb02-deecaa63bffa.png" height="28px" style="margin-top: 10px" />
+  </a>
+- 유튜브 :<a href="https://www.youtube.com/channel/UCdnXRtn_xnRWzZxUGY0yyWg">
+  <img src="https://user-images.githubusercontent.com/1569988/159397141-21463bc2-2acf-416b-aa15-235664556f34.png" height="24px" style="margin-top: 10px" />
+  </a>
